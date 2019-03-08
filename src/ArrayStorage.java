@@ -21,15 +21,7 @@ public class ArrayStorage {
      * by Resume objects and String objects inside them.
      */
     void clear() {
-
-        // check correctness of start index for clear
-        if (size > storage.length) {
-            size = storage.length;
-        }
-
-        for (int i = size - 1; i >= 0; i--) {
-            storage[i] = null;
-        }
+        Arrays.fill(storage,0, size, null);
         size = 0;
     }
 
@@ -48,7 +40,7 @@ public class ArrayStorage {
             throw new NullPointerException();
         }
         // Throw exception if final size more than allowed
-        if (size > storage.length - 1) {
+        if (size >= storage.length) {
             throw new IndexOutOfBoundsException();
         }
         storage[size++] = r;
@@ -66,8 +58,9 @@ public class ArrayStorage {
      * @return Reference to Resume object if founded or null
      */
     Resume get(String uuid) {
-        for (Resume r : storage) {
-            if (r != null && r.toString().equals(uuid)) {
+        for(int i = 0; i < size; i++) {
+            Resume r = storage[i];
+            if (r.toString().equals(uuid)) {
                 return r;
             }
         }
@@ -84,24 +77,9 @@ public class ArrayStorage {
      * @throws IndexOutOfBoundsException if resume with the uuid was not found
      */
     void delete(String uuid) {
-
         for (int i = 0; i < size; i++) {
-            if (storage[i] != null && storage[i].toString().equals(uuid)) {
-                storage[i] = null;
-
-                // move right part of array to the right
-
-                // Version 1: before IDEA code analyze
-                /*
-                for (int right = i + 1; right < size; right++) {
-                    storage[right - 1] = storage[right];
-                }
-                */
-
-                // Version 2: after IDEA code analyze
-                // Need test which version is faster
+            if (storage[i].toString().equals(uuid)) {
                 System.arraycopy(storage, i + 1, storage, i, size - i - 1);
-
                 // clear double reference to the same Resume
                 storage[size - 1] = null;
                 size--;
@@ -117,11 +95,7 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        if (size == 0) {
-            return new Resume[0];
-        } else {
-            return Arrays.copyOfRange(storage, 0, size);
-        }
+        return Arrays.copyOfRange(storage, 0, size);
     }
 
     /**
