@@ -25,7 +25,6 @@ public class ArrayStorage {
         size = 0;
     }
 
-
     /**
      * Update early created resume with new (replace old)
      *
@@ -37,12 +36,10 @@ public class ArrayStorage {
         if (r == null) {
             throw new NullPointerException();
         }
-        String uuid = r.getUuid(); // to avoid multiple calls
-        for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(uuid)) {
-                storage[i] = r;
-                return;
-            }
+        int i = getIndex(r.getUuid());
+        if (i != -1) {
+            storage[i] = r;
+            return;
         }
         System.out.println("Resume uuid=" + r.getUuid() + " not found for update");
         throw new IndexOutOfBoundsException();
@@ -66,7 +63,7 @@ public class ArrayStorage {
         if (size >= storage.length) {
             throw new IndexOutOfBoundsException();
         }
-        if (get(r.getUuid()) == null) {
+        if (getIndex(r.getUuid()) == -1) {
             storage[size++] = r;
         } else {
             System.out.println("Resume uuid=" + r.getUuid() + " already exists");
@@ -85,10 +82,9 @@ public class ArrayStorage {
      * @return Reference to Resume object if founded or null
      */
     Resume get(String uuid) {
-        for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(uuid)) {
-                return storage[i];
-            }
+        int i = getIndex(uuid);
+        if (i != -1) {
+            return storage[i];
         }
         System.out.println("Resume uuid=" + uuid + " not found");
         return null;
@@ -103,13 +99,12 @@ public class ArrayStorage {
      * @throws IndexOutOfBoundsException if resume with the uuid was not found
      */
     void delete(String uuid) {
-        for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(uuid)) {
-                System.arraycopy(storage, i + 1, storage, i, size - i - 1);
-                storage[size - 1] = null; // clear double reference to the same Resume
-                size--;
-                return;
-            }
+        int i = getIndex(uuid);
+        if (i != -1) {
+            System.arraycopy(storage, i + 1, storage, i, size - i - 1);
+            storage[size - 1] = null; // clear double reference to the same Resume
+            size--;
+            return;
         }
         System.out.println("Resume uuid=" + uuid + " not found for delete");
         throw new IndexOutOfBoundsException();
@@ -131,5 +126,20 @@ public class ArrayStorage {
      */
     int size() {
         return this.size;
+    }
+
+    /**
+     * Search for resume with getUuid() == uuid
+     *
+     * @param uuid String uuid to looking for
+     * @return Index in storage or -1 if not found
+     */
+    private int getIndex(String uuid) {
+        for (int i = 0; i < size; i++) {
+            if (storage[i].getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return -1; // not found
     }
 }
