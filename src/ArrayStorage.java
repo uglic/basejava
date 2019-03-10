@@ -44,6 +44,7 @@ public class ArrayStorage {
                 return;
             }
         }
+        System.out.println("Resume uuid=" + r.getUuid() + " not found for update");
         throw new IndexOutOfBoundsException();
     }
 
@@ -67,6 +68,8 @@ public class ArrayStorage {
         }
         if (get(r.getUuid()) == null) {
             storage[size++] = r;
+        } else {
+            System.out.println("Resume uuid=" + r.getUuid() + " already exists");
         }
     }
 
@@ -87,6 +90,7 @@ public class ArrayStorage {
                 return storage[i];
             }
         }
+        System.out.println("Resume uuid=" + uuid + " not found");
         return null;
     }
 
@@ -107,6 +111,7 @@ public class ArrayStorage {
                 return;
             }
         }
+        System.out.println("Resume uuid=" + uuid + " not found for delete");
         throw new IndexOutOfBoundsException();
     }
 
