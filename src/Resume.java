@@ -4,20 +4,19 @@
 public class Resume {
 
     // Unique identifier
-    public String uuid;
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     @Override
     public String toString() {
         return uuid;
     }
 
-    /**
-     * Return unique identifier of resume
-     * Function was introduced in Lesson 2
-     *
-     * @return Unique identifier
-     */
-    public String getUuid() {
-        return uuid;
-    }
 }
