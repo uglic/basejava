@@ -30,10 +30,12 @@ public class ArrayStorage {
         if (r == null) {
             System.out.println("Null not allowed for resume");
         } else if (size >= storage.length) {
-            System.out.println("Resume to save is not exists");
+            System.out.println("No space to add new resume");
         } else if (getPosition(r.getUuid()) == INCORRECT_INDEX) {
             storage[size++] = r;
             System.out.println("Resume with uuid=" + r.getUuid() + " added");
+        } else {
+            System.out.println("Resume with uuid=" + r.getUuid() + " already exists");
         }
     }
 
