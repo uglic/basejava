@@ -14,18 +14,8 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void insertUsingHelpIndex(Resume resume, int index) {
-        int insertAt = -index - 1; // index from Arrays.binarySearch()
-        for (int i = size - 1; i >= insertAt; i--) {
-            storage[i + 1] = storage[i];
-        }
-        storage[insertAt] = resume;
-    }
-
-    @Override
-    protected void deleteUsingHelpIndex(int index) {
-        for (int i = index; i < size - 1; i++) {
-            storage[i] = storage[i + 1];
-        }
+    protected int reorder(int index, int shift) {
+        System.arraycopy(storage, index - shift, storage, index, size - index + shift);
+        return index - shift;
     }
 }

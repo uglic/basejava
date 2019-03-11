@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.model.Resume;
-
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
@@ -15,13 +13,10 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void insertUsingHelpIndex(Resume resume, int index) {
-        storage[size] = resume;
+    protected int reorder(int index, int shift) {
+        if (shift == -1) {
+            storage[index] = storage[size + shift];
+        }
+        return size;
     }
-
-    @Override
-    protected void deleteUsingHelpIndex(int index) {
-        storage[index] = storage[size - 1];
-    }
-
 }
