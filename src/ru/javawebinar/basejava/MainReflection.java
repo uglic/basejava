@@ -13,9 +13,12 @@ public class MainReflection {
         System.out.println(field.getName());
         System.out.println(field.get(r));
         field.set(r, "new_uuid");
-        System.out.println("call via reflection:");
-        r.getClass().getMethod("toString").invoke(r);
+
         // TODO : invoke r.toString via reflection
+        System.out.println("\n-------\ncall via reflection:");
+        System.out.println(r.getClass().getMethod("toString").invoke(r));
+        System.out.println("-------");
+
         System.out.println(r);
     }
 }
