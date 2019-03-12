@@ -18,20 +18,22 @@ public abstract class AbstractArrayStorageTest {
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
 
+    public AbstractArrayStorageTest() {
+        try {
+            Class<?> classObj = Class.forName(getTestingClassName(this));
+            Constructor<?> constructor = classObj.getConstructor(new Class[0]);
+            storage = (Storage) constructor.newInstance(new Object[0]);
+        } catch (ReflectiveOperationException e) {
+            storage = null;
+        }
+    }
+
     @Before
     public void setUp() throws Exception {
-        setUpTestObjects(this);
         storage.clear();
         storage.save(new Resume(UUID_1));
         storage.save(new Resume(UUID_2));
         storage.save(new Resume(UUID_3));
-    }
-
-    @Ignore
-    public void setUpTestObjects(Object caller) throws Exception {
-        Class<?> classObj = Class.forName(getTestingClassName(caller));
-        Constructor<?> constructor = classObj.getConstructor(new Class[0]);
-        storage = (Storage) constructor.newInstance(new Object[0]);
     }
 
     @Ignore
@@ -114,7 +116,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test(expected = StorageException.class)
     public void saveOverflow() {
-        final int LOCAL_LIMIT = 1_000_001;
+        final int LOCAL_LIMIT = 10_000;
         storage.clear();
         for (int i = 0; i < LOCAL_LIMIT; i++) {
             String uuid = "u" + String.format("%d", i);
@@ -122,19 +124,18 @@ public abstract class AbstractArrayStorageTest {
             try {
                 storage.save(resume);
             } catch (StorageException e) {
-                System.out.println("Storage limit for [" + getTestingClassName(this)
-                        + "] found: " + i + " items");
-                throw e;
+                Assert.fail();
             }
         }
-        System.out.println("Storage limit for [" + getTestingClassName(this)
-                + "] not found. May be set bigger LOCAL_LIMIT in saveOverflow()");
+        String uuid = "u" + String.format("%d", LOCAL_LIMIT);
+        Resume resume = new Resume(uuid);
+        storage.save(resume);
     }
 
     @Test(expected = NotExistStorageException.class)
     public void delete() {
         final String checkUUID = UUID_3;
-        Assert.assertEquals (checkUUID, storage.get(checkUUID).getUuid());
+        Assert.assertEquals(checkUUID, storage.get(checkUUID).getUuid());
         storage.delete(checkUUID);
         storage.get(checkUUID);
     }
