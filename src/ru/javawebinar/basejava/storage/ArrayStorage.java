@@ -13,9 +13,9 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected int reorder(int index, int shift) {
-        if (shift == -1) {
-            storage[index] = storage[size + shift];
+    protected int reorder(int index) {
+        if (index >= 0) {
+            storage[index] = storage[size - 1];
         }
         return size;
     }

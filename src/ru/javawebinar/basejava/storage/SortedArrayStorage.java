@@ -14,8 +14,15 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected int reorder(int index, int shift) {
-        System.arraycopy(storage, index - shift, storage, index, size - index + shift);
-        return index - shift;
+    protected int reorder(int index) {
+        int from;
+        if (index < 0) {
+            index = -index;
+            from = index - 1;
+        } else {
+            from = index + 1;
+        }
+        System.arraycopy(storage, from, storage, index, size - from);
+        return from;
     }
 }

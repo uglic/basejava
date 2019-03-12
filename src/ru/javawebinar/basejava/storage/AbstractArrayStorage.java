@@ -37,7 +37,7 @@ public abstract class AbstractArrayStorage implements Storage {
         } else if (size >= STORAGE_LIMIT) {
             System.out.println("Storage overflow");
         } else {
-            storage[reorder(-index, 1)] = resume;
+            storage[reorder(index)] = resume;
             size++;
         }
     }
@@ -58,7 +58,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index <= -1) {
             System.out.println("Resume " + uuid + " not exist");
         } else {
-            reorder(index, -1);
+            reorder(index);
             storage[size - 1] = null;
             size--;
         }
@@ -77,14 +77,14 @@ public abstract class AbstractArrayStorage implements Storage {
     protected abstract int getIndex(String uuid);
 
     /**
-     * Reorder storage before add and delete of resumes.
+     * Reorder storage before add and delete operations.
      * Return index at which need to insert new resume
      * (for addition) or any other value (for deletion).
+     * If index below zero (resume absent) - addition.
+     * If index above or equal zero (exists) - deletion.
      *
-     * @param index for addition: negative of getIndex() value
-     *              for deletion: getIndex() value
-     * @param shift for addition: +1, for deletion -1
+     * @param index getIndex() value before reorder.
      * @return index to insert new resume (for addition)
      */
-    protected abstract int reorder(int index, int shift);
+    protected abstract int reorder(int index);
 }
