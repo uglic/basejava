@@ -7,22 +7,24 @@ import ru.javawebinar.basejava.model.Resume;
 public abstract class AbstractStorage implements Storage {
 
     @Override
-    public void update(Resume r) {
-        int index = getIndex(r.getUuid());
+    public void update(Resume resume) {
+        int index = getIndex(resume.getUuid());
         if (index < 0) {
-            throw new NotExistStorageException(r.toString());
+            throw new NotExistStorageException(resume.toString());
         } else {
-            setStorageElement(index, r);
+            setStorageElement(index, resume);
         }
     }
 
     @Override
-    public void save(Resume r) {
-        int index = getIndex(r.getUuid());
+    public void save(Resume resume) {
+        int index = getIndex(resume.getUuid());
         if (index >= 0) {
-            throw new ExistStorageException(r.toString());
+            throw new ExistStorageException(resume.toString());
         } else {
-            insertElement(r, index);
+            onBeforeSave(resume, index);
+            insertElement(resume, index);
+            onAfterSave(index);
         }
     }
 
@@ -32,7 +34,9 @@ public abstract class AbstractStorage implements Storage {
         if (index < 0) {
             throw new NotExistStorageException(uuid);
         } else {
+            onBeforeDelete(index);
             fillDeletedElement(index);
+            onAfterDelete(index);
         }
     }
 
@@ -47,7 +51,7 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract void fillDeletedElement(int index);
 
-    protected abstract void insertElement(Resume r, int index);
+    protected abstract void insertElement(Resume resume, int index);
 
     protected abstract int getIndex(String uuid);
 
@@ -56,4 +60,20 @@ public abstract class AbstractStorage implements Storage {
 
     /* added for part 1 of lesson 5 homework */
     protected abstract void setStorageElement(int index, Resume resume);
+
+    /* added for part 1 of lesson 5 homework new entity */
+    protected void onBeforeSave(Resume resume, int index) {
+    }
+
+    /* added for part 1 of lesson 5 homework new entity */
+    protected void onAfterSave(int index) {
+    }
+
+    /* added for part 1 of lesson 5 homework new entity */
+    protected void onBeforeDelete(int index) {
+    }
+
+    /* added for part 1 of lesson 5 homework new entity */
+    protected void onAfterDelete(int index) {
+    }
 }
