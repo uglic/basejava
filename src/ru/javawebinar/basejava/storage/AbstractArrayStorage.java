@@ -41,7 +41,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     protected void onBeforeSave(Resume resume, int index) {
         if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", resume.toString());
+            throw new StorageException(ERROR_MESSAGE_OVERFLOW, resume.toString());
         }
     }
 
