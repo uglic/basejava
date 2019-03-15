@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.Map;
 import java.util.TreeMap;
 
-public abstract class MapStorage extends AbstractStorage {
+public class MapStorage extends AbstractStorage {
     /**
      * Use of index as unique key follows from use of getIndex()
      * in the most methods of AbstractStorage.
@@ -36,7 +36,7 @@ public abstract class MapStorage extends AbstractStorage {
         for (Integer index : storage.keySet()) {
             Resume resume = storage.get(index);
             if (resume.getUuid().equals(uuid)) {
-                return index.intValue();
+                return index;
             }
         }
         return -1;
@@ -54,7 +54,13 @@ public abstract class MapStorage extends AbstractStorage {
 
     @Override
     protected void doSavedElement(Resume resume, int index) {
-        storage.put(index, resume);
+        int maxKeyValue = -1;
+        for (int key : storage.keySet()) {
+            if (key > maxKeyValue) {
+                maxKeyValue = key;
+            }
+        }
+        storage.put(maxKeyValue + 1, resume);
     }
 
     @Override
