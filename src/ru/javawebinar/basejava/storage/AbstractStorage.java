@@ -22,9 +22,7 @@ public abstract class AbstractStorage implements Storage {
         if (index >= 0) {
             throw new ExistStorageException(resume.toString());
         } else {
-            onBeforeSave(resume, index);
-            insertElement(resume, index);
-            onAfterSave(index);
+            doSavedElement(resume, index);
         }
     }
 
@@ -34,9 +32,7 @@ public abstract class AbstractStorage implements Storage {
         if (index < 0) {
             throw new NotExistStorageException(uuid);
         } else {
-            onBeforeDelete(index);
-            fillDeletedElement(index);
-            onAfterDelete(index);
+            doDeletedElement(index);
         }
     }
 
@@ -49,31 +45,13 @@ public abstract class AbstractStorage implements Storage {
         return getStorageElement(index);
     }
 
-    protected abstract void fillDeletedElement(int index);
-
-    protected abstract void insertElement(Resume resume, int index);
-
     protected abstract int getIndex(String uuid);
 
-    /* added for part 1 of lesson 5 homework */
     protected abstract Resume getStorageElement(int index);
 
-    /* added for part 1 of lesson 5 homework */
     protected abstract void setStorageElement(int index, Resume resume);
 
-    /* added for part 1 of lesson 5 homework new entity */
-    protected void onBeforeSave(Resume resume, int index) {
-    }
+    protected abstract void doSavedElement(Resume resume, int index);
 
-    /* added for part 1 of lesson 5 homework new entity */
-    protected void onAfterSave(int index) {
-    }
-
-    /* added for part 1 of lesson 5 homework new entity */
-    protected void onBeforeDelete(int index) {
-    }
-
-    /* added for part 1 of lesson 5 homework new entity */
-    protected void onAfterDelete(int index) {
-    }
+    protected abstract void doDeletedElement(int index);
 }
