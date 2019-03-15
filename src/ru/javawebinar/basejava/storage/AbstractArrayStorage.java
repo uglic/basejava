@@ -38,13 +38,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         storage[index] = resume;
     }
 
-    protected abstract void fillDeletedElement(int index);
-
-    protected abstract void insertElement(Resume resume, int index);
-
     @Override
     protected void doDeletedElement(int index) {
-        fillDeletedElement(index);
+        reorder(index);
         storage[size - 1] = null;
         size--;
     }
@@ -54,7 +50,19 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         if (size == STORAGE_LIMIT) {
             throw new StorageException(ERROR_MESSAGE_OVERFLOW, resume.toString());
         }
-        insertElement(resume, index);
+        storage[reorder(index)] = resume;
         size++;
     }
+
+    /**
+     * Reorder storage before add and delete operations.
+     * Return index at which need to insert new resume
+     * (for addition) or any other value (for deletion).
+     * If index below zero (resume absent) - addition.
+     * If index above or equal zero (exists) - deletion.
+     *
+     * @param index getIndex() value before reorder.
+     * @return index to insert new resume (for addition)
+     */
+    protected abstract int reorder(int index);
 }
