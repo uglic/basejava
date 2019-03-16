@@ -10,6 +10,7 @@ public class MapStorageTest extends AbstractStorageTest implements AbstractStora
         super(new MapStorage());
     }
 
+    @Override
     @Test(expected = StorageException.class)
     public void saveOverflow() {
         throw new StorageException(FAIL_MESSAGE_OVERFLOW, "");

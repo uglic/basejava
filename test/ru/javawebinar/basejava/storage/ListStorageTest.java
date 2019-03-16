@@ -12,6 +12,7 @@ public class ListStorageTest extends AbstractStorageTest implements AbstractStor
         super(new ListStorage());
     }
 
+    @Override
     @Test
     public void getAll() {
         Resume[] resumesMust = new Resume[]{
@@ -23,6 +24,7 @@ public class ListStorageTest extends AbstractStorageTest implements AbstractStor
         Assert.assertArrayEquals(resumesMust, resumesReal);
     }
 
+    @Override
     @Test(expected = StorageException.class)
     public void saveOverflow() {
         throw new StorageException(FAIL_MESSAGE_OVERFLOW, "");
