@@ -32,39 +32,40 @@ public class MapStorageBad extends AbstractStorage {
     }
 
     @Override
-    protected int getIndex(String uuid) {
+    protected SearchKey getIndex(String uuid) {
         for (Integer index : storage.keySet()) {
             Resume resume = storage.get(index);
             if (resume.getUuid().equals(uuid)) {
-                return index;
+                return new SearchKey(index);
             }
         }
-        return -1;
+        return new SearchKey(-1);
     }
 
     @Override
-    protected Resume getStorageElement(int index) {
-        return storage.get(index);
+    protected Resume getStorageElement(SearchKey key) {
+        return storage.get(key.intValue());
     }
 
     @Override
-    protected void setStorageElement(int index, Resume resume) {
-        storage.put(index, resume);
+    protected void setStorageElement(SearchKey key, Resume resume) {
+        storage.put(key.intValue(), resume);
     }
 
     @Override
-    protected void doSavedElement(Resume resume, int index) {
+    protected void doSaveElement(SearchKey key, Resume resume) {
         int maxKeyValue = -1;
-        for (int key : storage.keySet()) {
-            if (key > maxKeyValue) {
-                maxKeyValue = key;
+        for (int keyValue : storage.keySet()) {
+            if (keyValue > maxKeyValue) {
+                maxKeyValue = keyValue;
             }
         }
         storage.put(maxKeyValue + 1, resume);
     }
 
     @Override
-    protected void doDeletedElement(int index) {
-        storage.remove(index);
+    protected void doDeleteElement(SearchKey key) {
+        storage.remove(key.intValue());
     }
+
 }

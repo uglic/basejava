@@ -1,16 +1,10 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * This version of MapStorage not use getIndex().
- *
- */
 public class MapStorage extends AbstractStorage {
     protected final Map<String, Resume> storage = new TreeMap<>();
 
@@ -31,65 +25,31 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public void update(Resume resume) {
-        if (!storage.containsKey(resume.getUuid())) {
-            throw new NotExistStorageException(resume.toString());
+    protected SearchKey getIndex(String uuid) {
+        if (storage.containsKey(uuid)) {
+            return new SearchKey(uuid);
         } else {
-            storage.put(resume.getUuid(), resume);
+            return new SearchKey(-1);
         }
     }
 
     @Override
-    public void save(Resume resume) {
-        if (storage.containsKey(resume.getUuid())) {
-            throw new ExistStorageException(resume.toString());
-        } else {
-            storage.put(resume.getUuid(), resume);
-        }
+    protected Resume getStorageElement(SearchKey key) {
+        return storage.get(key.stringValue());
     }
 
     @Override
-    public void delete(String uuid) {
-        if (!storage.containsKey(uuid)) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            storage.remove(uuid);
-        }
+    protected void setStorageElement(SearchKey key, Resume resume) {
+        storage.put(key.stringValue(), resume);
     }
 
     @Override
-    public Resume get(String uuid) {
-        if (!storage.containsKey(uuid)) {
-            throw new NotExistStorageException(uuid);
-        }
-        return storage.get(uuid);
+    protected void doSaveElement(SearchKey key, Resume resume) {
+        storage.put(resume.getUuid(), resume);
     }
 
-    /* not needed for maps */
     @Override
-    protected int getIndex(String uuid) {
-        return  -1;
-    }
-
-
-    /* not needed for maps */
-    @Override
-    protected Resume getStorageElement(int index) {
-        return null;
-    }
-
-    /* not needed for maps */
-    @Override
-    protected void setStorageElement(int index, Resume resume) {
-    }
-
-    /* not needed for maps */
-    @Override
-    protected void doSavedElement(Resume resume, int index) {
-    }
-
-    /* not needed for maps */
-    @Override
-    protected void doDeletedElement(int index) {
+    protected void doDeleteElement(SearchKey key) {
+        storage.remove(key.stringValue());
     }
 }
