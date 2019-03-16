@@ -1,19 +1,18 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * This version of MapStorage not use getIndex().
+ *
+ */
 public class MapStorage extends AbstractStorage {
-    /**
-     * Use of index as unique key follows from use of getIndex()
-     * in the most methods of AbstractStorage.
-     * Interface Storage as is don't have any indexes besides uuid,
-     * but if we will use Map<String(==uuid), Resume> then we must to implement
-     * all AbstractStorage from the sсratch.
-     */
-    protected final Map<Integer, Resume> storage = new TreeMap<>();
+    protected final Map<String, Resume> storage = new TreeMap<>();
 
     @Override
     public int size() {
@@ -32,39 +31,65 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected int getIndex(String uuid) {
-        for (Integer index : storage.keySet()) {
-            Resume resume = storage.get(index);
-            if (resume.getUuid().equals(uuid)) {
-                return index;
-            }
+    public void update(Resume resume) {
+        if (!storage.containsKey(resume.getUuid())) {
+            throw new NotExistStorageException(resume.toString());
+        } else {
+            storage.put(resume.getUuid(), resume);
         }
-        return -1;
     }
 
+    @Override
+    public void save(Resume resume) {
+        if (storage.containsKey(resume.getUuid())) {
+            throw new ExistStorageException(resume.toString());
+        } else {
+            storage.put(resume.getUuid(), resume);
+        }
+    }
+
+    @Override
+    public void delete(String uuid) {
+        if (!storage.containsKey(uuid)) {
+            throw new NotExistStorageException(uuid);
+        } else {
+            storage.remove(uuid);
+        }
+    }
+
+    @Override
+    public Resume get(String uuid) {
+        if (!storage.containsKey(uuid)) {
+            throw new NotExistStorageException(uuid);
+        }
+        return storage.get(uuid);
+    }
+
+    /* not needed for maps */
+    @Override
+    protected int getIndex(String uuid) {
+        return  -1;
+    }
+
+
+    /* not needed for maps */
     @Override
     protected Resume getStorageElement(int index) {
-        return storage.get(index);
+        return null;
     }
 
+    /* not needed for maps */
     @Override
     protected void setStorageElement(int index, Resume resume) {
-        storage.put(index, resume);
     }
 
+    /* not needed for maps */
     @Override
     protected void doSavedElement(Resume resume, int index) {
-        int maxKeyValue = -1;
-        for (int key : storage.keySet()) {
-            if (key > maxKeyValue) {
-                maxKeyValue = key;
-            }
-        }
-        storage.put(maxKeyValue + 1, resume);
     }
 
+    /* not needed for maps */
     @Override
     protected void doDeletedElement(int index) {
-        storage.remove(index);
     }
 }

@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -18,6 +19,18 @@ public class MapStorageTest extends AbstractStorageTest {
     }
 
     @Test
+    public void save() {
+        int sizeOld = storage.size();
+        storage.save(resumeNew);
+        Assert.assertSame(resumeNew, storage.get(UUID_NEW));
+        Assert.assertEquals(sizeOld + 1, storage.size());
+    }
+
+    @Test
+    public void get() {
+    }
+
+    @Test
     public void testOfSpeedSave() {
         long startTime;
         long endTime;
@@ -31,7 +44,7 @@ public class MapStorageTest extends AbstractStorageTest {
         }
         endTime = System.nanoTime();
         time = endTime - startTime;
-        System.out.println("M1:testOfSpeedSave:          " + time + " nanosec");
+        System.out.println("M2:testOfSpeedSave:          " + time + " nanosec");
     }
 
     @Test
@@ -51,7 +64,7 @@ public class MapStorageTest extends AbstractStorageTest {
         }
         endTime = System.nanoTime();
         time = endTime - startTime;
-        System.out.println("M1:testOfSpeedSaveDelete:    " + time + " nanosec");
+        System.out.println("M2:testOfSpeedSaveDelete:    " + time + " nanosec");
     }
 
     @Test
@@ -72,6 +85,7 @@ public class MapStorageTest extends AbstractStorageTest {
         }
         endTime = System.nanoTime();
         time = endTime - startTime;
-        System.out.println("M1:testOfSpeedSaveGetDelete: " + time + " nanosec");
+        System.out.println("M2:testOfSpeedSaveGetDelete: " + time + " nanosec");
     }
+
 }

@@ -1,33 +1,20 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public class MapStorage2Test extends AbstractStorageTest {
+public class MapStorageBadTest extends AbstractStorageTest {
     private static final String FAIL_MESSAGE_OVERFLOW = "This type of storage does not support overflow exception";
     private static final int ELEMENT_COUNT = 10_000;
 
-    public MapStorage2Test() {
-        super(new MapStorage2());
+    public MapStorageBadTest() {
+        super(new MapStorageBad());
     }
 
     @Test(expected = StorageException.class)
     public void saveOverflow() {
         throw new StorageException(FAIL_MESSAGE_OVERFLOW, "");
-    }
-
-    @Test
-    public void save() {
-        int sizeOld = storage.size();
-        storage.save(resumeNew);
-        Assert.assertSame(resumeNew, storage.get(UUID_NEW));
-        Assert.assertEquals(sizeOld + 1, storage.size());
-    }
-
-    @Test
-    public void get() {
     }
 
     @Test
@@ -44,7 +31,7 @@ public class MapStorage2Test extends AbstractStorageTest {
         }
         endTime = System.nanoTime();
         time = endTime - startTime;
-        System.out.println("M2:testOfSpeedSave:          " + time + " nanosec");
+        System.out.println("M1:testOfSpeedSave:          " + time + " nanosec");
     }
 
     @Test
@@ -64,7 +51,7 @@ public class MapStorage2Test extends AbstractStorageTest {
         }
         endTime = System.nanoTime();
         time = endTime - startTime;
-        System.out.println("M2:testOfSpeedSaveDelete:    " + time + " nanosec");
+        System.out.println("M1:testOfSpeedSaveDelete:    " + time + " nanosec");
     }
 
     @Test
@@ -85,7 +72,6 @@ public class MapStorage2Test extends AbstractStorageTest {
         }
         endTime = System.nanoTime();
         time = endTime - startTime;
-        System.out.println("M2:testOfSpeedSaveGetDelete: " + time + " nanosec");
+        System.out.println("M1:testOfSpeedSaveGetDelete: " + time + " nanosec");
     }
-
 }
