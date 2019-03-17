@@ -26,33 +26,38 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected SearchKey getIndex(String uuid) {
+    protected Object getIndex(String uuid) {
         for (ListIterator<Resume> iterator = storage.listIterator(); iterator.hasNext(); ) {
+            int index = iterator.nextIndex();
             Resume resume = iterator.next();
             if (resume.getUuid().equals(uuid)) {
-                return new SearchKey(iterator);
+                return new Integer(index);
             }
         }
-        return new SearchKey(-1);
+        return new Integer(-1);
     }
 
     @Override
-    protected Resume getStorageElement(SearchKey key) {
-        return key.iterator().previous();
+    protected Resume getStorageElement(Object key) {
+        return storage.get(((Integer) key).intValue());
     }
 
     @Override
-    protected void setStorageElement(SearchKey key, Resume resume) {
-        key.iterator().set(resume);
+    protected void setStorageElement(Object key, Resume resume) {
+        storage.set(((Integer) key).intValue(), resume);
     }
 
     @Override
-    protected void doSaveElement(SearchKey key, Resume resume) {
+    protected void doSaveElement(Object key, Resume resume) {
         storage.add(0, resume);
     }
 
     @Override
-    protected void doDeleteElement(SearchKey key) {
-        key.iterator().remove();
+    protected void doDeleteElement(Object key) {
+        storage.remove(((Integer) key).intValue());
+    }
+
+    protected boolean isKeyExists(Object key) {
+        return (((Integer) key).intValue() >= 0);
     }
 }

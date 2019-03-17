@@ -3,7 +3,7 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 interface AbstractStorageTimeTest {
-    boolean MAKE_TIME_TESTS = true; // Run or stop time tests for all
+    boolean MAKE_TIME_TESTS = false; // Run or stop time tests for all
     int ELEMENT_COUNT = 2_000;     // Count of simple operations to perform
     int LEN_OF_MESSAGE = 30;
 
@@ -52,7 +52,7 @@ interface AbstractStorageTimeTest {
         if (runDelete) sb.append("Delete");
         if (sb.length() < LEN_OF_MESSAGE) {
             int appendSize = LEN_OF_MESSAGE - sb.length();
-            for(int i = 0; i< appendSize; i++){
+            for (int i = 0; i < appendSize; i++) {
                 sb.append(" ");
             }
         }
@@ -62,5 +62,4 @@ interface AbstractStorageTimeTest {
 
         System.out.println(sb.toString());
     }
-
 }

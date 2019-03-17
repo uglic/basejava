@@ -6,13 +6,13 @@ package ru.javawebinar.basejava.storage;
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected SearchKey getIndex(String uuid) {
+    protected Object getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
-                return new SearchKey(i);
+                return new Integer(i);
             }
         }
-        return new SearchKey(-1);
+        return new Integer(-1);
     }
 
     @Override
