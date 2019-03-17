@@ -30,17 +30,17 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     protected Resume getStorageElement(Object key) {
-        return storage[((Integer) key).intValue()];
+        return storage[(int) key];
     }
 
     @Override
     protected void setStorageElement(Object key, Resume resume) {
-        storage[((Integer) key).intValue()] = resume;
+        storage[(int) key] = resume;
     }
 
     @Override
     protected void doDeleteElement(Object key) {
-        reorder(((Integer) key).intValue());
+        reorder((int) key);
         storage[size - 1] = null;
         size--;
     }
@@ -50,7 +50,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         if (size == STORAGE_LIMIT) {
             throw new StorageException(ERROR_MESSAGE_OVERFLOW, resume.toString());
         }
-        storage[reorder(((Integer) key).intValue())] = resume;
+        storage[reorder((int) key)] = resume;
         size++;
     }
 
@@ -67,6 +67,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected abstract int reorder(int index);
 
     protected boolean isKeyExists(Object key) {
-        return (((Integer) key).intValue() >= 0);
+        return ((int) key >= 0);
     }
 }
