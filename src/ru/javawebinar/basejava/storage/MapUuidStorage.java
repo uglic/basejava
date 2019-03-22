@@ -49,7 +49,13 @@ public class MapUuidStorage extends AbstractStorage {
         storage.remove((String) key);
     }
 
+    @Override
     protected boolean isExist(Object key) {
         return (storage.containsKey(key));
+    }
+
+    @Override
+    protected String getUniqueStringKeyFromResume(Resume resume) {
+        return resume.getUuid();
     }
 }

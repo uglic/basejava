@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
@@ -30,18 +28,6 @@ public class MapNotUuidStorage extends AbstractStorage {
     }
 
     @Override
-    public void update(Resume resume) {
-        Object key = getExistedSearchKey(resume.getFullName());
-        doUpdate(resume, key);
-    }
-
-    @Override
-    public void save(Resume resume) {
-        Object key = getNotExistedSearchKey(resume.getFullName());
-        doSave(resume, key);
-    }
-
-    @Override
     protected Object getSearchKey(String uuid) {
         return uuid;
     }
@@ -58,7 +44,7 @@ public class MapNotUuidStorage extends AbstractStorage {
 
     @Override
     protected void doSave(Resume resume, Object key) {
-        storage.put(resume.getFullName(), resume);
+        storage.put(getUniqueStringKeyFromResume(resume), resume);
     }
 
     @Override
@@ -66,25 +52,13 @@ public class MapNotUuidStorage extends AbstractStorage {
         storage.remove((String) key);
     }
 
+    @Override
     protected boolean isExist(Object key) {
         return (storage.containsKey(key));
     }
 
-    // also cat be set as protected in AbstractStorage
-    private Object getExistedSearchKey(String uuid) {
-        Object key = getSearchKey(uuid);
-        if (!isExist(key)) {
-            throw new NotExistStorageException(uuid);
-        }
-        return key;
-    }
-
-    // also cat be set as protected in AbstractStorage
-    private Object getNotExistedSearchKey(String uuid) {
-        Object key = getSearchKey(uuid);
-        if (isExist(key)) {
-            throw new ExistStorageException(uuid);
-        }
-        return key;
+    @Override
+    protected String getUniqueStringKeyFromResume(Resume resume) {
+        return resume.getFullName();
     }
 }

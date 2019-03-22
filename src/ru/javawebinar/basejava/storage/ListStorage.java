@@ -58,7 +58,13 @@ public class ListStorage extends AbstractStorage {
         storage.remove((int) key);
     }
 
+    @Override
     protected boolean isExist(Object key) {
         return ((int) key >= 0);
+    }
+
+    @Override
+    protected String getUniqueStringKeyFromResume(Resume resume) {
+        return resume.getUuid();
     }
 }

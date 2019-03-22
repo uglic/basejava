@@ -57,6 +57,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         size++;
     }
 
+    @Override
+    protected String getUniqueStringKeyFromResume(Resume resume) {
+        return resume.getUuid();
+    }
+
     /**
      * Reorder storage before add and delete operations.
      * Return index at which need to insert new resume
@@ -69,6 +74,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
      */
     protected abstract int reorder(int index);
 
+    @Override
     protected boolean isExist(Object key) {
         return ((int) key >= 0);
     }
