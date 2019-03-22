@@ -2,8 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MapUuidStorage extends AbstractStorage {
     protected final Map<String, Resume> storage = new TreeMap<>();
@@ -19,9 +18,10 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
-        Resume[] resumes = new Resume[storage.size()];
-        return storage.values().toArray(resumes);
+    public List<Resume> getAllSorted() {
+        List<Resume> resumes = new ArrayList<>(storage.values());
+        resumes.sort(Resume.RESUME_COMPARATOR);
+        return resumes;
     }
 
     @Override

@@ -2,9 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class ListStorage extends AbstractStorage {
     protected final List<Resume> storage = new LinkedList<>();
@@ -20,9 +18,10 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
-        Resume[] resumes = new Resume[storage.size()];
-        return storage.toArray(resumes);
+    public List<Resume> getAllSorted() {
+        ArrayList<Resume> resumes = new ArrayList<>(storage);
+        resumes.sort(Resume.RESUME_COMPARATOR);
+        return resumes;
     }
 
     @Override
