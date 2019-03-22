@@ -8,52 +8,53 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public void update(Resume resume) {
-        Object key = getIndex(resume.getUuid());
-        if (!isKeyExists(key)) {
-            throw new NotExistStorageException(resume.toString());
-        } else {
-            setStorageElement(key, resume);
-        }
+        Object key = getExistedSearchKey(resume.getUuid());
+        doUpdate(resume, key);
     }
 
     @Override
     public void save(Resume resume) {
-        Object key = getIndex(resume.getUuid());
-        if (isKeyExists(key)) {
-            throw new ExistStorageException(resume.toString());
-        } else {
-            doSaveElement(key, resume);
-        }
+        Object key = getNotExistedSearchKey(resume.getUuid());
+        doSave(resume, key);
     }
 
     @Override
     public void delete(String uuid) {
-        Object key = getIndex(uuid);
-        if (!isKeyExists(key)) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            doDeleteElement(key);
-        }
+        Object key = getExistedSearchKey(uuid);
+        doDelete(key);
     }
 
     @Override
     public Resume get(String uuid) {
-        Object key = getIndex(uuid);
-        if (!isKeyExists(key)) {
-            throw new NotExistStorageException(uuid);
-        }
-        return getStorageElement(key);
+        Object key = getExistedSearchKey(uuid);
+        return doGet(key);
     }
 
-    protected abstract Object getIndex(String uuid);
+    protected abstract Object getSearchKey(String uuid);
 
-    protected abstract Resume getStorageElement(Object key);
+    protected abstract Resume doGet(Object key); // very bad practice is to call get method starting with do
 
-    protected abstract void setStorageElement(Object key, Resume resume);
+    protected abstract void doUpdate(Resume resume, Object key);
 
-    protected abstract void doSaveElement(Object key, Resume resume);
+    protected abstract void doSave(Resume resume, Object key);
 
-    protected abstract void doDeleteElement(Object key);
+    protected abstract void doDelete(Object key);
 
-    protected abstract boolean isKeyExists(Object key);
+    protected abstract boolean isExist(Object key);
+
+    private Object getExistedSearchKey(String uuid) {
+        Object key = getSearchKey(uuid);
+        if (!isExist(key)) {
+            throw new NotExistStorageException(uuid);
+        }
+        return key;
+    }
+
+    private Object getNotExistedSearchKey(String uuid) {
+        Object key = getSearchKey(uuid);
+        if (isExist(key)) {
+            throw new ExistStorageException(uuid);
+        }
+        return key;
+    }
 }

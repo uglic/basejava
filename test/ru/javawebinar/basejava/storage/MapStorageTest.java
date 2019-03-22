@@ -7,7 +7,7 @@ public class MapStorageTest extends AbstractStorageTest implements AbstractStora
     private static final String FAIL_MESSAGE_OVERFLOW = "This type of storage does not support overflow exception";
 
     public MapStorageTest() {
-        super(new MapStorage());
+        super(new MapUuidStorage());
     }
 
     @Override
