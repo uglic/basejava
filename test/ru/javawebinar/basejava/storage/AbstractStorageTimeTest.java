@@ -3,8 +3,8 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 interface AbstractStorageTimeTest {
-    boolean MAKE_TIME_TESTS = false; // Run or stop time tests for all
-    int ELEMENT_COUNT = 2_000;     // Count of simple operations to perform
+    boolean MAKE_TIME_TESTS = true; // Run or stop time tests for all
+    int ELEMENT_COUNT = 10_000;     // Count of simple operations to perform
     int LEN_OF_MESSAGE = 30;
 
     default void testOfSpeedSave(Storage storage) {

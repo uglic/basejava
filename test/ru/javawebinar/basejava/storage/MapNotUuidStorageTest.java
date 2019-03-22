@@ -2,9 +2,9 @@ package ru.javawebinar.basejava.storage;
 
 import org.junit.Test;
 
-public class MapStorageTest extends AbstractStorageTest implements AbstractStorageTimeTest {
-    public MapStorageTest() {
-        super(new MapUuidStorage());
+public class MapNotUuidStorageTest extends AbstractStorageTest implements AbstractStorageTimeTest {
+    public MapNotUuidStorageTest() {
+        super(new MapNotUuidStorage());
     }
 
     @Test
