@@ -8,6 +8,8 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.ArrayList;
+
 public abstract class AbstractStorageTest {
     protected final Storage storage;
 
@@ -17,6 +19,7 @@ public abstract class AbstractStorageTest {
     protected static final String UUID_NEW = "uuidNew";
     protected static final String UUID_TO_CHECK_EXISTING = UUID_1;
     protected static final String FAIL_MESSAGE_OVERFLOW = "Storage overflow before expected";
+    protected static final String FAIL_MESSAGE_OVERFLOW_ONLY_FOR_ARRAYS = "This type of storage does not support overflow exception";
 
     protected final Resume resumeExist1 = new Resume(UUID_1);
     protected final Resume resumeExist2 = new Resume(UUID_2);
@@ -96,19 +99,23 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = StorageException.class)
     public void saveOverflow() {
-        storage.clear();
-        try {
-            for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
-                String uuid = String.format("%d", i);
-                Resume resume = new Resume(uuid);
-                storage.save(resume);
+        if (storage instanceof ArrayList) {
+            storage.clear();
+            try {
+                for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
+                    String uuid = String.format("%d", i);
+                    Resume resume = new Resume(uuid);
+                    storage.save(resume);
+                }
+            } catch (StorageException e) {
+                Assert.fail(FAIL_MESSAGE_OVERFLOW);
             }
-        } catch (StorageException e) {
-            Assert.fail(FAIL_MESSAGE_OVERFLOW);
+            String uuid = "u" + String.format("%d", AbstractArrayStorage.STORAGE_LIMIT);
+            Resume resume = new Resume(uuid);
+            storage.save(resume);
+        } else {
+            throw new StorageException(FAIL_MESSAGE_OVERFLOW_ONLY_FOR_ARRAYS, "");
         }
-        String uuid = "u" + String.format("%d", AbstractArrayStorage.STORAGE_LIMIT);
-        Resume resume = new Resume(uuid);
-        storage.save(resume);
     }
 
     @Test(expected = NotExistStorageException.class)

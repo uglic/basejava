@@ -12,6 +12,9 @@ public interface Storage {
 
     Resume[] getAll();
 
+    // Return list sorted by fullName
+    //List<Resume> getAllSorted();
+
     void save(Resume r);
 
     void delete(String uuid);

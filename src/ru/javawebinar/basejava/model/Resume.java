@@ -6,16 +6,23 @@ import java.util.UUID;
  * ru.javawebinar.basejava.model.Resume class
  */
 public class Resume implements Comparable<Resume> {
-
+    private final static String DEFAULT_FULLNAME = "RAND NAMED";
     // Unique identifier
     private final String uuid;
 
+    private final String fullName;
+
     public Resume() {
-        this(UUID.randomUUID().toString());
+        this(UUID.randomUUID().toString(), DEFAULT_FULLNAME);
     }
 
     public Resume(String uuid) {
+        this(uuid, DEFAULT_FULLNAME);
+    }
+
+    public Resume(String uuid, String fullName) {
         this.uuid = uuid;
+        this.fullName = fullName;
     }
 
     public String getUuid() {
