@@ -6,9 +6,6 @@ import java.util.*;
 
 public class MapUuidStorage extends AbstractStorage {
     protected final Map<String, Resume> storage = new TreeMap<>();
-    private static final Comparator<Resume> RESUME_COMPARATOR_FULLNAME = (o1, o2) -> o1.getFullName().compareTo(o2.getFullName());
-    private static final Comparator<Resume> RESUME_COMPARATOR_UUID = (o1, o2) -> o1.getUuid().compareTo(o2.getUuid());
-    private static final Comparator<Resume> RESUME_COMPARATOR = RESUME_COMPARATOR_FULLNAME.thenComparing(RESUME_COMPARATOR_UUID);
 
     @Override
     public int size() {
@@ -21,10 +18,8 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        List<Resume> resumes = new ArrayList<>(storage.values());
-        resumes.sort(RESUME_COMPARATOR);
-        return resumes;
+    protected List<Resume> getAllAnySorted() {
+        return new ArrayList<>(storage.values());
     }
 
     @Override
@@ -55,10 +50,5 @@ public class MapUuidStorage extends AbstractStorage {
     @Override
     protected boolean isExist(Object searchKey) {
         return (storage.containsKey(searchKey));
-    }
-
-    @Override
-    protected String getUniqueStringKeyFromResume(Resume resume) {
-        return resume.getUuid();
     }
 }

@@ -4,6 +4,7 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     static final int STORAGE_LIMIT = 10_000;
@@ -35,7 +36,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     protected void doDelete(Object searchKey) {
-        reorder((int) searchKey);
+        reorder(searchKey);
         storage[size - 1] = null;
         size--;
     }
@@ -45,13 +46,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         if (size == STORAGE_LIMIT) {
             throw new StorageException(ERROR_MESSAGE_OVERFLOW, resume.toString());
         }
-        storage[reorder((int) searchKey)] = resume;
+        storage[reorder(searchKey)] = resume;
         size++;
-    }
-
-    @Override
-    protected String getUniqueStringKeyFromResume(Resume resume) {
-        return resume.getUuid();
     }
 
     protected abstract int reorder(Object searchKey);
@@ -59,5 +55,10 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     protected boolean isExist(Object searchKey) {
         return ((int) searchKey >= 0);
+    }
+
+    @Override
+    protected List<Resume> getAllAnySorted() {
+        return Arrays.asList(Arrays.copyOfRange(storage, 0, size));
     }
 }

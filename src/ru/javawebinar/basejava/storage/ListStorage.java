@@ -6,9 +6,6 @@ import java.util.*;
 
 public class ListStorage extends AbstractStorage {
     protected final List<Resume> storage = new LinkedList<>();
-    private static final Comparator<Resume> RESUME_COMPARATOR_FULLNAME = (o1, o2) -> o1.getFullName().compareTo(o2.getFullName());
-    private static final Comparator<Resume> RESUME_COMPARATOR_UUID = (o1, o2) -> o1.getUuid().compareTo(o2.getUuid());
-    private static final Comparator<Resume> RESUME_COMPARATOR = RESUME_COMPARATOR_FULLNAME.thenComparing(RESUME_COMPARATOR_UUID);
 
     @Override
     public int size() {
@@ -21,10 +18,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        ArrayList<Resume> resumes = new ArrayList<>(storage);
-        resumes.sort(RESUME_COMPARATOR);
-        return resumes;
+    protected List<Resume> getAllAnySorted() {
+        return new ArrayList<>(storage);
     }
 
     @Override
@@ -62,10 +57,5 @@ public class ListStorage extends AbstractStorage {
     @Override
     protected boolean isExist(Object searchKey) {
         return ((int) searchKey >= 0);
-    }
-
-    @Override
-    protected String getUniqueStringKeyFromResume(Resume resume) {
-        return resume.getUuid();
     }
 }
