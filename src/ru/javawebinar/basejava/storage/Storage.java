@@ -10,11 +10,11 @@ public interface Storage {
 
     void clear();
 
-    void update(Resume r);
+    void update(Resume resume);
     
     List<Resume> getAllSorted();
 
-    void save(Resume r);
+    void save(Resume resume);
 
     void delete(String uuid);
 

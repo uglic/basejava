@@ -6,6 +6,9 @@ import java.util.*;
 
 public class ListStorage extends AbstractStorage {
     protected final List<Resume> storage = new LinkedList<>();
+    private static final Comparator<Resume> RESUME_COMPARATOR_FULLNAME = (o1, o2) -> o1.getFullName().compareTo(o2.getFullName());
+    private static final Comparator<Resume> RESUME_COMPARATOR_UUID = (o1, o2) -> o1.getUuid().compareTo(o2.getUuid());
+    private static final Comparator<Resume> RESUME_COMPARATOR = RESUME_COMPARATOR_FULLNAME.thenComparing(RESUME_COMPARATOR_UUID);
 
     @Override
     public int size() {
@@ -20,47 +23,45 @@ public class ListStorage extends AbstractStorage {
     @Override
     public List<Resume> getAllSorted() {
         ArrayList<Resume> resumes = new ArrayList<>(storage);
-        resumes.sort(Resume.RESUME_COMPARATOR);
+        resumes.sort(RESUME_COMPARATOR);
         return resumes;
     }
 
     @Override
     protected Integer getSearchKey(String uuid) {
-        // In homework analysis used get(i) - O(n2) for search because list is not an array
-        // Never use get(i) for search in real linked lists
-        for (ListIterator<Resume> iterator = storage.listIterator(); iterator.hasNext(); ) {
-            int index = iterator.nextIndex();
-            Resume resume = iterator.next();
+        int i = 0;
+        for (Resume resume : storage) {
             if (resume.getUuid().equals(uuid)) {
-                return new Integer(index);
+                return i;
             }
+            ++i;
         }
-        return new Integer(-1);
+        return -1;
     }
 
     @Override
-    protected Resume doGet(Object key) {
-        return storage.get((int) key);
+    protected Resume doGet(Object searchKey) {
+        return storage.get((int) searchKey);
     }
 
     @Override
-    protected void doUpdate(Resume resume, Object key) {
-        storage.set((int) key, resume);
+    protected void doUpdate(Resume resume, Object searchKey) {
+        storage.set((int) searchKey, resume);
     }
 
     @Override
-    protected void doSave(Resume resume, Object key) {
+    protected void doSave(Resume resume, Object searchKey) {
         storage.add(resume);
     }
 
     @Override
-    protected void doDelete(Object key) {
-        storage.remove((int) key);
+    protected void doDelete(Object searchKey) {
+        storage.remove((int) searchKey);
     }
 
     @Override
-    protected boolean isExist(Object key) {
-        return ((int) key >= 0);
+    protected boolean isExist(Object searchKey) {
+        return ((int) searchKey >= 0);
     }
 
     @Override

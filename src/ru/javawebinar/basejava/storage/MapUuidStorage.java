@@ -6,6 +6,9 @@ import java.util.*;
 
 public class MapUuidStorage extends AbstractStorage {
     protected final Map<String, Resume> storage = new TreeMap<>();
+    private static final Comparator<Resume> RESUME_COMPARATOR_FULLNAME = (o1, o2) -> o1.getFullName().compareTo(o2.getFullName());
+    private static final Comparator<Resume> RESUME_COMPARATOR_UUID = (o1, o2) -> o1.getUuid().compareTo(o2.getUuid());
+    private static final Comparator<Resume> RESUME_COMPARATOR = RESUME_COMPARATOR_FULLNAME.thenComparing(RESUME_COMPARATOR_UUID);
 
     @Override
     public int size() {
@@ -20,7 +23,7 @@ public class MapUuidStorage extends AbstractStorage {
     @Override
     public List<Resume> getAllSorted() {
         List<Resume> resumes = new ArrayList<>(storage.values());
-        resumes.sort(Resume.RESUME_COMPARATOR);
+        resumes.sort(RESUME_COMPARATOR);
         return resumes;
     }
 
@@ -30,28 +33,28 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume doGet(Object key) {
-        return storage.get((String) key);
+    protected Resume doGet(Object searchKey) {
+        return storage.get((String) searchKey);
     }
 
     @Override
-    protected void doUpdate(Resume resume, Object key) {
-        storage.put((String) key, resume);
+    protected void doUpdate(Resume resume, Object searchKey) {
+        storage.put((String) searchKey, resume);
     }
 
     @Override
-    protected void doSave(Resume resume, Object key) {
+    protected void doSave(Resume resume, Object searchKey) {
         storage.put(resume.getUuid(), resume);
     }
 
     @Override
-    protected void doDelete(Object key) {
-        storage.remove((String) key);
+    protected void doDelete(Object searchKey) {
+        storage.remove((String) searchKey);
     }
 
     @Override
-    protected boolean isExist(Object key) {
-        return (storage.containsKey(key));
+    protected boolean isExist(Object searchKey) {
+        return (storage.containsKey(searchKey));
     }
 
     @Override

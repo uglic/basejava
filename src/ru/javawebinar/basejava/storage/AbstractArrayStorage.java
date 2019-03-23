@@ -4,7 +4,6 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
-import java.util.List;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     static final int STORAGE_LIMIT = 10_000;
@@ -25,35 +24,28 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        Resume[] resumes = Arrays.copyOfRange(storage, 0, size);
-        Arrays.sort(resumes, Resume.RESUME_COMPARATOR);
-        return Arrays.asList(resumes);
+    protected Resume doGet(Object searchKey) {
+        return storage[(int) searchKey];
     }
 
     @Override
-    protected Resume doGet(Object key) {
-        return storage[(int) key];
+    protected void doUpdate(Resume resume, Object searchKey) {
+        storage[(int) searchKey] = resume;
     }
 
     @Override
-    protected void doUpdate(Resume resume, Object key) {
-        storage[(int) key] = resume;
-    }
-
-    @Override
-    protected void doDelete(Object key) {
-        reorder((int) key);
+    protected void doDelete(Object searchKey) {
+        reorder((int) searchKey);
         storage[size - 1] = null;
         size--;
     }
 
     @Override
-    protected void doSave(Resume resume, Object key) {
+    protected void doSave(Resume resume, Object searchKey) {
         if (size == STORAGE_LIMIT) {
             throw new StorageException(ERROR_MESSAGE_OVERFLOW, resume.toString());
         }
-        storage[reorder((int) key)] = resume;
+        storage[reorder((int) searchKey)] = resume;
         size++;
     }
 
@@ -62,20 +54,10 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return resume.getUuid();
     }
 
-    /**
-     * Reorder storage before add and delete operations.
-     * Return index at which need to insert new resume
-     * (for addition) or any other value (for deletion).
-     * If index below zero (resume absent) - addition.
-     * If index above or equal zero (exists) - deletion.
-     *
-     * @param index getIndex() value before reorder.
-     * @return index to insert new resume (for addition)
-     */
-    protected abstract int reorder(int index);
+    protected abstract int reorder(Object searchKey);
 
     @Override
-    protected boolean isExist(Object key) {
-        return ((int) key >= 0);
+    protected boolean isExist(Object searchKey) {
+        return ((int) searchKey >= 0);
     }
 }

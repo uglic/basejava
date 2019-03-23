@@ -1,32 +1,31 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.Comparator;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
  * ru.javawebinar.basejava.model.Resume class
  */
 public class Resume implements Comparable<Resume> {
-    public static final Comparator<Resume> RESUME_COMPARATOR = (o1, o2) -> {
-        int compareNames = o1.getFullName().compareTo(o2.getFullName());
-        if (compareNames == 0) {
-            return o1.getUuid().compareTo(o2.getUuid());
-        } else {
-            return compareNames;
-        }
-    };
-
     // Unique identifier
     private final String uuid;
 
     private String fullName;
+    private static final String DEFAULT_FULLNAME = "";
 
     public Resume() {
-        this(UUID.randomUUID().toString(), "");
+        this(UUID.randomUUID().toString(), DEFAULT_FULLNAME);
+    }
+
+    public Resume(String fullName) {
+        this();
+        Objects.requireNonNull(fullName);
+        this.fullName = DEFAULT_FULLNAME;
     }
 
     public Resume(String uuid, String fullName) {
-        if ((uuid == null) || (fullName == null)) throw new NullPointerException();
+        Objects.requireNonNull(uuid);
+        Objects.requireNonNull(fullName);
         this.uuid = uuid;
         this.fullName = fullName;
     }
@@ -47,12 +46,12 @@ public class Resume implements Comparable<Resume> {
 
         Resume resume = (Resume) o;
 
-        return uuid.equals(resume.uuid);
+        return uuid.equals(resume.uuid) && fullName.equals(resume.fullName);
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return (uuid + fullName).hashCode();
     }
 
     @Override
@@ -60,7 +59,6 @@ public class Resume implements Comparable<Resume> {
         return uuid;
     }
 
-    // About this method homework for lesson#06 says nothing
     @Override
     public int compareTo(Resume o) {
         return uuid.compareTo(o.uuid);
@@ -68,5 +66,9 @@ public class Resume implements Comparable<Resume> {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }
