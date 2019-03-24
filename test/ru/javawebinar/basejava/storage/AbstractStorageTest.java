@@ -15,22 +15,13 @@ public abstract class AbstractStorageTest {
     protected final Storage storage;
 
     protected static final String UUID_1 = "uuid1";
-    protected static final String UUID_2 = "uuid2";
-    protected static final String UUID_3 = "uuid3";
     protected static final String UUID_NEW = "uuidNew";
-    protected static final String FULLNAME_1 = "Abab Ababov";
-    protected static final String FULLNAME_2 = "Baba Babov";
-    protected static final String FULLNAME_3 = "Caca Cavov";
-    protected static final String FULLNAME_NEW = "Nemo Captain";
-
     protected static final String UUID_TO_CHECK_EXISTING = UUID_1;
-    protected static final String FAIL_MESSAGE_OVERFLOW = "Storage overflow before expected";
-    protected static final String FAIL_MESSAGE_OVERFLOW_ONLY_FOR_ARRAYS = "This type of storage does not support overflow exception";
 
-    protected final Resume RESUME_EXIST_1 = new Resume(UUID_1, FULLNAME_1);
-    protected final Resume RESUME_EXIST_2 = new Resume(UUID_2, FULLNAME_2);
-    protected final Resume RESUME_EXIST_3 = new Resume(UUID_3, FULLNAME_3);
-    protected final Resume RESUME_EXIST_NEW = new Resume(UUID_NEW, FULLNAME_NEW);
+    protected final Resume RESUME_EXIST_1 = new Resume(UUID_1, "Abab Ababov");
+    protected final Resume RESUME_EXIST_2 = new Resume("uuid2", "Baba Babov");
+    protected final Resume RESUME_EXIST_3 = new Resume("uuid3", "Caca Cavov");
+    protected final Resume RESUME_EXIST_NEW = new Resume(UUID_NEW, "Nemo Captain");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -116,13 +107,12 @@ public abstract class AbstractStorageTest {
                     storage.save(resume);
                 }
             } catch (StorageException e) {
-                Assert.fail(FAIL_MESSAGE_OVERFLOW);
+                Assert.fail("Storage overflow before expected");
             }
-            String uuid = "u" + String.format("%d", AbstractArrayStorage.STORAGE_LIMIT);
             Resume resume = new Resume();
             storage.save(resume);
         } else {
-            throw new StorageException(FAIL_MESSAGE_OVERFLOW_ONLY_FOR_ARRAYS, "");
+            throw new StorageException("This type of storage does not support overflow exception", "");
         }
     }
 
@@ -137,7 +127,6 @@ public abstract class AbstractStorageTest {
     @Test(expected = NotExistStorageException.class)
     public void deleteNotExist() {
         storage.delete(UUID_NEW);
-        // cannot check size here because of exception
     }
 
     @Test

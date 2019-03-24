@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.*;
 
 public class MapNotUuidStorage extends AbstractStorage {
-    protected final Map<Resume, Resume> storage = new TreeMap<>();
+    private final Map<Resume, Resume> storage = new TreeMap<>();
 
     @Override
     public int size() {

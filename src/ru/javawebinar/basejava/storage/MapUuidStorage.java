@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.*;
 
 public class MapUuidStorage extends AbstractStorage {
-    protected final Map<String, Resume> storage = new TreeMap<>();
+    private final Map<String, Resume> storage = new TreeMap<>();
 
     @Override
     public int size() {
@@ -29,7 +29,7 @@ public class MapUuidStorage extends AbstractStorage {
 
     @Override
     protected Resume doGet(Object searchKey) {
-        return storage.get((String) searchKey);
+        return storage.get(searchKey);
     }
 
     @Override
@@ -44,11 +44,11 @@ public class MapUuidStorage extends AbstractStorage {
 
     @Override
     protected void doDelete(Object searchKey) {
-        storage.remove((String) searchKey);
+        storage.remove(searchKey);
     }
 
     @Override
     protected boolean isExist(Object searchKey) {
-        return (storage.containsKey(searchKey));
+        return storage.containsKey(searchKey);
     }
 }

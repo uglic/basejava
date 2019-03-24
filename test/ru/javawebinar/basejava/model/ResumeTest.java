@@ -1,32 +1,25 @@
 package ru.javawebinar.basejava.model;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ResumeTest {
     private final static String FULLNAME_1 = "Abab Babov";
-    private final static String FULLNAME_2 = "Baba Cacov";
     private final static String UUID_1 = "uuid1";
-    private final static String UUID_2 = "uuid2";
     private final static Resume RESUME_1 = new Resume(UUID_1, FULLNAME_1);
-    private final static Resume RESUME_2 = new Resume(UUID_2, FULLNAME_2);
+    private final static Resume RESUME_2 = new Resume("uuid2", "Baba Cacov");
     private final static Resume RESUME_1_COPY1 = new Resume(RESUME_1.getUuid(), RESUME_1.getFullName());
     private final static Resume RESUME_1_COPY2 = new Resume(RESUME_1.getUuid(), RESUME_1.getFullName());
 
-    @Before
-    public void setUp() {
-    }
-
     @Test(expected = NullPointerException.class)
     public void createNullUuid() {
-        Resume resume = new Resume(null, FULLNAME_1);
+        new Resume(null, FULLNAME_1);
     }
 
     @Test(expected = NullPointerException.class)
     public void createNullFullName() {
-        Resume resume = new Resume(UUID_1, null);
+        new Resume(UUID_1, null);
     }
 
     @Test

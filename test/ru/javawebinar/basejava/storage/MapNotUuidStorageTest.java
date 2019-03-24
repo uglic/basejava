@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
-public class MapNotUuidStorageTest extends AbstractStorageTest implements AbstractStorageTimeTest {
+public class MapNotUuidStorageTest extends AbstractStorageTest {
     public MapNotUuidStorageTest() {
         super(new MapNotUuidStorage());
     }

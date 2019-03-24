@@ -8,8 +8,6 @@ import java.util.List;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     static final int STORAGE_LIMIT = 10_000;
-    static final String ERROR_MESSAGE_OVERFLOW = "Storage overflow";
-
     protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
@@ -44,7 +42,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     protected void doSave(Resume resume, Object searchKey) {
         if (size == STORAGE_LIMIT) {
-            throw new StorageException(ERROR_MESSAGE_OVERFLOW, resume.toString());
+            throw new StorageException("Storage overflow", resume.toString());
         }
         storage[reorder(searchKey)] = resume;
         size++;

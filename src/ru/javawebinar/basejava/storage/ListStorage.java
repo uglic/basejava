@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.*;
 
 public class ListStorage extends AbstractStorage {
-    protected final List<Resume> storage = new LinkedList<>();
+    private final List<Resume> storage = new LinkedList<>();
 
     @Override
     public int size() {
@@ -29,7 +29,7 @@ public class ListStorage extends AbstractStorage {
             if (resume.getUuid().equals(uuid)) {
                 return i;
             }
-            ++i;
+            i++;
         }
         return -1;
     }

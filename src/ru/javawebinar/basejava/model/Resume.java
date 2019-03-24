@@ -3,24 +3,18 @@ package ru.javawebinar.basejava.model;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * ru.javawebinar.basejava.model.Resume class
- */
 public class Resume implements Comparable<Resume> {
-    // Unique identifier
     private final String uuid;
-
     private String fullName;
-    private static final String DEFAULT_FULLNAME = "";
 
     public Resume() {
-        this(UUID.randomUUID().toString(), DEFAULT_FULLNAME);
+        this(UUID.randomUUID().toString(), "");
     }
 
     public Resume(String fullName) {
         this();
         Objects.requireNonNull(fullName);
-        this.fullName = DEFAULT_FULLNAME;
+        this.fullName = "";
     }
 
     public Resume(String uuid, String fullName) {
