@@ -48,8 +48,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         size++;
     }
 
-    protected abstract int reorder(Object searchKey);
-
     @Override
     protected boolean isExist(Object searchKey) {
         return ((int) searchKey >= 0);
@@ -59,4 +57,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected List<Resume> getAllAnySorted() {
         return Arrays.asList(Arrays.copyOfRange(storage, 0, size));
     }
+
+    protected abstract int reorder(Object searchKey);
 }

@@ -8,9 +8,7 @@ public class Resume implements Comparable<Resume> {
     private String fullName;
 
     public Resume(String fullName) {
-        Objects.requireNonNull(fullName);
-        this.uuid = UUID.randomUUID().toString();
-        this.fullName = "";
+        this(UUID.randomUUID().toString(), fullName);
     }
 
     public Resume(String uuid, String fullName) {

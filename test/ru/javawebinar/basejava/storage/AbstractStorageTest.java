@@ -46,7 +46,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume newResume = new Resume(RESUME_EXIST_1.getUuid(), RESUME_EXIST_1.getFullName());
+        Resume newResume = new Resume(UUID_1, "updated fullName");
         storage.update(newResume);
         Assert.assertSame(storage.get(newResume.getUuid()), newResume);
     }
@@ -63,10 +63,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        List<Resume> resumesExpected = Arrays.asList(
-                RESUME_EXIST_1,
-                RESUME_EXIST_2,
-                RESUME_EXIST_3);
+        List<Resume> resumesExpected = Arrays.asList(RESUME_EXIST_1, RESUME_EXIST_2, RESUME_EXIST_3);
         List<Resume> resumesReal = storage.getAllSorted();
         Assert.assertEquals(resumesExpected, resumesReal);
     }
