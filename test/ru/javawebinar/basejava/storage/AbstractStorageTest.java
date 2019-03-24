@@ -5,10 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractStorageTest {
@@ -29,9 +28,8 @@ public abstract class AbstractStorageTest {
 
     @Before
     public void setUp() {
-        storage.clear(); // this line can be deleted because storage here is empty.
-        storage.save(RESUME_EXIST_1);
         storage.save(RESUME_EXIST_2);
+        storage.save(RESUME_EXIST_1);
         storage.save(RESUME_EXIST_3);
     }
 
@@ -48,7 +46,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume newResume = new Resume(RESUME_EXIST_1);
+        Resume newResume = new Resume(RESUME_EXIST_1.getUuid(), RESUME_EXIST_1.getFullName());
         storage.update(newResume);
         Assert.assertSame(storage.get(newResume.getUuid()), newResume);
     }
@@ -65,16 +63,12 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        storage.clear();
-        storage.save(RESUME_EXIST_2);
-        storage.save(RESUME_EXIST_1);
-        storage.save(RESUME_EXIST_3);
-        List<Resume> resumesMust = new ArrayList<>();
-        resumesMust.add(RESUME_EXIST_1);
-        resumesMust.add(RESUME_EXIST_2);
-        resumesMust.add(RESUME_EXIST_3);
+        List<Resume> resumesExpected = Arrays.asList(
+                RESUME_EXIST_1,
+                RESUME_EXIST_2,
+                RESUME_EXIST_3);
         List<Resume> resumesReal = storage.getAllSorted();
-        Assert.assertEquals(resumesMust, resumesReal);
+        Assert.assertEquals(resumesExpected, resumesReal);
     }
 
     @Test
@@ -95,25 +89,6 @@ public abstract class AbstractStorageTest {
     public void saveNullResume() {
         storage.save(null);
         // cannot check size here because of exception
-    }
-
-    @Test(expected = StorageException.class)
-    public void saveOverflow() {
-        if (storage instanceof ArrayList) {
-            storage.clear();
-            try {
-                for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
-                    Resume resume = new Resume();
-                    storage.save(resume);
-                }
-            } catch (StorageException e) {
-                Assert.fail("Storage overflow before expected");
-            }
-            Resume resume = new Resume();
-            storage.save(resume);
-        } else {
-            throw new StorageException("This type of storage does not support overflow exception", "");
-        }
     }
 
     @Test(expected = NotExistStorageException.class)

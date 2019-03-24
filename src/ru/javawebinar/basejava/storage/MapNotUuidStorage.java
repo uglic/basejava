@@ -23,7 +23,7 @@ public class MapNotUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected Object getSearchKey(String uuid) {
+    protected Resume getSearchKey(String uuid) {
         for (Resume resume : storage.keySet()) {
             if (resume.getUuid().equals(uuid)) {
                 return resume;
@@ -54,7 +54,6 @@ public class MapNotUuidStorage extends AbstractStorage {
 
     @Override
     protected boolean isExist(Object searchKey) {
-        if (searchKey == null) return false;
-        return (storage.containsKey(searchKey));
+        return searchKey != null && storage.containsKey(searchKey);
     }
 }
