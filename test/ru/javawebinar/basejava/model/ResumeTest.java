@@ -9,8 +9,10 @@ public class ResumeTest {
     private final static String UUID_1 = "uuid1";
     private final static Resume RESUME_1 = new Resume(UUID_1, FULLNAME_1);
     private final static Resume RESUME_2 = new Resume("uuid2", "Baba Cacov");
-    private final static Resume RESUME_1_COPY1 = new Resume(RESUME_1.getUuid(), RESUME_1.getFullName());
-    private final static Resume RESUME_1_COPY2 = new Resume(RESUME_1.getUuid(), RESUME_1.getFullName());
+    private final static Resume RESUME_1_COPY1 = new Resume(UUID_1, FULLNAME_1);
+    private final static Resume RESUME_1_COPY2 = new Resume(UUID_1, FULLNAME_1);
+    private final static Resume RESUME_1_COPY_NEWUUID = new Resume(FULLNAME_1);
+    private final static Resume RESUME_1_COPY_NEWNAME = new Resume(UUID_1, FULLNAME_1 + "new");
 
     @Test(expected = NullPointerException.class)
     public void createNullUuid() {
@@ -107,9 +109,19 @@ public class ResumeTest {
     }
 
     @Test
-    public void compareTo() {
+    public void compareToDifferentAll() {
         assertEquals(0, RESUME_1.compareTo(RESUME_1));
         assertEquals(-1, RESUME_1.compareTo(RESUME_2));
         assertEquals(1, RESUME_2.compareTo(RESUME_1));
+    }
+
+    @Test
+    public void compareToDifferentUuidOnly() {
+        assertNotEquals(0, RESUME_1.compareTo(RESUME_1_COPY_NEWUUID));
+    }
+
+    @Test
+    public void compareToDifferentNameOnly() {
+        assertNotEquals(0, RESUME_1.compareTo(RESUME_1_COPY_NEWNAME));
     }
 }

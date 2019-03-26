@@ -11,23 +11,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractStorageTest {
-    protected final Storage storage;
+    @SuppressWarnings("WeakerAccess") protected final Storage storage;
 
-    protected static final String UUID_1 = "uuid1";
-    protected static final String UUID_NEW = "uuidNew";
-    protected static final String UUID_TO_CHECK_EXISTING = UUID_1;
+    private static final String UUID_1 = "uuid1";
+    private static final String UUID_NEW = "uuidNew";
+    private static final String UUID_TO_CHECK_EXISTING = UUID_1;
 
-    protected final Resume RESUME_EXIST_1 = new Resume(UUID_1, "Abab Ababov");
-    protected final Resume RESUME_EXIST_2 = new Resume("uuid2", "Baba Babov");
-    protected final Resume RESUME_EXIST_3 = new Resume("uuid3", "Caca Cavov");
-    protected final Resume RESUME_EXIST_NEW = new Resume(UUID_NEW, "Nemo Captain");
+    private final Resume RESUME_EXIST_1 = new Resume(UUID_1, "Abab Ababov");
+    private final Resume RESUME_EXIST_2 = new Resume("uuid2", "Baba Babov");
+    private final Resume RESUME_EXIST_3 = new Resume("uuid3", "Caca Cavov");
+    private final Resume RESUME_EXIST_NEW = new Resume(UUID_NEW, "Nemo Captain");
 
-    protected AbstractStorageTest(Storage storage) {
+    @SuppressWarnings("WeakerAccess") protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
     }
 
     @Before
     public void setUp() {
+        // order must be random to test getAllSorted()
         storage.save(RESUME_EXIST_2);
         storage.save(RESUME_EXIST_1);
         storage.save(RESUME_EXIST_3);
