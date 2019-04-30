@@ -15,7 +15,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected int reorder(Integer searchKey) {
+    protected int reorder(int searchKey) {
         if (searchKey >= 0) {
             storage[searchKey] = storage[size - 1];
         }

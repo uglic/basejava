@@ -11,7 +11,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
     protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
-    protected abstract int reorder(Integer searchKey);
+    protected abstract int reorder(int searchKey);
 
     @Override
     public int size() {
