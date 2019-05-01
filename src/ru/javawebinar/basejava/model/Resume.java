@@ -1,11 +1,17 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Resume implements Comparable<Resume> {
     private final String uuid;
     private String fullName;
+
+    //{need review
+    private ArrayList<Contact> contacts = new ArrayList<>();
+    private ArrayList<Section> sections = new ArrayList<>();
+    //}need review
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -55,4 +61,31 @@ public class Resume implements Comparable<Resume> {
         int compareToFullnameResult = fullName.compareTo(o.fullName);
         return compareToFullnameResult != 0 ? compareToFullnameResult : uuid.compareTo(o.uuid);
     }
+
+    //{need review
+    public void addContact(Contact contact) {
+        contacts.add(contact);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public String getAsHtml() {
+        StringBuilder builder = new StringBuilder();
+        for (Contact contact : contacts) {
+            if (builder.length() != 0) {
+                builder.append("\r\n");
+            }
+            builder.append(contact.getAsHtml());
+        }
+        for (Section section : sections) {
+            if (builder.length() != 0) {
+                builder.append("\r\n");
+            }
+            builder.append(section.getAsHtml());
+        }
+        return builder.toString();
+    }
+    //}need review
 }

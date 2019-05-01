@@ -13,7 +13,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected int reorder(Integer searchKey) {
+    protected int reorder(int searchKey) {
         int from;
         int index = searchKey;
         if (index < 0) {
