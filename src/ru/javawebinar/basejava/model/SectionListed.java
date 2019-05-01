@@ -1,41 +1,24 @@
 package ru.javawebinar.basejava.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SectionListed extends Section {
-    private List<SectionItem> items = new ArrayList<>();
+    private final List<SectionItem> items = new ArrayList<>();
 
     public SectionListed(SectionsEnum type, SectionItem... items) {
         setType(type);
-        for (SectionItem item : items) {
-            this.items.add(item);
-        }
-    }
-
-    public void addSectionItem(SectionItem item) {
-        items.add(item);
+        Collections.addAll(this.items, items);
     }
 
     @Override
-    protected String getAsHtmlContent() {
-        StringBuilder builder = new StringBuilder();
+    protected void appendHtmlString(StringBuilder builder) {
         for (SectionItem item : items) {
             if (builder.length() != 0) {
                 builder.append("\r\n");
             }
-            builder.append(item.getAsHtml());
+            item.appendHtmlString(builder);
         }
-        return builder.toString();
-    }
-
-    @Override
-    public void save() {
-        System.out.println("TODO: " + getClass().getName() + ".save()");
-    }
-
-    @Override
-    public void read() {
-        System.out.println("TODO: " + getClass().getName() + ".read()");
     }
 }

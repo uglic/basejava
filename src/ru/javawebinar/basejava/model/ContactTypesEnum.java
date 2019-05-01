@@ -9,8 +9,8 @@ public enum ContactTypesEnum {
     STACKOVERFLOW("", IconsEnum.STACKOVERFLOW),
     HOMESITE("", IconsEnum.NONE);
 
-    private String prefix;
-    private IconsEnum icon;
+    private final String prefix;
+    private final IconsEnum icon;
 
     ContactTypesEnum(String prefix, IconsEnum icon) {
         this.prefix = prefix;

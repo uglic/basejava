@@ -1,9 +1,9 @@
 package ru.javawebinar.basejava.model;
 
 public class Contact implements Model {
-    String name;
-    String url;
-    ContactTypesEnum type;
+    private final String name;
+    private final String url;
+    private final ContactTypesEnum type;
 
     public Contact(ContactTypesEnum type, String name, String url) {
         this.type = type;
@@ -17,23 +17,28 @@ public class Contact implements Model {
         if (type != null) {
             String prefix = type.getPrefix();
             if (!prefix.isEmpty()) {
-                builder.append(prefix + ":");
+                builder.append(prefix);
+                builder.append(":");
             }
             String iconFileName = type.getIcon().getFilename();
             if (!iconFileName.isEmpty()) {
-                builder.append("<" + iconFileName + ">");
+                builder.append("[");
+                builder.append(iconFileName);
+                builder.append("]");
             }
         } else {
-            builder.append("<no type>");
+            builder.append("[no type]");
         }
 
         if (name != null && url != null) {
             builder.append("[" + name + "](" + url + ")");
         } else if (name != null) {
-            builder.append("[" + name + "]");
+            builder.append(" " + name + "");
         } else if (url != null) {
             builder.append("(" + url + ")");
         }
+
+        builder.append("\r\n");
         return builder.toString();
     }
 

@@ -81,118 +81,148 @@ public class ResumeTestData {
                 )
         );
         resume.addSection(new SectionListed(SectionsEnum.EXPERIENCE,
-                        new SectionItemPeriodContact("Автор проекта.",
-                                LocalDate.of(2013, 10, 1), null,
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Java Online Projects",
-                                        "http://javaops.ru/"),
-                                "Создание, организация и проведение Java онлайн проектов и стажировок."),
-                        new SectionItemPeriodContact("Старший разработчик (backend)",
-                                LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Wrike",
-                                        "https://www.wrike.com/"),
-                                "Проектирование и разработка онлайн платформы управления проектами Wrike "
-                                        + "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). "
-                                        + "Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO."),
-                        new SectionItemPeriodContact("Java архитектор",
-                                LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "RIT Center",
-                                        ""),
-                                "Организация процесса разработки системы ERP для разных окружений: "
-                                        + "релизная политика, версионирование, ведение CI (Jenkins), миграция базы "
-                                        + "(кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA "
-                                        + "via SSO. Архитектура БД и серверной части системы. Разработка "
-                                        + "интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего "
-                                        + "назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN "
-                                        + "для online редактирование из браузера документов MS Office. Maven + "
-                                        + "plugin development, Ant, Apache Commons, Spring security, Spring MVC, "
-                                        + "Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell "
-                                        + "remote scripting via ssh tunnels, PL/Python"),
-                        new SectionItemPeriodContact("Ведущий программист",
-                                LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Luxoft (Deutsche Bank)",
-                                        "http://www.luxoft.ru/"),
-                                "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, "
-                                        + "Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и "
-                                        + "серверной части CRM. Реализация RIA-приложения для администрирования, "
-                                        + "мониторинга и анализа результатов в области алгоритмического трейдинга. "
-                                        + "JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5."),
-                        new SectionItemPeriodContact("Ведущий специалист",
-                                LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Yota",
-                                        "https://www.yota.ru/"),
-                                "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные "
-                                        + "Системы\" (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, "
-                                        + "JSP, JMX, JMS, Maven2). Реализация администрирования, статистики и "
-                                        + "мониторинга фреймворка. Разработка online JMX клиента (Python/ Jython, "
-                                        + "Django, ExtJS)"),
-                        new SectionItemPeriodContact("Разработчик ПО",
-                                LocalDate.of(2007, 3, 1), LocalDate.of(2008, 6, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Enkata",
-                                        "http://enkata.com/"),
-                                "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, "
-                                        + "Tomcat, JMS) частей кластерного J2EE приложения (OLAP, Data mining)."),
-                        new SectionItemPeriodContact("Разработчик ПО",
-                                LocalDate.of(2005, 1, 1), LocalDate.of(2007, 2, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Siemens AG",
-                                        "https://www.siemens.com/ru/ru/home.html"),
-                                "Разработка информационной модели, проектирование интерфейсов, реализация "
-                                        + "и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix)."),
-                        new SectionItemPeriodContact("Инженер по аппаратному и программному тестированию",
-                                LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Alcatel",
-                                        "http://www.alcatel.ru/"),
-                                "Тестирование, отладка, внедрение ПО цифровой телефонной станции "
-                                        + "Alcatel 1000 S12 (CHILL, ASM).")
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Java Online Projects",
+                                "http://javaops.ru/"),
+                                new SectionItemPeriod(LocalDate.of(2013, 10, 1), null,
+                                        "Автор проекта.",
+                                        "Создание, организация и проведение Java онлайн проектов и стажировок."
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Wrike",
+                                "https://www.wrike.com/"),
+                                new SectionItemPeriod(LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
+                                        "Старший разработчик (backend)",
+                                        "Проектирование и разработка онлайн платформы управления проектами Wrike "
+                                                + "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). "
+                                                + "Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO."
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "RIT Center",
+                                ""),
+                                new SectionItemPeriod(LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1),
+                                        "Java архитектор",
+                                        "Организация процесса разработки системы ERP для разных окружений: "
+                                                + "релизная политика, версионирование, ведение CI (Jenkins), миграция базы "
+                                                + "(кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA "
+                                                + "via SSO. Архитектура БД и серверной части системы. Разработка "
+                                                + "интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего "
+                                                + "назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN "
+                                                + "для online редактирование из браузера документов MS Office. Maven + "
+                                                + "plugin development, Ant, Apache Commons, Spring security, Spring MVC, "
+                                                + "Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell "
+                                                + "remote scripting via ssh tunnels, PL/Python"
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Luxoft (Deutsche Bank)",
+                                "http://www.luxoft.ru/"),
+                                new SectionItemPeriod(LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1),
+                                        "Ведущий программист",
+                                        "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, "
+                                                + "Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и "
+                                                + "серверной части CRM. Реализация RIA-приложения для администрирования, "
+                                                + "мониторинга и анализа результатов в области алгоритмического трейдинга. "
+                                                + "JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5."
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Yota",
+                                "https://www.yota.ru/"),
+                                new SectionItemPeriod(LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1),
+                                        "Ведущий специалист",
+                                        "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные "
+                                                + "Системы\" (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, "
+                                                + "JSP, JMX, JMS, Maven2). Реализация администрирования, статистики и "
+                                                + "мониторинга фреймворка. Разработка online JMX клиента (Python/ Jython, "
+                                                + "Django, ExtJS)"
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Enkata",
+                                "http://enkata.com/"),
+                                new SectionItemPeriod(LocalDate.of(2007, 3, 1), LocalDate.of(2008, 6, 1),
+                                        "Разработчик ПО",
+                                        "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, "
+                                                + "Tomcat, JMS) частей кластерного J2EE приложения (OLAP, Data mining)."
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Siemens AG",
+                                "https://www.siemens.com/ru/ru/home.html"),
+                                new SectionItemPeriod(LocalDate.of(2005, 1, 1), LocalDate.of(2007, 2, 1),
+                                        "Разработчик ПО",
+                                        "Разработка информационной модели, проектирование интерфейсов, реализация "
+                                                + "и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix)."
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Alcatel",
+                                "http://www.alcatel.ru/"),
+                                new SectionItemPeriod(LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1),
+                                        "Инженер по аппаратному и программному тестированию",
+                                        "Тестирование, отладка, внедрение ПО цифровой телефонной станции "
+                                                + "Alcatel 1000 S12 (CHILL, ASM)."
+                                )
+                        )
                 )
         );
         resume.addSection(new SectionListed(SectionsEnum.EDUCATION,
-                        new SectionItemPeriodContact("\"Functional Programming Principles in "
-                                + "Scala\" by Martin Odersky",
-                                LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Coursera",
-                                        "https://www.coursera.org/course/progfun"),
-                                ""),
-                        new SectionItemPeriodContact("Курс \"Объектно-ориентированный анализ ИС. "
-                                + "Концептуальное моделирование на UML.\"",
-                                LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Luxoft",
-                                        "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366"),
-                                ""),
-                        new SectionItemPeriodContact("3 месяца обучения мобильным IN сетям (Берлин)",
-                                LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Siemens AG",
-                                        "http://www.siemens.ru/"),
-                                ""),
-                        new SectionItemPeriodContact("6 месяцев обучения цифровым телефонным сетям (Москва)",
-                                LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Alcatel",
-                                        "http://www.alcatel.ru/"),
-                                ""),
-                        new SectionItemPeriodContact("Аспирантура (программист С, С++)",
-                                LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Санкт-Петербургский национальный исследовательский университет "
-                                                + "информационных технологий, механики и оптики",
-                                        "http://www.ifmo.ru/"),
-                                ""),
-                        new SectionItemPeriodContact("Закончил с отличием",
-                                LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1),
-                                new Contact(ContactTypesEnum.HOMESITE,
-                                        "Заочная физико-техническая школа при МФТИ",
-                                        "http://www.school.mipt.ru/"),
-                                "")
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Coursera",
+                                "https://www.coursera.org/course/progfun"),
+                                new SectionItemPeriod(LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1),
+                                        "\"Functional Programming Principles in Scala\" by Martin Odersky",
+                                        ""
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Luxoft",
+                                "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366"),
+                                new SectionItemPeriod(LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1),
+                                        "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"",
+                                        ""
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Siemens AG",
+                                "http://www.siemens.ru/"),
+                                new SectionItemPeriod(LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1),
+                                        "3 месяца обучения мобильным IN сетям (Берлин)",
+                                        ""
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Alcatel",
+                                "http://www.alcatel.ru/"),
+                                new SectionItemPeriod(LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1),
+                                        "6 месяцев обучения цифровым телефонным сетям (Москва)",
+                                        ""
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Санкт-Петербургский национальный исследовательский университет "
+                                        + "информационных технологий, механики и оптики",
+                                "http://www.ifmo.ru/"),
+                                new SectionItemPeriod(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1),
+                                        "Аспирантура (программист С, С++)",
+                                        ""
+                                ),
+                                new SectionItemPeriod(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1),
+                                        "Инженер (программист Fortran, C)",
+                                        ""
+                                )
+                        ),
+                        new SectionItemContactPeriod(new Contact(ContactTypesEnum.HOMESITE,
+                                "Заочная физико-техническая школа при МФТИ",
+                                "http://www.school.mipt.ru/"),
+                                new SectionItemPeriod(LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1),
+                                        "Закончил с отличием",
+                                        ""
+                                )
+                        )
                 )
         );
         return resume;

@@ -3,11 +3,11 @@ package ru.javawebinar.basejava.model;
 public abstract class Section implements Model {
     private SectionsEnum type;
 
-    protected final void setType(SectionsEnum type) {
+    final void setType(SectionsEnum type) {
         this.type = type;
     }
 
-    protected final SectionsEnum getType() {
+    final SectionsEnum getType() {
         return type;
     }
 
@@ -16,13 +16,24 @@ public abstract class Section implements Model {
         StringBuilder builder = new StringBuilder();
         String title = getType().getTitle();
         if(!title.isEmpty()){
-            builder.append("# " + title);
+            builder.append("# ");
+            builder.append(title);
             builder.append("\r\n");
         }
-        builder.append(getAsHtmlContent());
+        appendHtmlString(builder);
         builder.append("\r\n");
         return builder.toString();
     }
 
-    protected abstract String getAsHtmlContent();
+    protected abstract void appendHtmlString(StringBuilder builder);
+
+    @Override
+    public void save() {
+        System.out.println("TODO: " + getClass().getName() + ".save()");
+    }
+
+    @Override
+    public void read() {
+        System.out.println("TODO: " + getClass().getName() + ".read()");
+    }
 }

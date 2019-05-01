@@ -1,8 +1,8 @@
 package ru.javawebinar.basejava.model;
 
 public class SectionSimple extends Section {
-    private String content;
-    private boolean selected;
+    private final String content;
+    private final boolean selected;
 
     public SectionSimple(SectionsEnum type, String content, boolean selected) {
         setType(type);
@@ -11,27 +11,15 @@ public class SectionSimple extends Section {
     }
 
     @Override
-    public void save() {
-        System.out.println("TODO: " + getClass().getName() + ".save()");
-    }
-
-    @Override
-    public void read() {
-        System.out.println("TODO: " + getClass().getName() + ".read()");
-    }
-
-    @Override
-    protected String getAsHtmlContent() {
-        StringBuilder builder = new StringBuilder();
+    protected void appendHtmlString(StringBuilder builder) {
         if (content != null && !content.isEmpty()) {
             if (selected) {
-                builder.append("*");
+                builder.append("**");
             }
             builder.append(content);
             if (selected) {
-                builder.append("*");
+                builder.append("**");
             }
         }
-        return builder.toString();
     }
 }

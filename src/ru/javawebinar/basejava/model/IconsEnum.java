@@ -8,7 +8,7 @@ public enum IconsEnum {
     GITHUB("github"),
     STACKOVERFLOW("stackoverflow");
 
-    private String filename;
+    private final String filename;
 
     IconsEnum(String filename) {
         this.filename = filename;

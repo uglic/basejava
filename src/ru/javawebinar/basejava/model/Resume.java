@@ -1,16 +1,17 @@
 package ru.javawebinar.basejava.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Resume implements Comparable<Resume> {
+public class Resume implements Comparable<Resume>, Model {
     private final String uuid;
     private String fullName;
 
     //{need review
-    private ArrayList<Contact> contacts = new ArrayList<>();
-    private ArrayList<Section> sections = new ArrayList<>();
+    private final List<Contact> contacts = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
     //}need review
 
     public Resume(String fullName) {
@@ -71,6 +72,7 @@ public class Resume implements Comparable<Resume> {
         sections.add(section);
     }
 
+    @Override
     public String getAsHtml() {
         StringBuilder builder = new StringBuilder();
         for (Contact contact : contacts) {
@@ -86,6 +88,16 @@ public class Resume implements Comparable<Resume> {
             builder.append(section.getAsHtml());
         }
         return builder.toString();
+    }
+
+    @Override
+    public void save() {
+        System.out.println("TODO: " + getClass().getName() + ".save()");
+    }
+
+    @Override
+    public void read() {
+        System.out.println("TODO: " + getClass().getName() + ".read()");
     }
     //}need review
 }
