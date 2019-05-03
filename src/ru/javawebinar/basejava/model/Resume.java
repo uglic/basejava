@@ -35,6 +35,14 @@ public class Resume implements Comparable<Resume> {
         this.fullName = fullName;
     }
 
+    public Contact getContact(ContactTypes type){
+        return contacts.get(type);
+    }
+
+    public AbstractSection getSection(SectionTypes type){
+        return sections.get(type);
+    }
+
     public void addContact(ContactTypes type, Contact contact) {
         contacts.put(type, contact);
     }

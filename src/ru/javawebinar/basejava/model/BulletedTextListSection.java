@@ -3,11 +3,13 @@ package ru.javawebinar.basejava.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class BulletedTextListSection extends AbstractSection {
     private final List<String> items = new ArrayList<>();
 
     public BulletedTextListSection(String... items) {
+        Objects.requireNonNull(items, "items must not be null");
         Collections.addAll(this.items, items);
     }
 

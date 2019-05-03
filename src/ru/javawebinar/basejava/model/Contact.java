@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.Objects;
+
 public class Contact {
     private final String name;
     private final String url;
@@ -33,8 +35,8 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        if (name != null ? !name.equals(contact.name) : contact.name != null) return false;
-        return url != null ? url.equals(contact.url) : contact.url == null;
+        if(!Objects.equals(name, contact.name)) return false;
+        return  Objects.equals(url, contact.url);
     }
 
     @Override
