@@ -32,17 +32,17 @@ public class ResumeTestData {
         );
 
         resume.addSection(SectionTypes.OBJECTIVE,
-                new StringSection(
+                new SimpleTextSection(
                         "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"
                 )
         );
         resume.addSection(SectionTypes.PERSONAL,
-                new StringSection(
+                new SimpleTextSection(
                         "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."
                 )
         );
         resume.addSection(SectionTypes.ACHIEVEMENT,
-                new ListSection(
+                new BulletedTextListSection(
                         "С 2013 года: разработка проектов \"Разработка Web приложения\","
                                 + "\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). "
                                 + "Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн "
@@ -69,7 +69,7 @@ public class ResumeTestData {
                 )
         );
         resume.addSection(SectionTypes.QUALIFICATIONS,
-                new ListSection(
+                new BulletedTextListSection(
                         "JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2",
                         "Version control: Subversion, Git, Mercury, ClearCase, Perforce",
                         "DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle,",

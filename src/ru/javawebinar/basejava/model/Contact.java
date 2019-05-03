@@ -27,5 +27,22 @@ public class Contact {
         }
         return builder.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        if (name != null ? !name.equals(contact.name) : contact.name != null) return false;
+        return url != null ? url.equals(contact.url) : contact.url == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        return result;
+    }
+
 }
 

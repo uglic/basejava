@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ListSection extends Section {
+public class BulletedTextListSection extends AbstractSection {
     private final List<String> items = new ArrayList<>();
 
-    public ListSection(String... items) {
+    public BulletedTextListSection(String... items) {
         Collections.addAll(this.items, items);
     }
 
@@ -28,7 +28,7 @@ public class ListSection extends Section {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ListSection that = (ListSection) o;
+        BulletedTextListSection that = (BulletedTextListSection) o;
         return items.equals(that.items);
     }
 
