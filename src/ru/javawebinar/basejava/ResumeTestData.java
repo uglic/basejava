@@ -1,8 +1,7 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
-
-import java.time.LocalDate;
+import ru.javawebinar.basejava.util.DateUtil;
 
 public class ResumeTestData {
 
@@ -99,14 +98,14 @@ public class ResumeTestData {
                 new OrganizationSection(
                         new Organization(
                                 new Contact("Java Online Projects", "http://javaops.ru/"),
-                                new Period(LocalDate.of(2013, 10, 1), null,
+                                new Period(DateUtil.of(2013, 10), null,
                                         "Автор проекта.",
                                         "Создание, организация и проведение Java онлайн проектов и стажировок."
                                 )
                         ),
                         new Organization(
                                 new Contact("Wrike", "https://www.wrike.com/"),
-                                new Period(LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
+                                new Period(DateUtil.of(2014, 10), DateUtil.of(2016, 1),
                                         "Старший разработчик (backend)",
                                         "Проектирование и разработка онлайн платформы управления проектами Wrike "
                                                 + "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). "
@@ -115,7 +114,7 @@ public class ResumeTestData {
                         ),
                         new Organization(
                                 new Contact("RIT Center", null),
-                                new Period(LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1),
+                                new Period(DateUtil.of(2012, 4), DateUtil.of(2014, 10),
                                         "Java архитектор",
                                         "Организация процесса разработки системы ERP для разных окружений: "
                                                 + "релизная политика, версионирование, ведение CI (Jenkins), миграция базы "
@@ -131,7 +130,7 @@ public class ResumeTestData {
                         ),
                         new Organization(
                                 new Contact("Luxoft (Deutsche Bank)", "http://www.luxoft.ru/"),
-                                new Period(LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1),
+                                new Period(DateUtil.of(2010, 12), DateUtil.of(2012, 4),
                                         "Ведущий программист",
                                         "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, "
                                                 + "Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и "
@@ -142,7 +141,7 @@ public class ResumeTestData {
                         ),
                         new Organization(
                                 new Contact("Yota", "https://www.yota.ru/"),
-                                new Period(LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1),
+                                new Period(DateUtil.of(2008, 6), DateUtil.of(2010, 12),
                                         "Ведущий специалист",
                                         "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные "
                                                 + "Системы\" (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, "
@@ -153,7 +152,7 @@ public class ResumeTestData {
                         ),
                         new Organization(
                                 new Contact("Enkata", "http://enkata.com/"),
-                                new Period(LocalDate.of(2007, 3, 1), LocalDate.of(2008, 6, 1),
+                                new Period(DateUtil.of(2007, 3), DateUtil.of(2008, 6),
                                         "Разработчик ПО",
                                         "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, "
                                                 + "Tomcat, JMS) частей кластерного J2EE приложения (OLAP, Data mining)."
@@ -161,7 +160,7 @@ public class ResumeTestData {
                         ),
                         new Organization(
                                 new Contact("Siemens AG", "https://www.siemens.com/ru/ru/home.html"),
-                                new Period(LocalDate.of(2005, 1, 1), LocalDate.of(2007, 2, 1),
+                                new Period(DateUtil.of(2005, 1), DateUtil.of(2007, 2),
                                         "Разработчик ПО",
                                         "Разработка информационной модели, проектирование интерфейсов, реализация "
                                                 + "и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix)."
@@ -169,7 +168,7 @@ public class ResumeTestData {
                         ),
                         new Organization(
                                 new Contact("Alcatel", "http://www.alcatel.ru/"),
-                                new Period(LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1),
+                                new Period(DateUtil.of(1997, 9), DateUtil.of(2005, 1),
                                         "Инженер по аппаратному и программному тестированию",
                                         "Тестирование, отладка, внедрение ПО цифровой телефонной станции "
                                                 + "Alcatel 1000 S12 (CHILL, ASM)."
@@ -181,28 +180,28 @@ public class ResumeTestData {
                 new OrganizationSection(
                         new Organization(
                                 new Contact("Coursera", "https://www.coursera.org/course/progfun"),
-                                new Period(LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1),
+                                new Period(DateUtil.of(2013, 3), DateUtil.of(2013, 5),
                                         "\"Functional Programming Principles in Scala\" by Martin Odersky",
                                         null
                                 )
                         ),
                         new Organization(
                                 new Contact("Luxoft", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366"),
-                                new Period(LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1),
+                                new Period(DateUtil.of(2011, 3), DateUtil.of(2011, 4),
                                         "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"",
                                         null
                                 )
                         ),
                         new Organization(
                                 new Contact("Siemens AG", "http://www.siemens.ru/"),
-                                new Period(LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1),
+                                new Period(DateUtil.of(2005, 1), DateUtil.of(2005, 4),
                                         "3 месяца обучения мобильным IN сетям (Берлин)",
                                         null
                                 )
                         ),
                         new Organization(
                                 new Contact("Alcatel", "http://www.alcatel.ru/"),
-                                new Period(LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1),
+                                new Period(DateUtil.of(1997, 9), DateUtil.of(1998, 3),
                                         "6 месяцев обучения цифровым телефонным сетям (Москва)",
                                         null
                                 )
@@ -210,18 +209,18 @@ public class ResumeTestData {
                         new Organization(
                                 new Contact("Санкт-Петербургский национальный исследовательский университет "
                                         + "информационных технологий, механики и оптики", "http://www.ifmo.ru/"),
-                                new Period(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1),
+                                new Period(DateUtil.of(1993, 9), DateUtil.of(1996, 7),
                                         "Аспирантура (программист С, С++)",
                                         null
                                 ),
-                                new Period(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1),
+                                new Period(DateUtil.of(1987, 9), DateUtil.of(1993, 7),
                                         "Инженер (программист Fortran, C)",
                                         null
                                 )
                         ),
                         new Organization(
                                 new Contact("Заочная физико-техническая школа при МФТИ", "http://www.school.mipt.ru/"),
-                                new Period(LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1),
+                                new Period(DateUtil.of(1984, 9), DateUtil.of(1987, 6),
                                         "Закончил с отличием",
                                         null
                                 )
