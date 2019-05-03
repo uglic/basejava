@@ -2,10 +2,10 @@ package ru.javawebinar.basejava.model;
 
 import java.util.Objects;
 
-public class SimpleSection extends Section {
+public class StringSection extends Section {
     private final String content;
 
-    public SimpleSection(String content) {
+    public StringSection(String content) {
         Objects.requireNonNull(content, "Section content must be non-null");
         this.content = content;
     }
@@ -25,7 +25,7 @@ public class SimpleSection extends Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SimpleSection that = (SimpleSection) o;
+        StringSection that = (StringSection) o;
 
         return content.equals(that.content);
 

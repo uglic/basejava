@@ -32,12 +32,12 @@ public class ResumeTestData {
         );
 
         resume.addSection(SectionTypes.OBJECTIVE,
-                new SimpleSection(
+                new StringSection(
                         "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"
                 )
         );
         resume.addSection(SectionTypes.PERSONAL,
-                new SimpleSection(
+                new StringSection(
                         "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."
                 )
         );
