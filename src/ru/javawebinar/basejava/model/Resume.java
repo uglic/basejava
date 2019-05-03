@@ -50,7 +50,7 @@ public class Resume implements Comparable<Resume> {
                     builder.append("\r\n");
                 }
                 builder.append(contactType);
-                builder.append(contact.toString());
+                builder.append(contact);
             }
         }
         for (SectionTypes sectionType : SectionTypes.values()) {
