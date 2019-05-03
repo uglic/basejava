@@ -4,22 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ListSection extends Section {
-    private final List<String> items = new ArrayList<>();
+public class OrganizationSection extends Section {
+    private final List<Organization> organizations = new ArrayList<>();
 
-    public ListSection(String... items) {
-        Collections.addAll(this.items, items);
+    public OrganizationSection(Organization... organizations) {
+        Collections.addAll(this.organizations, organizations);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (String item : items) {
+        for (Organization organization : organizations) {
             if (builder.length() != 0) {
                 builder.append("\r\n");
             }
-            builder.append("- ");
-            builder.append(item);
+            builder.append(organization);
         }
         return builder.toString();
     }
@@ -28,12 +27,12 @@ public class ListSection extends Section {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ListSection that = (ListSection) o;
-        return items.equals(that.items);
+        OrganizationSection that = (OrganizationSection) o;
+        return organizations.equals(that.organizations);
     }
 
     @Override
     public int hashCode() {
-        return items.hashCode();
+        return organizations.hashCode();
     }
 }

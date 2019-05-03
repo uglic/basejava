@@ -11,24 +11,20 @@ public class StringSection extends Section {
     }
 
     @Override
-    void appendToHtmlStringBuilder(StringBuilder builder) {
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
         if (content != null && !content.isEmpty()) {
-            if (builder.length() != 0) {
-                builder.append("\r\n");
-            }
             builder.append(content);
         }
+        return builder.toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         StringSection that = (StringSection) o;
-
         return content.equals(that.content);
-
     }
 
     @Override

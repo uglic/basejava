@@ -4,16 +4,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class PeriodSection extends Section {
+public class Period {
     private final String title;
     private final LocalDate dateFrom;
     private final LocalDate dateTo;
     private final String description;
 
-    public PeriodSection(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
+    public Period(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
         Objects.requireNonNull(title, "Section title must be non-null");
         Objects.requireNonNull(dateFrom, "DateFrom must be non-null");
-        //may be add check to non-empty for {title}
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.title = title;
@@ -21,11 +20,9 @@ public class PeriodSection extends Section {
     }
 
     @Override
-    void appendToHtmlStringBuilder(StringBuilder builder) {
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/Y");
-        if (builder.length() != 0) {
-            builder.append("\r\n");
-        }
         builder.append("Начало: ");
         builder.append(dateFormatter.format(dateFrom));
         builder.append("\r\nОкончание: ");
@@ -43,15 +40,14 @@ public class PeriodSection extends Section {
             builder.append("\r\n");
             builder.append(description);
         }
+        return builder.toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        PeriodSection that = (PeriodSection) o;
-
+        Period that = (Period) o;
         if (!title.equals(that.title)) return false;
         if (!dateFrom.equals(that.dateFrom)) return false;
         if (!Objects.equals(dateTo, that.dateTo)) return false;

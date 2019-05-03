@@ -19,7 +19,6 @@ public class Contact {
             builder.append(url);
             builder.append(")");
         } else if (name != null) {
-            builder.append(" ");
             builder.append(name);
         } else if (url != null) {
             builder.append("(");

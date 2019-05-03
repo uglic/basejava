@@ -96,26 +96,26 @@ public class ResumeTestData {
                 )
         );
         resume.addSection(SectionTypes.EXPERIENCE,
-                new ListContactSection(
-                        new ListContactHistorySection(
+                new OrganizationSection(
+                        new Organization(
                                 new Contact("Java Online Projects", "http://javaops.ru/"),
-                                new PeriodSection(LocalDate.of(2013, 10, 1), null,
+                                new Period(LocalDate.of(2013, 10, 1), null,
                                         "Автор проекта.",
                                         "Создание, организация и проведение Java онлайн проектов и стажировок."
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Wrike", "https://www.wrike.com/"),
-                                new PeriodSection(LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
+                                new Period(LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
                                         "Старший разработчик (backend)",
                                         "Проектирование и разработка онлайн платформы управления проектами Wrike "
                                                 + "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). "
                                                 + "Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO."
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("RIT Center", null),
-                                new PeriodSection(LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1),
+                                new Period(LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1),
                                         "Java архитектор",
                                         "Организация процесса разработки системы ERP для разных окружений: "
                                                 + "релизная политика, версионирование, ведение CI (Jenkins), миграция базы "
@@ -129,9 +129,9 @@ public class ResumeTestData {
                                                 + "remote scripting via ssh tunnels, PL/Python"
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Luxoft (Deutsche Bank)", "http://www.luxoft.ru/"),
-                                new PeriodSection(LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1),
+                                new Period(LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1),
                                         "Ведущий программист",
                                         "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, "
                                                 + "Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и "
@@ -140,9 +140,9 @@ public class ResumeTestData {
                                                 + "JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5."
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Yota", "https://www.yota.ru/"),
-                                new PeriodSection(LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1),
+                                new Period(LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1),
                                         "Ведущий специалист",
                                         "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные "
                                                 + "Системы\" (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, "
@@ -151,25 +151,25 @@ public class ResumeTestData {
                                                 + "Django, ExtJS)"
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Enkata", "http://enkata.com/"),
-                                new PeriodSection(LocalDate.of(2007, 3, 1), LocalDate.of(2008, 6, 1),
+                                new Period(LocalDate.of(2007, 3, 1), LocalDate.of(2008, 6, 1),
                                         "Разработчик ПО",
                                         "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, "
                                                 + "Tomcat, JMS) частей кластерного J2EE приложения (OLAP, Data mining)."
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Siemens AG", "https://www.siemens.com/ru/ru/home.html"),
-                                new PeriodSection(LocalDate.of(2005, 1, 1), LocalDate.of(2007, 2, 1),
+                                new Period(LocalDate.of(2005, 1, 1), LocalDate.of(2007, 2, 1),
                                         "Разработчик ПО",
                                         "Разработка информационной модели, проектирование интерфейсов, реализация "
                                                 + "и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix)."
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Alcatel", "http://www.alcatel.ru/"),
-                                new PeriodSection(LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1),
+                                new Period(LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1),
                                         "Инженер по аппаратному и программному тестированию",
                                         "Тестирование, отладка, внедрение ПО цифровой телефонной станции "
                                                 + "Alcatel 1000 S12 (CHILL, ASM)."
@@ -178,50 +178,50 @@ public class ResumeTestData {
                 )
         );
         resume.addSection(SectionTypes.EDUCATION,
-                new ListContactSection(
-                        new ListContactHistorySection(
+                new OrganizationSection(
+                        new Organization(
                                 new Contact("Coursera", "https://www.coursera.org/course/progfun"),
-                                new PeriodSection(LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1),
+                                new Period(LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1),
                                         "\"Functional Programming Principles in Scala\" by Martin Odersky",
                                         null
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Luxoft", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366"),
-                                new PeriodSection(LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1),
+                                new Period(LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1),
                                         "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"",
                                         null
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Siemens AG", "http://www.siemens.ru/"),
-                                new PeriodSection(LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1),
+                                new Period(LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1),
                                         "3 месяца обучения мобильным IN сетям (Берлин)",
                                         null
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Alcatel", "http://www.alcatel.ru/"),
-                                new PeriodSection(LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1),
+                                new Period(LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1),
                                         "6 месяцев обучения цифровым телефонным сетям (Москва)",
                                         null
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Санкт-Петербургский национальный исследовательский университет "
                                         + "информационных технологий, механики и оптики", "http://www.ifmo.ru/"),
-                                new PeriodSection(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1),
+                                new Period(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1),
                                         "Аспирантура (программист С, С++)",
                                         null
                                 ),
-                                new PeriodSection(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1),
+                                new Period(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1),
                                         "Инженер (программист Fortran, C)",
                                         null
                                 )
                         ),
-                        new ListContactHistorySection(
+                        new Organization(
                                 new Contact("Заочная физико-техническая школа при МФТИ", "http://www.school.mipt.ru/"),
-                                new PeriodSection(LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1),
+                                new Period(LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1),
                                         "Закончил с отличием",
                                         null
                                 )
