@@ -43,6 +43,10 @@ public class Resume implements Comparable<Resume> {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append(uuid);
+        builder.append(" (");
+        builder.append(fullName);
+        builder.append(")");
         for (ContactTypes contactType : ContactTypes.values()) {
             Contact contact = contacts.get(contactType);
             if (contact != null) {
