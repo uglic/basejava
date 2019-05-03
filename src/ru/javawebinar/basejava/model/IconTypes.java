@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-public enum IconsEnum {
+public enum IconTypes {
     NONE(""),
     SKYPE("skype"),
     EMAIL("email"),
@@ -10,11 +10,16 @@ public enum IconsEnum {
 
     private final String filename;
 
-    IconsEnum(String filename) {
+    IconTypes(String filename) {
         this.filename = filename;
     }
 
     public String getFilename() {
+        return filename;
+    }
+
+    @Override
+    public String toString() {
         return filename;
     }
 }

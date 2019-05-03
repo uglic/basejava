@@ -1,8 +1,10 @@
 package ru.javawebinar.basejava.model;
 
-public enum SectionsEnum {
-    PERSONAL("Личные качества"),
+import java.util.Objects;
+
+public enum SectionTypes {
     OBJECTIVE("Позиция"),
+    PERSONAL("Личные качества"),
     ACHIEVEMENT("Достижения"),
     QUALIFICATIONS("Квалификация"),
     EXPERIENCE("Опыт работы"),
@@ -10,11 +12,13 @@ public enum SectionsEnum {
 
     private final String title;
 
-    SectionsEnum(String title) {
+    SectionTypes(String title) {
+        Objects.requireNonNull(title);
         this.title = title;
     }
 
-    public String getTitle(){
+    @Override
+    public String toString(){
         return title;
     }
 }
