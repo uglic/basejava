@@ -4,10 +4,18 @@ import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.util.DateUtil;
 
 public class ResumeTestData {
+    private ResumeTestData() {
+    }
 
-    private Resume getResumeWithTestData() {
-        Resume resume = new Resume("Григорий Кислин");
+    public static Resume get(String uuid, String fullName) {
+        return get(new Resume(uuid, fullName));
+    }
 
+    public static Resume get(String fullName) {
+        return get(new Resume(fullName));
+    }
+
+    private static Resume get(Resume resume) {
         resume.addContact(ContactTypes.PHONE,
                 new Contact("+7(921) 855-0482", null)
         );
@@ -228,10 +236,5 @@ public class ResumeTestData {
                 )
         );
         return resume;
-    }
-
-    public static void main(String[] args) {
-        Resume resume = new ResumeTestData().getResumeWithTestData();
-        System.out.println(resume.toString());
     }
 }

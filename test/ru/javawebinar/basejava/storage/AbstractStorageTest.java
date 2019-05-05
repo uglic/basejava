@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.storage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.ResumeTestData;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -13,18 +14,20 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractStorageTest {
-    @SuppressWarnings("WeakerAccess") protected final Storage storage;
+    @SuppressWarnings("WeakerAccess")
+    protected final Storage storage;
 
     private static final String UUID_1 = "uuid1";
     private static final String UUID_NEW = "uuidNew";
     private static final String UUID_TO_CHECK_EXISTING = UUID_1;
 
-    private final Resume RESUME_EXIST_1 = new Resume(UUID_1, "Abab Ababov");
-    private final Resume RESUME_EXIST_2 = new Resume("uuid2", "Baba Babov");
-    private final Resume RESUME_EXIST_3 = new Resume("uuid3", "Caca Cavov");
-    private final Resume RESUME_EXIST_NEW = new Resume(UUID_NEW, "Nemo Captain");
+    private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Abab Ababov");
+    private final Resume RESUME_EXIST_2 = ResumeTestData.get("uuid2", "Baba Babov");
+    private final Resume RESUME_EXIST_3 = ResumeTestData.get("uuid3", "Caca Cavov");
+    private final Resume RESUME_EXIST_NEW = ResumeTestData.get(UUID_NEW, "Nemo Captain");
 
-    @SuppressWarnings("WeakerAccess") protected AbstractStorageTest(Storage storage) {
+    @SuppressWarnings("WeakerAccess")
+    protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
     }
 
@@ -49,7 +52,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume newResume = new Resume(UUID_1, "updated fullName");
+        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName");
         storage.update(newResume);
         Assert.assertSame(storage.get(newResume.getUuid()), newResume);
     }
