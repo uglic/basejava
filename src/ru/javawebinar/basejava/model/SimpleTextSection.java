@@ -10,6 +10,10 @@ public class SimpleTextSection extends AbstractSection {
         this.content = content;
     }
 
+    public String getContent() {
+        return content;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

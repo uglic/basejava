@@ -30,11 +30,6 @@ public class ResumeTest {
     }
 
     @Test
-    public void getFullName() {
-        assertEquals(FULLNAME_1, RESUME_1.getFullName());
-    }
-
-    @Test
     public void equalsReflexive() {
         assertTrue(RESUME_1.equals(RESUME_1));
     }
@@ -81,7 +76,6 @@ public class ResumeTest {
 
         // some work with object
         RESUME_1.getUuid();
-        RESUME_1.getFullName();
 
         int hash2 = RESUME_1.hashCode();
         assertTrue(hash1 == hash2);

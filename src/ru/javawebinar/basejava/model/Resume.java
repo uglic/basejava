@@ -27,19 +27,11 @@ public class Resume implements Comparable<Resume> {
         return uuid;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public Contact getContact(ContactTypes type){
+    public Contact getContact(ContactTypes type) {
         return contacts.get(type);
     }
 
-    public AbstractSection getSection(SectionTypes type){
+    public AbstractSection getSection(SectionTypes type) {
         return sections.get(type);
     }
 
