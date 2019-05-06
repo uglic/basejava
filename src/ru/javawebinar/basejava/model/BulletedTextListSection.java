@@ -13,6 +13,11 @@ public class BulletedTextListSection extends AbstractSection {
         Collections.addAll(this.items, items);
     }
 
+    public BulletedTextListSection(List<String> items) {
+        Objects.requireNonNull(items, "items must not be null");
+        this.items.addAll(items);
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
