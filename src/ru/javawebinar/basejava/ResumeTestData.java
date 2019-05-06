@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.model.Organization.Period;
 import ru.javawebinar.basejava.util.DateUtil;
 
 public class ResumeTestData {
