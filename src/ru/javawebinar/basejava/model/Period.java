@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.model;
 
+import ru.javawebinar.basejava.util.DateUtil;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -13,6 +15,7 @@ public class Period {
     public Period(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
         Objects.requireNonNull(title, "Section title must be non-null");
         Objects.requireNonNull(dateFrom, "DateFrom must be non-null");
+        Objects.requireNonNull(dateTo, "DateFrom must be non-null");
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.title = title;
@@ -26,7 +29,7 @@ public class Period {
         builder.append("Начало: ");
         builder.append(dateFormatter.format(dateFrom));
         builder.append("\r\nОкончание: ");
-        if (dateTo != null) {
+        if (dateTo != DateUtil.NOW) {
             builder.append(dateFormatter.format(dateTo));
         } else {
             builder.append("Сейчас");

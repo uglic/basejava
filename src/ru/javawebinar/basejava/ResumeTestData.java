@@ -106,7 +106,7 @@ public class ResumeTestData {
                 new OrganizationSection(
                         new Organization(
                                 new Contact("Java Online Projects", "http://javaops.ru/"),
-                                new Period(DateUtil.of(2013, 10), null,
+                                new Period(DateUtil.of(2013, 10), DateUtil.NOW,
                                         "Автор проекта.",
                                         "Создание, организация и проведение Java онлайн проектов и стажировок."
                                 )
