@@ -16,6 +16,13 @@ public class Organization {
         Collections.addAll(this.history, history);
     }
 
+    public Organization(Contact contact, List<Period> history) {
+        Objects.requireNonNull(contact, "Contact must be non-null");
+        Objects.requireNonNull(history, "Contact history must be non-null");
+        this.contact = contact;
+        this.history.addAll(history);
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
