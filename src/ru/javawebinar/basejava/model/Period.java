@@ -8,16 +8,16 @@ import java.util.Objects;
 
 public class Period {
     private final String title;
-    private final LocalDate dateFrom;
-    private final LocalDate dateTo;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
     private final String description;
 
-    public Period(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
+    public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
         Objects.requireNonNull(title, "Section title must be non-null");
-        Objects.requireNonNull(dateFrom, "DateFrom must be non-null");
-        Objects.requireNonNull(dateTo, "DateFrom must be non-null");
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
+        Objects.requireNonNull(startDate, "DateFrom must be non-null");
+        Objects.requireNonNull(endDate, "DateFrom must be non-null");
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.title = title;
         this.description = description;
     }
@@ -27,10 +27,10 @@ public class Period {
         StringBuilder builder = new StringBuilder();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/Y");
         builder.append("Начало: ");
-        builder.append(dateFormatter.format(dateFrom));
+        builder.append(dateFormatter.format(startDate));
         builder.append("\r\nОкончание: ");
-        if (dateTo != DateUtil.NOW) {
-            builder.append(dateFormatter.format(dateTo));
+        if (endDate != DateUtil.NOW) {
+            builder.append(dateFormatter.format(endDate));
         } else {
             builder.append("Сейчас");
         }
@@ -52,16 +52,16 @@ public class Period {
         if (o == null || getClass() != o.getClass()) return false;
         Period that = (Period) o;
         if (!title.equals(that.title)) return false;
-        if (!dateFrom.equals(that.dateFrom)) return false;
-        if (!Objects.equals(dateTo, that.dateTo)) return false;
+        if (!startDate.equals(that.startDate)) return false;
+        if (!Objects.equals(endDate, that.endDate)) return false;
         return Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
         int result = title.hashCode();
-        result = 31 * result + dateFrom.hashCode();
-        result = 31 * result + (dateTo != null ? dateTo.hashCode() : 0);
+        result = 31 * result + startDate.hashCode();
+        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
