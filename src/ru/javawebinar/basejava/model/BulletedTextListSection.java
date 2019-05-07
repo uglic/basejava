@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class BulletedTextListSection extends AbstractSection {
+    private static final long serialVersionUID = 1L;
+
     private final List<String> items = new ArrayList<>();
 
     public BulletedTextListSection(String... items) {

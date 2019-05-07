@@ -8,12 +8,15 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractStorageTest {
+    protected static final File STORAGE_DIR = new File("data/storage");
+
     @SuppressWarnings("WeakerAccess")
     protected final Storage storage;
 
@@ -34,6 +37,7 @@ public abstract class AbstractStorageTest {
     @Before
     public void setUp() {
         // order must be random to test getAllSorted()
+        storage.clear();
         storage.save(RESUME_EXIST_2);
         storage.save(RESUME_EXIST_1);
         storage.save(RESUME_EXIST_3);
@@ -54,7 +58,7 @@ public abstract class AbstractStorageTest {
     public void update() {
         Resume newResume = ResumeTestData.get(UUID_1, "updated fullName");
         storage.update(newResume);
-        Assert.assertSame(storage.get(newResume.getUuid()), newResume);
+        Assert.assertEquals(storage.get(newResume.getUuid()), newResume);
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -79,7 +83,7 @@ public abstract class AbstractStorageTest {
     public void save() {
         int sizeOld = storage.size();
         storage.save(RESUME_EXIST_NEW);
-        Assert.assertSame(RESUME_EXIST_NEW, storage.get(UUID_NEW));
+        Assert.assertEquals(RESUME_EXIST_NEW, storage.get(UUID_NEW));
         assertEquals(sizeOld + 1, storage.size());
     }
 
