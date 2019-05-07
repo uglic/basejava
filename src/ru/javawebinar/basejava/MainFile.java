@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class MainFile {
@@ -14,11 +15,40 @@ public class MainFile {
         File rootFileObject = new File(rootDirName);
         Path rootPathObject = Paths.get(rootDirName);
 
-        listDirRecursiveWalk(rootFileObject);
-        listDirRecursiveWithPath(rootPathObject);
-        listDirRecursiveFilter(rootFileObject);
-        listDir(rootFileObject);
-        listDirWithCounters(rootFileObject);
+        listPathRecursiveBeautiful(rootPathObject, 0);
+//        listDirRecursiveWalk(rootFileObject);
+//        listDirRecursiveWithPath(rootPathObject);
+//        listDirRecursiveFilter(rootFileObject);
+//        listDir(rootFileObject);
+//        listDirWithCounters(rootFileObject);
+    }
+
+
+    public static void listPathRecursiveBeautiful(Path pathFrom, int startIndent) {
+        if (startIndent < 0) return;
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < startIndent; i++) {
+            builder.append("| ");
+        }
+        String prefix = builder.toString();
+        try {
+            Files.list(pathFrom)
+                    .filter(Files::isDirectory)
+                    //.sorted()
+                    .forEach(path -> {
+                        System.out.println(prefix + "+"  + path.getFileName());
+                        listPathRecursiveBeautiful(path, startIndent + 1);
+                    });
+            Files.list(pathFrom)
+                    .filter(((Predicate<Path>) Files::isDirectory).negate())
+                    //.sorted()
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .map(prefix::concat)
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            System.out.println(prefix + "<READING ERROR>");
+        }
     }
 
     public static void listDirRecursiveWalk(File fileFrom) {

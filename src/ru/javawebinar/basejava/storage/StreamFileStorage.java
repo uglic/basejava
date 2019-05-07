@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public abstract class FileStreamStorage extends AbstractFileStorage {
+public class StreamFileStorage extends AbstractFileStorage {
     private StorageStream storageStream;
 
-    protected FileStreamStorage(File directory) {
+    public StreamFileStorage(File directory) {
         super(directory);
     }
 
+    public StreamFileStorage(File directory, StorageStream storageStream) {
+        super(directory);
+        this.storageStream = storageStream;
+    }
 
     public void setStorageStream(StorageStream storageStream) {
         this.storageStream = storageStream;

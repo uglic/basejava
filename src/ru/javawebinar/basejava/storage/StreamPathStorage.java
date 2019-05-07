@@ -7,13 +7,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
-public abstract class PathStreamStorage extends AbstractPathStorage {
+public class StreamPathStorage extends AbstractPathStorage {
     private StorageStream storageStream;
 
-    protected PathStreamStorage(Path directory) {
+    public StreamPathStorage(Path directory) {
         super(directory);
     }
 
+    public StreamPathStorage(Path directory, StorageStream storageStream) {
+        super(directory);
+        this.storageStream = storageStream;
+    }
 
     public void setStorageStream(StorageStream storageStream) {
         this.storageStream = storageStream;
