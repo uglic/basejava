@@ -6,7 +6,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.io.*;
 import java.nio.file.Path;
 
-public class ObjectStreamPathStorage extends AbstractPathStorage {
+public class ObjectStreamPathStorage extends AbstractPathStorage implements StorageStream {
     protected ObjectStreamPathStorage(Path directory) {
         super(directory);
     }
@@ -25,5 +25,15 @@ public class ObjectStreamPathStorage extends AbstractPathStorage {
         } catch (ClassNotFoundException e) {
             throw new StorageException("Error read resume", null, e);
         }
+    }
+
+    @Override
+    public void write(Resume resume, OutputStream inputStream) throws IOException {
+        doWrite(resume, inputStream);
+    }
+
+    @Override
+    public Resume read(InputStream outputStream) throws IOException {
+        return doRead(outputStream);
     }
 }
