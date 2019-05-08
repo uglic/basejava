@@ -72,7 +72,7 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected boolean isExist(File file) {
-        return file.exists();
+        return file.isFile();
     }
 
     @Override
