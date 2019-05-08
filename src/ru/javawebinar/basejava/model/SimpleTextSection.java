@@ -7,6 +7,10 @@ public class SimpleTextSection extends AbstractSection {
 
     private final String content;
 
+    private SimpleTextSection() { // only for marshalling
+        this("");
+    }
+
     public SimpleTextSection(String content) {
         Objects.requireNonNull(content, "Section content must be non-null");
         this.content = content;

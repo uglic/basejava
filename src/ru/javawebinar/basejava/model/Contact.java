@@ -1,17 +1,23 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
-import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Contact implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String name;
     private final String url;
 
+    private Contact() { // only for marshalling
+        this("", "");
+    }
+
     public Contact(String name, String url) {
-        this.name = name;
-        this.url = url;
+        this.name = name != null ? name : "";
+        this.url = url != null ? url : "";
     }
 
     @Override
@@ -46,8 +52,8 @@ public class Contact implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        if(!Objects.equals(name, contact.name)) return false;
-        return  Objects.equals(url, contact.url);
+        return name.equals(contact.name)
+                && url.equals(contact.url);
     }
 
     @Override

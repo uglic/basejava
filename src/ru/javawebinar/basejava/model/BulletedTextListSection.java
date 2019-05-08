@@ -10,6 +10,9 @@ public class BulletedTextListSection extends AbstractSection {
 
     private final List<String> items = new ArrayList<>();
 
+    private BulletedTextListSection() { // only for marshalling
+    }
+
     public BulletedTextListSection(String... items) {
         Objects.requireNonNull(items, "items must not be null");
         Collections.addAll(this.items, items);

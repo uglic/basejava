@@ -1,7 +1,11 @@
 package ru.javawebinar.basejava.model;
 
 import ru.javawebinar.basejava.util.DateUtil;
+import ru.javawebinar.basejava.util.LocalDateAdapter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,11 +14,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final Contact contact;
     private final List<Period> history = new ArrayList<>();
+
+    private Organization() { // only for marshalling
+        this(new Contact("", ""));
+    }
 
     public Organization(Contact contact, Period... history) {
         Objects.requireNonNull(contact, "Contact must be non-null");
@@ -47,8 +56,8 @@ public class Organization implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Organization that = (Organization) o;
-        if (!contact.equals(that.contact)) return false;
-        return history.equals(that.history);
+        return contact.equals(that.contact)
+                && history.equals(that.history);
     }
 
     @Override
@@ -58,13 +67,20 @@ public class Organization implements Serializable {
         return result;
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class Period implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private final String title;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private final LocalDate startDate;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private final LocalDate endDate;
         private final String description;
+
+        private Period() {// only for marshalling
+            this(DateUtil.NOW, DateUtil.NOW, "", "");
+        }
 
         public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
             Objects.requireNonNull(title, "Section title must be non-null");
@@ -73,7 +89,7 @@ public class Organization implements Serializable {
             this.startDate = startDate;
             this.endDate = endDate;
             this.title = title;
-            this.description = description;
+            this.description = description != null ? description : "";
         }
 
         public LocalDate getStartDate() {
@@ -121,10 +137,11 @@ public class Organization implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Period that = (Period) o;
-            if (!title.equals(that.title)) return false;
-            if (!startDate.equals(that.startDate)) return false;
-            if (!Objects.equals(endDate, that.endDate)) return false;
-            return Objects.equals(description, that.description);
+
+            return title.equals(that.title)
+                    && startDate.equals(that.startDate)
+                    && endDate.equals(that.endDate)
+                    && description.equals(that.description);
         }
 
         @Override

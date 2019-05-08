@@ -3,13 +3,18 @@ package ru.javawebinar.basejava.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class OrganizationSection extends AbstractSection {
     private static final long serialVersionUID = 1L;
 
     private final List<Organization> organizations = new ArrayList<>();
 
+    private OrganizationSection() {// only for marshalling
+    }
+
     public OrganizationSection(Organization... organizations) {
+        Objects.requireNonNull(organizations, "history must be non-null");
         Collections.addAll(this.organizations, organizations);
     }
 
