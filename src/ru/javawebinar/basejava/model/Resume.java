@@ -1,19 +1,25 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@XmlRootElement
 public class Resume implements Comparable<Resume>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String uuid;
-    private String fullName;
+    private final String fullName;
 
     private final Map<ContactTypes, Contact> contacts = new EnumMap<>(ContactTypes.class);
     private final Map<SectionTypes, AbstractSection> sections = new EnumMap<>(SectionTypes.class);
+
+    public Resume() {
+        this("");
+    }
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
