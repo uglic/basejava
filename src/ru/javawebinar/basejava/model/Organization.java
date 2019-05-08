@@ -59,6 +59,8 @@ public class Organization implements Serializable {
     }
 
     public static class Period implements Serializable {
+        private static final long serialVersionUID = 1L;
+
         private final String title;
         private final LocalDate startDate;
         private final LocalDate endDate;

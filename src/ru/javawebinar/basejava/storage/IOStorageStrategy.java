@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface StorageStream {
+public interface IOStorageStrategy {
     void write(Resume resume, OutputStream inputStream) throws IOException;
 
     Resume read(InputStream outputStream) throws IOException;

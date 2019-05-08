@@ -11,10 +11,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
+public class PathStorage extends AbstractStorage<Path> {
     private Path directory;
+    private IOStorageStrategy storageStrategy;
 
-    protected AbstractPathStorage(Path directory) {
+    public PathStorage(Path directory, IOStorageStrategy storageStrategy) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory)) {
             throw new IllegalArgumentException(directory + " is not directory");
@@ -23,11 +24,13 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
             throw new IllegalArgumentException(directory + " is not readable/writable");
         }
         this.directory = directory;
+        Objects.requireNonNull(storageStrategy, "storageStrategy must not be null");
+        this.storageStrategy = storageStrategy;
     }
 
-    protected abstract void doWrite(Resume resume, OutputStream inputStream) throws IOException;
-
-    protected abstract Resume doRead(InputStream outputStream) throws IOException;
+    public void setStorageStrategy(IOStorageStrategy storageStrategy) {
+        this.storageStrategy = storageStrategy;
+    }
 
     @Override
     protected Path getSearchKey(String uuid) {
@@ -37,7 +40,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     protected Resume doGet(Path path) {
         try {
-            return doRead(new BufferedInputStream(new FileInputStream(path.toFile())));
+            return storageStrategy.read(new BufferedInputStream(new FileInputStream(path.toFile())));
         } catch (IOException e) {
             throw new StorageException("IO error", path.getFileName().toString(), e);
         }
@@ -46,7 +49,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     protected void doUpdate(Resume resume, Path path) {
         try {
-            doWrite(resume, new BufferedOutputStream(new FileOutputStream(path.toFile())));
+            storageStrategy.write(resume, new BufferedOutputStream(new FileOutputStream(path.toFile())));
         } catch (IOException e) {
             throw new StorageException("IO error", path.getFileName().toString(), e);
         }
@@ -56,7 +59,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     protected void doSave(Resume resume, Path path) {
         try {
             Files.createFile(path);
-            doWrite(resume, new BufferedOutputStream(new FileOutputStream(path.toFile())));
+            storageStrategy.write(resume, new BufferedOutputStream(new FileOutputStream(path.toFile())));
         } catch (IOException e) {
             throw new StorageException("IO error", path.getFileName().toString(), e);
         }

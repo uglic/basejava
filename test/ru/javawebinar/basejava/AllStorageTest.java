@@ -10,11 +10,7 @@ import ru.javawebinar.basejava.storage.*;
         SortedArrayStorageTest.class,
         ListStorageTest.class,
         MapUuidStorageTest.class,
-        MapResumeStorageTest.class,
-        ObjectStreamFileStorageTest.class,
-        ObjectStreamPathStorageTest.class,
-        StreamFileStorageTest.class,
-        StreamPathStorageTest.class
+        MapResumeStorageTest.class
 })
 public class AllStorageTest {
 }

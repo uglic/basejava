@@ -1,6 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.ResumeTestData;
@@ -56,7 +55,7 @@ public abstract class AbstractStorageTest {
     public void update() {
         Resume newResume = ResumeTestData.get(UUID_1, "updated fullName");
         storage.update(newResume);
-        Assert.assertEquals(storage.get(newResume.getUuid()), newResume);
+        assertEquals(newResume, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -81,7 +80,7 @@ public abstract class AbstractStorageTest {
     public void save() {
         int sizeOld = storage.size();
         storage.save(RESUME_EXIST_NEW);
-        Assert.assertEquals(RESUME_EXIST_NEW, storage.get(UUID_NEW));
+        assertEquals(RESUME_EXIST_NEW, storage.get(UUID_NEW));
         assertEquals(sizeOld + 1, storage.size());
     }
 

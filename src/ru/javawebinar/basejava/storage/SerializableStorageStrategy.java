@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.io.*;
 
-public class SerializedObjectStorageStream implements StorageStream {
+public class SerializableStorageStrategy implements IOStorageStrategy {
     @Override
     public void write(Resume resume, OutputStream outputStream) throws IOException {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
