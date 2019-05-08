@@ -4,7 +4,7 @@ import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.util.XmlParser;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class XmlStorageStrategy implements IOStorageStrategy {
     private final XmlParser xmlParser;
@@ -18,7 +18,7 @@ public class XmlStorageStrategy implements IOStorageStrategy {
 
     @Override
     public void write(Resume resume, OutputStream outputStream) throws IOException {
-        try (Writer writer = new OutputStreamWriter(outputStream, Charset.forName("utf-8"))) {
+        try (Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
             xmlParser.marshall(resume, writer);
         }
     }

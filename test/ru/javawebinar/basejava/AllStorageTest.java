@@ -14,7 +14,9 @@ import ru.javawebinar.basejava.storage.*;
         FileStorageTest.class,
         PathStorageTest.class,
         XmlFileStorageTest.class,
-        XmlPathStorageTest.class
+        XmlPathStorageTest.class,
+        JsonFileStorageTest.class,
+        JsonPathStorageTest.class
 })
 public class AllStorageTest {
 }
