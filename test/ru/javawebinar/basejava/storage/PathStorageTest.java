@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.storage.strategy.SerializableStorageStrategy;
+
 import java.nio.file.Paths;
 
 public class PathStorageTest extends AbstractStorageTest {

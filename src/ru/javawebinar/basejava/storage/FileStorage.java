@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.strategy.IOStorageStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -90,11 +91,7 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     public int size() {
         File[] files = directory.listFiles(File::isFile);
-        if (files != null) {
-            return files.length;
-        } else {
-            return 0;
-        }
+        return files != null ? files.length : 0;
     }
 
     @Override
