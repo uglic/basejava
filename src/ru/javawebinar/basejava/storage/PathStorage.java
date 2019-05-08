@@ -88,7 +88,7 @@ public class PathStorage extends AbstractStorage<Path> {
                     .map(this::doGet)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new StorageException(directory + " clear error", null, e);
+            throw new StorageException(directory + " directory read error", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class PathStorage extends AbstractStorage<Path> {
                     .filter(((Predicate<Path>) Files::isDirectory).negate())
                     .count();
         } catch (IOException e) {
-            throw new StorageException(directory + " clear error", null, e);
+            throw new StorageException(directory + " directory read error", e);
         }
     }
 
@@ -110,7 +110,7 @@ public class PathStorage extends AbstractStorage<Path> {
                     .filter(((Predicate<Path>) Files::isDirectory).negate())
                     .forEach(this::doDelete);
         } catch (IOException e) {
-            throw new StorageException(directory + " clear error", null, e);
+            throw new StorageException(directory + " directory clear error", e);
         }
     }
 }
