@@ -27,48 +27,72 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
             //    dataOutputStreamF.writeUTF(mapEntry.getValue().getUrl());
             //});
 
-            forEachWriteWithIOException(contacts.entrySet(), dataOutputStream, mapEntry -> Arrays.asList(
-                    mapEntry.getKey().name(),
-                    mapEntry.getValue().getName(),
-                    mapEntry.getValue().getUrl()
-            ));
+//            forEachWriteWithIOException(contacts.entrySet(), dataOutputStream, mapEntry -> Arrays.asList(
+//                    mapEntry.getKey().name(),
+//                    mapEntry.getValue().getName(),
+//                    mapEntry.getValue().getUrl()
+//            ));
 
+            contacts.entrySet().forEach(contactEntry -> {
+                try {
+                    dataOutputStream.writeUTF(contactEntry.getKey().name());
+                    dataOutputStream.writeUTF(contactEntry.getValue().getName());
+                    dataOutputStream.writeUTF(contactEntry.getValue().getUrl());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             Map<SectionTypes, AbstractSection> sections = resume.getSections();
             dataOutputStream.writeInt(sections.size());
-
-            for (Map.Entry<SectionTypes, AbstractSection> abstractSectionEntry : sections.entrySet()) {
-                AbstractSection section = abstractSectionEntry.getValue();
-                dataOutputStream.writeUTF(abstractSectionEntry.getKey().name());
-                switch (abstractSectionEntry.getKey()) {
-                    case OBJECTIVE:
-                    case PERSONAL:
-                        dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        dataOutputStream.writeInt(((BulletedTextListSection) section).getItems().size());
-                        for (String item : ((BulletedTextListSection) section).getItems()) {
-                            dataOutputStream.writeUTF(item);
-                        }
-                        break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        dataOutputStream.writeInt(((OrganizationSection) section).getOrganizations().size());
-                        for (Organization organization : ((OrganizationSection) section).getOrganizations()) {
-                            dataOutputStream.writeUTF(organization.getContact().getName());
-                            dataOutputStream.writeUTF(organization.getContact().getUrl());
-                            dataOutputStream.writeInt(organization.getHistory().size());
-                            for (Organization.Position history : organization.getHistory()) {
-                                dataOutputStream.writeUTF(history.getStartDate().toString());
-                                dataOutputStream.writeUTF(history.getEndDate().toString());
-                                dataOutputStream.writeUTF(history.getTitle());
-                                dataOutputStream.writeUTF(history.getDescription());
-                            }
-                        }
-                        break;
-                    default:
+            sections.entrySet().forEach(abstractSectionEntry -> {
+                try {
+                    AbstractSection section = abstractSectionEntry.getValue();
+                    dataOutputStream.writeUTF(abstractSectionEntry.getKey().name());
+                    switch (abstractSectionEntry.getKey()) {
+                        case OBJECTIVE:
+                        case PERSONAL:
+                            dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
+                            break;
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
+                            dataOutputStream.writeInt(((BulletedTextListSection) section).getItems().size());
+                            ((BulletedTextListSection) section).getItems().forEach(item -> {
+                                try {
+                                    dataOutputStream.writeUTF(item);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                            break;
+                        case EXPERIENCE:
+                        case EDUCATION:
+                            dataOutputStream.writeInt(((OrganizationSection) section).getOrganizations().size());
+                            ((OrganizationSection) section).getOrganizations().forEach(organization -> {
+                                try {
+                                    dataOutputStream.writeUTF(organization.getContact().getName());
+                                    dataOutputStream.writeUTF(organization.getContact().getUrl());
+                                    dataOutputStream.writeInt(organization.getHistory().size());
+                                    organization.getHistory().forEach(history -> {
+                                        try {
+                                            dataOutputStream.writeUTF(history.getStartDate().toString());
+                                            dataOutputStream.writeUTF(history.getEndDate().toString());
+                                            dataOutputStream.writeUTF(history.getTitle());
+                                            dataOutputStream.writeUTF(history.getDescription());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                            break;
+                        default:
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
+            });
         }
     }
 
