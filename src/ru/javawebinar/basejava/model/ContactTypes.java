@@ -21,19 +21,19 @@ public enum ContactTypes {
         this.icon = icon;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        if (!prefix.isEmpty()) {
-            builder.append(prefix);
-            builder.append(":");
-        }
-        String iconFileName = icon.getFilename();
-        if (!iconFileName.isEmpty()) {
-            builder.append("[");
-            builder.append(iconFileName);
-            builder.append("]");
-        }
-        return builder.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder builder = new StringBuilder();
+//        if (!prefix.isEmpty()) {
+//            builder.append(prefix);
+//            builder.append(":");
+//        }
+//        String iconFileName = icon.getFilename();
+//        if (!iconFileName.isEmpty()) {
+//            builder.append("[");
+//            builder.append(iconFileName);
+//            builder.append("]");
+//        }
+//        return builder.toString();
+//    }
 }
