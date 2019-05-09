@@ -23,6 +23,10 @@ public class BulletedTextListSection extends AbstractSection {
         this.items.addAll(items);
     }
 
+    public List<String> getItems() {
+        return items;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

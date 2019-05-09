@@ -14,8 +14,13 @@ public class OrganizationSection extends AbstractSection {
     }
 
     public OrganizationSection(Organization... organizations) {
-        Objects.requireNonNull(organizations, "history must be non-null");
+        Objects.requireNonNull(organizations, "organizations must be non-null");
         Collections.addAll(this.organizations, organizations);
+    }
+
+    public OrganizationSection(List<Organization> organizations) {
+        Objects.requireNonNull(organizations, "organizations must not be null");
+        this.organizations.addAll(organizations);
     }
 
     @Override

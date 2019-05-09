@@ -39,6 +39,14 @@ public class Organization implements Serializable {
         this.history.addAll(history);
     }
 
+    public Contact getContact() {
+        return contact;
+    }
+
+    public List<Period> getHistory() {
+        return history;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

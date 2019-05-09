@@ -17,8 +17,7 @@ public enum SectionTypes {
         this.title = title;
     }
 
-//    @Override
-//    public String toString() {
-//        return title;
-//    }
+    public String getTitle() {
+        return title;
+    }
 }

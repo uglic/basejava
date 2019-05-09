@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class JsonMapAdapter<T> implements JsonDeserializer<T> {  //JsonSerializer<T>,
+public class JsonMapAdapter<T> implements JsonDeserializer<T> {
     @Override
     public T deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
@@ -15,41 +15,16 @@ public class JsonMapAdapter<T> implements JsonDeserializer<T> {  //JsonSerialize
         if (enumClass == null) {
             return null;
         }
-
-        T result;
         if (enumClass == ContactTypes.class) {
-            result = deserializeContactTypes(jsonObject, context);
+            return deserializeContacts(jsonObject, context);
         } else if (enumClass == SectionTypes.class) {
-            result = deserializeSectionTypes(jsonObject, context);
+            return deserializeSections(jsonObject, context);
         } else {
             throw new JsonParseException("Unknown enum class: " + enumClass.getCanonicalName());
         }
-        return result;
-
     }
 
-    private Class<? extends Enum> getEnumClassByItemValue(String itemValue, Class<? extends Enum>... classes) {
-        for (Class<? extends Enum> clazz : classes) {
-            for (Enum enumValue : clazz.getEnumConstants()) {
-                if (enumValue.name().equals(itemValue)
-                        || enumValue.toString().equals(itemValue)) {
-                    return clazz;
-                }
-            }
-        }
-        throw new JsonParseException("Unknown enum value: " + itemValue);
-    }
-
-    private Class<? extends Enum> getEnumClassByJsonObject(JsonObject json, Class<? extends Enum>... classes) {
-        if (json.entrySet().size() > 0) {
-            String anyEnumItem = json.entrySet().iterator().next().getKey();
-            return getEnumClassByItemValue(anyEnumItem, classes);
-        } else {
-            return null;
-        }
-    }
-
-    private T deserializeContactTypes(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
+    private T deserializeContacts(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
         EnumMap<ContactTypes, Contact> resultMap = new EnumMap<>(ContactTypes.class);
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             String key = entry.getKey();
@@ -59,13 +34,14 @@ public class JsonMapAdapter<T> implements JsonDeserializer<T> {  //JsonSerialize
         return (T) resultMap;
     }
 
-    private T deserializeSectionTypes(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
+
+    private T deserializeSections(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
         EnumMap<SectionTypes, AbstractSection> resultMap = new EnumMap<>(SectionTypes.class);
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             String key = entry.getKey();
-            SectionTypes enumValue = SectionTypes.valueOf(key);
-            Class<? extends AbstractSection> sectionClass = null;
-            switch (enumValue) {
+            SectionTypes sectionType = SectionTypes.valueOf(key);
+            Class<? extends AbstractSection> sectionClass;
+            switch (sectionType) {
                 case OBJECTIVE:
                 case PERSONAL:
                     sectionClass = SimpleTextSection.class;
@@ -79,10 +55,28 @@ public class JsonMapAdapter<T> implements JsonDeserializer<T> {  //JsonSerialize
                     sectionClass = OrganizationSection.class;
                     break;
                 default:
-                    throw new JsonParseException("Unknown section: " + enumValue);
+                    throw new JsonParseException("Unknown section type: " + sectionType);
             }
-            resultMap.put(enumValue, context.deserialize(entry.getValue(), sectionClass));
+            resultMap.put(sectionType, context.deserialize(entry.getValue(), sectionClass));
         }
         return (T) resultMap;
+    }
+
+    @SafeVarargs
+    final private Class<? extends Enum> getEnumClassByJsonObject(JsonObject json, Class<? extends Enum>... classes) {
+        if (json.entrySet().size() > 0) {
+            String string = json.entrySet().iterator().next().getKey();
+            for (Class<? extends Enum> clazz : classes) {
+                for (Enum enumValue : clazz.getEnumConstants()) {
+                    if (enumValue.name().equals(string)
+                            || enumValue.toString().equals(string)) {
+                        return clazz;
+                    }
+                }
+            }
+            throw new JsonParseException("Unknown enum value: " + string);
+        } else {
+            return null;
+        }
     }
 }
