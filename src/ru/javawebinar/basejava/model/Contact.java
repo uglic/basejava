@@ -22,21 +22,7 @@ public class Contact implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        if (name != null && url != null) {
-            builder.append("[");
-            builder.append(name);
-            builder.append("](");
-            builder.append(url);
-            builder.append(")");
-        } else if (name != null) {
-            builder.append(name);
-        } else if (url != null) {
-            builder.append("(");
-            builder.append(url);
-            builder.append(")");
-        }
-        return builder.toString();
+        return "Contact(" + name + ',' + url + ')';
     }
 
     public String getName() {

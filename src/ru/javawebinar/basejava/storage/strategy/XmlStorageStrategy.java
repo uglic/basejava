@@ -13,7 +13,7 @@ public class XmlStorageStrategy implements IOStorageStrategy {
         xmlParser = new XmlParser(
                 Resume.class, Contact.class,
                 BulletedTextListSection.class, OrganizationSection.class, SimpleTextSection.class,
-                Contact.class, Organization.class, Organization.Period.class);
+                Contact.class, Organization.class, Organization.Position.class);
     }
 
     @Override

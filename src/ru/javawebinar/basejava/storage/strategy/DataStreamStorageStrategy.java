@@ -5,9 +5,8 @@ import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 public class DataStreamStorageStrategy implements IOStorageStrategy {
     @Override
@@ -17,36 +16,57 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
             dataOutputStream.writeUTF(resume.getFullName());
             Map<ContactTypes, Contact> contacts = resume.getContacts();
             dataOutputStream.writeInt(contacts.size());
-            for (Map.Entry<ContactTypes, Contact> contactEntry : contacts.entrySet()) {
-                dataOutputStream.writeUTF(contactEntry.getKey().name());
-                dataOutputStream.writeUTF(contactEntry.getValue().getName());
-                dataOutputStream.writeUTF(contactEntry.getValue().getUrl());
-            }
+
+            //contacts.entrySet().stream().map(Map.Entry::getKey).map(ContactTypes::name).forEach(dataOutputStream::writeUTF);
+            //contacts.entrySet().stream().map(Map.Entry::getValue).map(Contact::getName).forEach(dataOutputStream::writeUTF);
+            //contacts.entrySet().stream().map(Map.Entry::getValue).map(Contact::getUrl).forEach(dataOutputStream::writeUTF);
+
+            //DataStreamStorageStrategy.<Map.Entry<ContactTypes, Contact>>forEachWithIOException(contacts.entrySet(), dataOutputStream, (dataOutputStreamF, mapEntry) -> {
+            //    dataOutputStreamF.writeUTF(mapEntry.getKey().name());
+            //    dataOutputStreamF.writeUTF(mapEntry.getValue().getName());
+            //    dataOutputStreamF.writeUTF(mapEntry.getValue().getUrl());
+            //});
+
+            forEachWriteWithIOException(contacts.entrySet(), dataOutputStream, mapEntry -> Arrays.asList(
+                    mapEntry.getKey().name(),
+                    mapEntry.getValue().getName(),
+                    mapEntry.getValue().getUrl()
+            ));
+
             Map<SectionTypes, AbstractSection> sections = resume.getSections();
             dataOutputStream.writeInt(sections.size());
+
             for (Map.Entry<SectionTypes, AbstractSection> abstractSectionEntry : sections.entrySet()) {
                 AbstractSection section = abstractSectionEntry.getValue();
                 dataOutputStream.writeUTF(abstractSectionEntry.getKey().name());
-                if (section.getClass() == SimpleTextSection.class) {
-                    dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
-                } else if (section.getClass() == BulletedTextListSection.class) {
-                    dataOutputStream.writeInt(((BulletedTextListSection) section).getItems().size());
-                    for (String item : ((BulletedTextListSection) section).getItems()) {
-                        dataOutputStream.writeUTF(item);
-                    }
-                } else if (section.getClass() == OrganizationSection.class) {
-                    dataOutputStream.writeInt(((OrganizationSection) section).getOrganizations().size());
-                    for (Organization organization : ((OrganizationSection) section).getOrganizations()) {
-                        dataOutputStream.writeUTF(organization.getContact().getName());
-                        dataOutputStream.writeUTF(organization.getContact().getUrl());
-                        dataOutputStream.writeInt(organization.getHistory().size());
-                        for (Organization.Period history : organization.getHistory()) {
-                            dataOutputStream.writeUTF(history.getStartDate().toString());
-                            dataOutputStream.writeUTF(history.getEndDate().toString());
-                            dataOutputStream.writeUTF(history.getTitle());
-                            dataOutputStream.writeUTF(history.getDescription());
+                switch (abstractSectionEntry.getKey()) {
+                    case OBJECTIVE:
+                    case PERSONAL:
+                        dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        dataOutputStream.writeInt(((BulletedTextListSection) section).getItems().size());
+                        for (String item : ((BulletedTextListSection) section).getItems()) {
+                            dataOutputStream.writeUTF(item);
                         }
-                    }
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        dataOutputStream.writeInt(((OrganizationSection) section).getOrganizations().size());
+                        for (Organization organization : ((OrganizationSection) section).getOrganizations()) {
+                            dataOutputStream.writeUTF(organization.getContact().getName());
+                            dataOutputStream.writeUTF(organization.getContact().getUrl());
+                            dataOutputStream.writeInt(organization.getHistory().size());
+                            for (Organization.Position history : organization.getHistory()) {
+                                dataOutputStream.writeUTF(history.getStartDate().toString());
+                                dataOutputStream.writeUTF(history.getEndDate().toString());
+                                dataOutputStream.writeUTF(history.getTitle());
+                                dataOutputStream.writeUTF(history.getDescription());
+                            }
+                        }
+                        break;
+                    default:
                 }
             }
         }
@@ -87,16 +107,16 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
                         int organizationsSize = dataInputStream.readInt();
                         for (int organizationIndex = 0; organizationIndex < organizationsSize; organizationIndex++) {
                             Contact contact = new Contact(dataInputStream.readUTF(), dataInputStream.readUTF());
-                            List<Organization.Period> history = new ArrayList<>();
+                            List<Organization.Position> history = new ArrayList<>();
                             int historySize = dataInputStream.readInt();
                             for (int historyIndex = 0; historyIndex < historySize; historyIndex++) {
-                                Organization.Period period = new Organization.Period(
+                                Organization.Position position = new Organization.Position(
                                         LocalDate.parse(dataInputStream.readUTF()),
                                         LocalDate.parse(dataInputStream.readUTF()),
                                         dataInputStream.readUTF(),
                                         dataInputStream.readUTF()
                                 );
-                                history.add(period);
+                                history.add(position);
                             }
                             organizations.add(new Organization(contact, history));
                         }
@@ -108,10 +128,21 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
                 resume.addSection(sectionType, section);
             }
             return resume;
-        } catch (EOFException e) {
-        } catch (IOException e) {
-            throw new StorageException("Error read resume", e);
         }
-        return resume;
     }
+
+    private static <T> void forEachWriteWithIOException(Collection<? extends T> collection, DataOutputStream dataOutputStream, Function<? super T, List<String>> action) throws IOException {
+        for (T t : collection) {
+            for (String t2 : action.apply(t)) {
+                dataOutputStream.writeUTF(t2);
+            }
+        }
+    }
+
+    private static <T> void forEachWriteWithIOException2(Collection<? extends T> collection, DataOutputStream dataOutputStream, Function<? super T, String> action) throws IOException {
+        for (T t : collection) {
+            dataOutputStream.writeUTF(action.apply(t));
+        }
+    }
+
 }

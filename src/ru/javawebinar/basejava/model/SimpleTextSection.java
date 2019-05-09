@@ -22,11 +22,7 @@ public class SimpleTextSection extends AbstractSection {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        if (content != null && !content.isEmpty()) {
-            builder.append(content);
-        }
-        return builder.toString();
+        return content;
     }
 
     @Override

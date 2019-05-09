@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,20 +18,20 @@ public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final Contact contact;
-    private final List<Period> history = new ArrayList<>();
+    private final List<Position> history = new ArrayList<>();
 
     private Organization() { // only for marshalling
         this(new Contact("", ""));
     }
 
-    public Organization(Contact contact, Period... history) {
+    public Organization(Contact contact, Position... history) {
         Objects.requireNonNull(contact, "Contact must be non-null");
         Objects.requireNonNull(history, "Contact history must be non-null");
         this.contact = contact;
         Collections.addAll(this.history, history);
     }
 
-    public Organization(Contact contact, List<Period> history) {
+    public Organization(Contact contact, List<Position> history) {
         Objects.requireNonNull(contact, "Contact must be non-null");
         Objects.requireNonNull(history, "Contact history must be non-null");
         this.contact = contact;
@@ -43,20 +42,13 @@ public class Organization implements Serializable {
         return contact;
     }
 
-    public List<Period> getHistory() {
+    public List<Position> getHistory() {
         return history;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("---\r\n");
-        builder.append(contact);
-        for (Period historyRecord : history) {
-            builder.append("\r\n");
-            builder.append(historyRecord);
-        }
-        return builder.toString();
+        return "Organization(" + contact.getUrl() + "," + history + ')';
     }
 
     @Override
@@ -76,7 +68,7 @@ public class Organization implements Serializable {
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Period implements Serializable {
+    public static class Position implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private final String title;
@@ -86,11 +78,11 @@ public class Organization implements Serializable {
         private final LocalDate endDate;
         private final String description;
 
-        private Period() {// only for marshalling
+        private Position() {// only for marshalling
             this(DateUtil.NOW, DateUtil.NOW, "", "");
         }
 
-        public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
+        public Position(LocalDate startDate, LocalDate endDate, String title, String description) {
             Objects.requireNonNull(title, "Section title must be non-null");
             Objects.requireNonNull(startDate, "DateFrom must be non-null");
             Objects.requireNonNull(endDate, "DateFrom must be non-null");
@@ -118,33 +110,14 @@ public class Organization implements Serializable {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/Y");
-            builder.append("Начало: ");
-            builder.append(dateFormatter.format(startDate));
-            builder.append("\r\nОкончание: ");
-            if (endDate != DateUtil.NOW) {
-                builder.append(dateFormatter.format(endDate));
-            } else {
-                builder.append("Сейчас");
-            }
-            if (!title.isEmpty()) {
-                builder.append("\r\n*");
-                builder.append(title);
-                builder.append("*");
-            }
-            if (description != null && !description.isEmpty()) {
-                builder.append("\r\n");
-                builder.append(description);
-            }
-            return builder.toString();
+            return "Position(" + startDate + ',' + endDate + ',' + title + ',' + description + ')';
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Period that = (Period) o;
+            Position that = (Position) o;
 
             return title.equals(that.title)
                     && startDate.equals(that.startDate)

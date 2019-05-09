@@ -29,15 +29,7 @@ public class BulletedTextListSection extends AbstractSection {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (String item : items) {
-            if (builder.length() != 0) {
-                builder.append("\r\n");
-            }
-            builder.append("- ");
-            builder.append(item);
-        }
-        return builder.toString();
+        return items.toString();
     }
 
     @Override

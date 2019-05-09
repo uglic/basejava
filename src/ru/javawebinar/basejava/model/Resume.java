@@ -43,14 +43,6 @@ public class Resume implements Comparable<Resume>, Serializable {
         return fullName;
     }
 
-//    public Contact getContact(ContactTypes type) {
-//        return contacts.get(type);
-//    }
-//
-//    public AbstractSection getSection(SectionTypes type) {
-//        return sections.get(type);
-//    }
-
     public Map<ContactTypes, Contact> getContacts() {
         return contacts;
     }
@@ -69,34 +61,7 @@ public class Resume implements Comparable<Resume>, Serializable {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(uuid);
-        builder.append(" (");
-        builder.append(fullName);
-        builder.append(")");
-        for (ContactTypes contactType : ContactTypes.values()) {
-            Contact contact = contacts.get(contactType);
-            if (contact != null) {
-                if (builder.length() != 0) {
-                    builder.append("\r\n");
-                }
-                builder.append(contactType);
-                builder.append(contact);
-            }
-        }
-        for (SectionTypes sectionType : SectionTypes.values()) {
-            AbstractSection section = sections.get(sectionType);
-            if (section != null) {
-                if (builder.length() != 0) {
-                    builder.append("\r\n\r\n");
-                }
-                builder.append("# ");
-                builder.append(sectionType);
-                builder.append("\r\n");
-                builder.append(section);
-            }
-        }
-        return builder.toString();
+        return uuid + '(' + fullName + ')';
     }
 
     @Override

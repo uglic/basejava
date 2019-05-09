@@ -23,20 +23,13 @@ public class OrganizationSection extends AbstractSection {
         this.organizations.addAll(organizations);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (Organization organization : organizations) {
-            if (builder.length() != 0) {
-                builder.append("\r\n");
-            }
-            builder.append(organization);
-        }
-        return builder.toString();
-    }
-
     public List<Organization> getOrganizations() {
         return organizations;
+    }
+
+    @Override
+    public String toString() {
+        return organizations.toString();
     }
 
     @Override
