@@ -7,58 +7,48 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DataStreamStorageStrategy implements IOStorageStrategy {
-    private final static String FIN_CONTACTS = "-c";
-    private final static String FIN_SECTIONS = "-s";
-    private final static String FIN_BULLETEDTEXTLIST = "-sb";
-    private final static String FIN_ORGANIZATIONLIST = "-so";
-    private final static String FIN_ORGANIZATION_HISTORY = "-soh";
-
     @Override
     public void write(Resume resume, OutputStream outputStream) throws IOException {
         try (DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
             dataOutputStream.writeUTF(resume.getUuid());
             dataOutputStream.writeUTF(resume.getFullName());
-
-            for (ContactTypes contactType : ContactTypes.values()) {
-                Contact contact = resume.getContact(contactType);
-                if (contact != null) {
-                    dataOutputStream.writeUTF(contactType.name());
-                    dataOutputStream.writeUTF(contact.getName());
-                    dataOutputStream.writeUTF(contact.getUrl());
-                }
+            Map<ContactTypes, Contact> contacts = resume.getContacts();
+            dataOutputStream.writeInt(contacts.size());
+            for (Map.Entry<ContactTypes, Contact> contactEntry : contacts.entrySet()) {
+                dataOutputStream.writeUTF(contactEntry.getKey().name());
+                dataOutputStream.writeUTF(contactEntry.getValue().getName());
+                dataOutputStream.writeUTF(contactEntry.getValue().getUrl());
             }
-            dataOutputStream.writeUTF(FIN_CONTACTS);
-
-            for (SectionTypes sectionType : SectionTypes.values()) {
-                AbstractSection section = resume.getSection(sectionType);
-                if (section != null) {
-                    dataOutputStream.writeUTF(sectionType.name());
-                    if (section.getClass() == SimpleTextSection.class) {
-                        dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
-                    } else if (section.getClass() == BulletedTextListSection.class) {
-                        for (String item : ((BulletedTextListSection) section).getItems()) {
-                            dataOutputStream.writeUTF(item);
+            Map<SectionTypes, AbstractSection> sections = resume.getSections();
+            dataOutputStream.writeInt(sections.size());
+            for (Map.Entry<SectionTypes, AbstractSection> abstractSectionEntry : sections.entrySet()) {
+                AbstractSection section = abstractSectionEntry.getValue();
+                dataOutputStream.writeUTF(abstractSectionEntry.getKey().name());
+                if (section.getClass() == SimpleTextSection.class) {
+                    dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
+                } else if (section.getClass() == BulletedTextListSection.class) {
+                    dataOutputStream.writeInt(((BulletedTextListSection) section).getItems().size());
+                    for (String item : ((BulletedTextListSection) section).getItems()) {
+                        dataOutputStream.writeUTF(item);
+                    }
+                } else if (section.getClass() == OrganizationSection.class) {
+                    dataOutputStream.writeInt(((OrganizationSection) section).getOrganizations().size());
+                    for (Organization organization : ((OrganizationSection) section).getOrganizations()) {
+                        dataOutputStream.writeUTF(organization.getContact().getName());
+                        dataOutputStream.writeUTF(organization.getContact().getUrl());
+                        dataOutputStream.writeInt(organization.getHistory().size());
+                        for (Organization.Period history : organization.getHistory()) {
+                            dataOutputStream.writeUTF(history.getStartDate().toString());
+                            dataOutputStream.writeUTF(history.getEndDate().toString());
+                            dataOutputStream.writeUTF(history.getTitle());
+                            dataOutputStream.writeUTF(history.getDescription());
                         }
-                        dataOutputStream.writeUTF(FIN_BULLETEDTEXTLIST);
-                    } else if (section.getClass() == OrganizationSection.class) {
-                        for (Organization organization : ((OrganizationSection) section).getOrganizations()) {
-                            dataOutputStream.writeUTF(organization.getContact().getName());
-                            dataOutputStream.writeUTF(organization.getContact().getUrl());
-                            for (Organization.Period history : organization.getHistory()) {
-                                dataOutputStream.writeUTF(history.getStartDate().toString());
-                                dataOutputStream.writeUTF(history.getEndDate().toString());
-                                dataOutputStream.writeUTF(history.getTitle());
-                                dataOutputStream.writeUTF(history.getDescription());
-                            }
-                            dataOutputStream.writeUTF(FIN_ORGANIZATION_HISTORY);
-                        }
-                        dataOutputStream.writeUTF(FIN_ORGANIZATIONLIST);
                     }
                 }
             }
-            dataOutputStream.writeUTF(FIN_SECTIONS);
         }
     }
 
@@ -67,14 +57,15 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         Resume resume = null;
         try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
             resume = new Resume(dataInputStream.readUTF(), dataInputStream.readUTF());
-            String buffer;
-            while (!(buffer = dataInputStream.readUTF()).equals(FIN_CONTACTS)) {
-                ContactTypes contactType = ContactTypes.valueOf(buffer);
+            int contactsSize = dataInputStream.readInt();
+            for (int contactIndex = 0; contactIndex < contactsSize; contactIndex++) {
+                ContactTypes contactType = ContactTypes.valueOf(dataInputStream.readUTF());
                 Contact contact = new Contact(dataInputStream.readUTF(), dataInputStream.readUTF());
                 resume.addContact(contactType, contact);
             }
-            while (!(buffer = dataInputStream.readUTF()).equals(FIN_SECTIONS)) {
-                SectionTypes sectionType = SectionTypes.valueOf(buffer);
+            int sectionsSize = dataInputStream.readInt();
+            for (int sectionIndex = 0; sectionIndex < sectionsSize; sectionIndex++) {
+                SectionTypes sectionType = SectionTypes.valueOf(dataInputStream.readUTF());
                 AbstractSection section;
                 switch (sectionType) {
                     case OBJECTIVE:
@@ -84,20 +75,23 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
                         List<String> bulletedItems = new ArrayList<>();
-                        while (!(buffer = dataInputStream.readUTF()).equals(FIN_BULLETEDTEXTLIST)) {
-                            bulletedItems.add(buffer);
+                        int bulletedItemsSize = dataInputStream.readInt();
+                        for (int bulletedItemIndex = 0; bulletedItemIndex < bulletedItemsSize; bulletedItemIndex++) {
+                            bulletedItems.add(dataInputStream.readUTF());
                         }
                         section = new BulletedTextListSection(bulletedItems);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
                         List<Organization> organizations = new ArrayList<>();
-                        while (!(buffer = dataInputStream.readUTF()).equals(FIN_ORGANIZATIONLIST)) {
-                            Contact contact = new Contact(buffer, dataInputStream.readUTF());
+                        int organizationsSize = dataInputStream.readInt();
+                        for (int organizationIndex = 0; organizationIndex < organizationsSize; organizationIndex++) {
+                            Contact contact = new Contact(dataInputStream.readUTF(), dataInputStream.readUTF());
                             List<Organization.Period> history = new ArrayList<>();
-                            while (!(buffer = dataInputStream.readUTF()).equals(FIN_ORGANIZATION_HISTORY)) {
+                            int historySize = dataInputStream.readInt();
+                            for (int historyIndex = 0; historyIndex < historySize; historyIndex++) {
                                 Organization.Period period = new Organization.Period(
-                                        LocalDate.parse(buffer),
+                                        LocalDate.parse(dataInputStream.readUTF()),
                                         LocalDate.parse(dataInputStream.readUTF()),
                                         dataInputStream.readUTF(),
                                         dataInputStream.readUTF()
