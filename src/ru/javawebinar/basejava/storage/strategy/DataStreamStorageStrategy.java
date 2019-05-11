@@ -18,38 +18,38 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
             dataOutputStream.writeUTF(resume.getFullName());
             Map<ContactTypes, Contact> contacts = resume.getContacts();
             dataOutputStream.writeInt(contacts.size());
-            forEachDataOutputStream(contacts.entrySet(), dataOutputStream, (stream, entry) -> {
-                stream.writeUTF(entry.getKey().name());
-                stream.writeUTF(entry.getValue().getName());
-                stream.writeUTF(entry.getValue().getUrl());
+            forEachDataOutputStream(contacts.entrySet(), contactEntry -> {
+                dataOutputStream.writeUTF(contactEntry.getKey().name());
+                dataOutputStream.writeUTF(contactEntry.getValue().getName());
+                dataOutputStream.writeUTF(contactEntry.getValue().getUrl());
             });
             Map<SectionTypes, AbstractSection> sections = resume.getSections();
             dataOutputStream.writeInt(sections.size());
-            forEachDataOutputStream(sections.entrySet(), dataOutputStream, (stream, abstractSectionEntry) -> {
+            forEachDataOutputStream(sections.entrySet(), abstractSectionEntry -> {
                 AbstractSection section = abstractSectionEntry.getValue();
-                stream.writeUTF(abstractSectionEntry.getKey().name());
+                dataOutputStream.writeUTF(abstractSectionEntry.getKey().name());
                 switch (abstractSectionEntry.getKey()) {
                     case OBJECTIVE:
                     case PERSONAL:
-                        stream.writeUTF(((SimpleTextSection) section).getContent());
+                        dataOutputStream.writeUTF(((SimpleTextSection) section).getContent());
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        stream.writeInt(((BulletedTextListSection) section).getItems().size());
-                        forEachDataOutputStream(((BulletedTextListSection) section).getItems(), stream, DataOutputStream::writeUTF);
+                        dataOutputStream.writeInt(((BulletedTextListSection) section).getItems().size());
+                        forEachDataOutputStream(((BulletedTextListSection) section).getItems(), dataOutputStream::writeUTF);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        stream.writeInt(((OrganizationSection) section).getOrganizations().size());
-                        forEachDataOutputStream(((OrganizationSection) section).getOrganizations(), stream, (streamOrg, organization) -> {
-                            streamOrg.writeUTF(organization.getContact().getName());
-                            streamOrg.writeUTF(organization.getContact().getUrl());
-                            streamOrg.writeInt(organization.getHistory().size());
-                            forEachDataOutputStream(organization.getHistory(), streamOrg, (streamHistory, history) -> {
-                                streamHistory.writeUTF(history.getStartDate().toString());
-                                streamHistory.writeUTF(history.getEndDate().toString());
-                                streamHistory.writeUTF(history.getTitle());
-                                streamHistory.writeUTF(history.getDescription());
+                        dataOutputStream.writeInt(((OrganizationSection) section).getOrganizations().size());
+                        forEachDataOutputStream(((OrganizationSection) section).getOrganizations(), organization -> {
+                            dataOutputStream.writeUTF(organization.getContact().getName());
+                            dataOutputStream.writeUTF(organization.getContact().getUrl());
+                            dataOutputStream.writeInt(organization.getHistory().size());
+                            forEachDataOutputStream(organization.getHistory(), history -> {
+                                dataOutputStream.writeUTF(history.getStartDate().toString());
+                                dataOutputStream.writeUTF(history.getEndDate().toString());
+                                dataOutputStream.writeUTF(history.getTitle());
+                                dataOutputStream.writeUTF(history.getDescription());
                             });
                         });
                         break;
@@ -118,13 +118,13 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
     }
 
     @FunctionalInterface
-    private interface DataOutputBiConsumer<S extends DataOutputStream, T> {
-        void apply(S dataOutputStream, T t) throws IOException;
+    private interface DataOutputConsumer<T> {
+        void apply(T t) throws IOException;
     }
 
-    private static <S extends DataOutputStream, T> void forEachDataOutputStream(Collection<? extends T> collection, S dataOutputStream, DataOutputBiConsumer<S, T> action) throws IOException {
+    private static <T> void forEachDataOutputStream(Collection<? extends T> collection, DataOutputConsumer<T> action) throws IOException {
         for (T t : collection) {
-            action.apply(dataOutputStream, t);
+            action.apply(t);
         }
     }
 }
