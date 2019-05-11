@@ -38,7 +38,6 @@ public class ResumeTestData {
         resume.addContact(ContactTypes.HOMESITE,
                 new Contact("Домашняя страница", "http://gkislin.ru/")
         );
-
         resume.addSection(SectionTypes.OBJECTIVE,
                 new SimpleTextSection(
                         "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"

@@ -118,7 +118,6 @@ public class Organization implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Position that = (Position) o;
-
             return title.equals(that.title)
                     && startDate.equals(that.startDate)
                     && endDate.equals(that.endDate)

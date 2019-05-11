@@ -13,7 +13,6 @@ public class JsonSectionAdapter<T> implements JsonSerializer<T>, JsonDeserialize
         JsonObject jsonObject = json.getAsJsonObject();
         JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
         String className = prim.getAsString();
-
         try {
             Class clazz = Class.forName(className);
             return context.deserialize(jsonObject.get(INSTANCE), clazz);
@@ -21,7 +20,6 @@ public class JsonSectionAdapter<T> implements JsonSerializer<T>, JsonDeserialize
             throw new JsonParseException(e.getMessage());
         }
     }
-
 
     @Override
     public JsonElement serialize(T section, Type type, JsonSerializationContext context) {
