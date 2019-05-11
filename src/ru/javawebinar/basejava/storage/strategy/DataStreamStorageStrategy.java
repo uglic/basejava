@@ -56,8 +56,6 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
                     default:
                 }
             });
-        } catch (PassException e) {
-            throw e.getIOException();
         }
     }
 
@@ -119,30 +117,14 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         }
     }
 
-    private static class PassException extends RuntimeException {
-        private final IOException e;
-
-        PassException(IOException e) {
-            this.e = e;
-        }
-
-        IOException getIOException() {
-            return e;
-        }
-    }
-
     @FunctionalInterface
     private interface DataOutputBiConsumer<S extends DataOutputStream, T> {
         void apply(S dataOutputStream, T t) throws IOException;
     }
 
-    private static <S extends DataOutputStream, T> void forEachDataOutputStream(Collection<? extends T> collection, S dataOutputStream, DataOutputBiConsumer<S, T> action) {
-        try {
-            for (T t : collection) {
-                action.apply(dataOutputStream, t);
-            }
-        } catch (IOException e) {
-            throw new PassException(e);
+    private static <S extends DataOutputStream, T> void forEachDataOutputStream(Collection<? extends T> collection, S dataOutputStream, DataOutputBiConsumer<S, T> action) throws IOException {
+        for (T t : collection) {
+            action.apply(dataOutputStream, t);
         }
     }
 }
