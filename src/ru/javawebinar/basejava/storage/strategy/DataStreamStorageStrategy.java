@@ -107,7 +107,7 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
 
     @FunctionalInterface
     private interface IOExceptionConsumer<T> {
-        void apply(T t) throws IOException;
+        void accept(T t) throws IOException;
     }
 
     @FunctionalInterface
@@ -115,14 +115,14 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         T get() throws IOException;
     }
 
-    private static <T> void forEachConsume(Collection<? extends T> collection, DataOutputStream dataOutputStream, IOExceptionConsumer<T> action) throws IOException {
+    private <T> void forEachConsume(Collection<? extends T> collection, DataOutputStream dataOutputStream, IOExceptionConsumer<T> action) throws IOException {
         dataOutputStream.writeInt(collection.size());
         for (T t : collection) {
-            action.apply(t);
+            action.accept(t);
         }
     }
 
-    private static <T> List<T> getListIOException(IOExceptionSupplier<T> element, DataInputStream dataInputStream) throws IOException {
+    private <T> List<T> getListIOException(IOExceptionSupplier<T> element, DataInputStream dataInputStream) throws IOException {
         int size = dataInputStream.readInt();
         List<T> collection = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -131,7 +131,7 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         return collection;
     }
 
-    private static <T> void addElements(DataInputStream dataInputStream, IOExceptionUnary action) throws IOException {
+    private void addElements(DataInputStream dataInputStream, IOExceptionUnary action) throws IOException {
         int size = dataInputStream.readInt();
         for (int i = 0; i < size; i++) {
             action.apply();
