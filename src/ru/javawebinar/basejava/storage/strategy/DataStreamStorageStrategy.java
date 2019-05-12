@@ -15,15 +15,13 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
             dataOutputStream.writeUTF(resume.getUuid());
             dataOutputStream.writeUTF(resume.getFullName());
             Map<ContactTypes, Contact> contacts = resume.getContacts();
-            forEachConsume(Arrays.asList(contacts.size()), dataOutputStream::writeInt);
-            forEachConsume(contacts.entrySet(), contactEntry -> {
+            forEachConsume(contacts.entrySet(), dataOutputStream, contactEntry -> {
                 dataOutputStream.writeUTF(contactEntry.getKey().name());
                 dataOutputStream.writeUTF(contactEntry.getValue().getName());
                 dataOutputStream.writeUTF(contactEntry.getValue().getUrl());
             });
             Map<SectionTypes, AbstractSection> sections = resume.getSections();
-            forEachConsume(Arrays.asList(sections.size()), dataOutputStream::writeInt);
-            forEachConsume(sections.entrySet(), abstractSectionEntry -> {
+            forEachConsume(sections.entrySet(), dataOutputStream, abstractSectionEntry -> {
                 AbstractSection section = abstractSectionEntry.getValue();
                 dataOutputStream.writeUTF(abstractSectionEntry.getKey().name());
                 switch (abstractSectionEntry.getKey()) {
@@ -33,17 +31,14 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        forEachConsume(Arrays.asList(((BulletedTextListSection) section).getItems().size()), dataOutputStream::writeInt);
-                        forEachConsume(((BulletedTextListSection) section).getItems(), dataOutputStream::writeUTF);
+                        forEachConsume(((BulletedTextListSection) section).getItems(), dataOutputStream, dataOutputStream::writeUTF);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        forEachConsume(Arrays.asList(((OrganizationSection) section).getOrganizations().size()), dataOutputStream::writeInt);
-                        forEachConsume(((OrganizationSection) section).getOrganizations(), organization -> {
+                        forEachConsume(((OrganizationSection) section).getOrganizations(), dataOutputStream, organization -> {
                             dataOutputStream.writeUTF(organization.getContact().getName());
                             dataOutputStream.writeUTF(organization.getContact().getUrl());
-                            dataOutputStream.writeInt(organization.getHistory().size());
-                            forEachConsume(organization.getHistory(), history -> {
+                            forEachConsume(organization.getHistory(), dataOutputStream, history -> {
                                 dataOutputStream.writeUTF(history.getStartDate().toString());
                                 dataOutputStream.writeUTF(history.getEndDate().toString());
                                 dataOutputStream.writeUTF(history.getTitle());
@@ -62,49 +57,44 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
             Resume resume = new Resume(dataInputStream.readUTF(), dataInputStream.readUTF());
 
-            addContacts(resume,
+            addElements(resume::addContact,
                     () -> ContactTypes.valueOf(dataInputStream.readUTF()),
-                    () -> new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()),
-                    getListIOException(ArrayList::new, dataInputStream::readInt, 1).get(0));
+                    (type) -> new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()),
+                    dataInputStream.readInt());
 
-            addSections(resume,
+            addElements(resume::addSection,
                     () -> SectionTypes.valueOf(dataInputStream.readUTF()),
                     (sectionType) -> {
                         switch (sectionType) {
                             case OBJECTIVE:
                             case PERSONAL:
-                                return new SimpleTextSection(
-                                        getListIOException(ArrayList::new,
-                                                dataInputStream::readUTF, 1).get(0));
+                                return new SimpleTextSection(dataInputStream.readUTF());
                             case ACHIEVEMENT:
                             case QUALIFICATIONS:
                                 return new BulletedTextListSection(
                                         getListIOException(ArrayList::new,
                                                 dataInputStream::readUTF,
-                                                getListIOException(ArrayList::new,
-                                                        dataInputStream::readInt, 1).get(0)));
+                                                dataInputStream.readInt()));
                             case EXPERIENCE:
                             case EDUCATION:
                                 return new OrganizationSection(
                                         getListIOException(ArrayList::new,
                                                 () -> new Organization(
-                                                        getListIOException(ArrayList::new,
-                                                                () -> new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()), 1).get(0),
+                                                        new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()),
                                                         getListIOException(ArrayList::new,
                                                                 () -> new Organization.Position(
                                                                         LocalDate.parse(dataInputStream.readUTF()),
                                                                         LocalDate.parse(dataInputStream.readUTF()),
                                                                         dataInputStream.readUTF(),
                                                                         dataInputStream.readUTF()),
-                                                                getListIOException(ArrayList::new,
-                                                                        dataInputStream::readInt, 1).get(0))
+                                                                dataInputStream.readInt())
                                                 ),
-                                                getListIOException(ArrayList::new, dataInputStream::readInt, 1).get(0)));
+                                                dataInputStream.readInt()));
                             default:
                                 throw new StorageException("Unknown section: " + sectionType);
                         }
                     },
-                    getListIOException(ArrayList::new, dataInputStream::readInt, 1).get(0));
+                    dataInputStream.readInt());
             return resume;
         }
     }
@@ -112,6 +102,11 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
     @FunctionalInterface
     private interface IOExceptionConsumer<T> {
         void apply(T t) throws IOException;
+    }
+
+    @FunctionalInterface
+    private interface IOExceptionBiConsumer<T, U> {
+        void apply(T t, U u) throws IOException;
     }
 
     @FunctionalInterface
@@ -124,7 +119,8 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         T get(V v) throws IOException;
     }
 
-    private static <T> void forEachConsume(Collection<? extends T> collection, IOExceptionConsumer<T> action) throws IOException {
+    private static <T> void forEachConsume(Collection<? extends T> collection, DataOutputStream dataOutputStream, IOExceptionConsumer<T> action) throws IOException {
+        dataOutputStream.writeInt(collection.size());
         for (T t : collection) {
             action.apply(t);
         }
@@ -138,16 +134,10 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         return collection;
     }
 
-    private static void addContacts(Resume resume, IOExceptionSupplier<ContactTypes> contactType, IOExceptionSupplier<Contact> contact, int size) throws IOException {
+    private static <ET, T, U> void addElements(IOExceptionBiConsumer<ET, T> action, IOExceptionSupplier<ET> elementType, IOExceptionBiSupplier<T, ET> element, int size) throws IOException {
         for (int i = 0; i < size; i++) {
-            resume.addContact(contactType.get(), contact.get());
-        }
-    }
-
-    private static void addSections(Resume resume, IOExceptionSupplier<SectionTypes> sectionType, IOExceptionBiSupplier<AbstractSection, SectionTypes> section, int size) throws IOException {
-        for (int i = 0; i < size; i++) {
-            SectionTypes type = sectionType.get();
-            resume.addSection(type, section.get(type));
+            ET type = elementType.get();
+            action.apply(type, element.get(type));
         }
     }
 }
