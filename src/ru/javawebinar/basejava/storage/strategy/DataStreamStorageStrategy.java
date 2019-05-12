@@ -5,8 +5,10 @@ import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class DataStreamStorageStrategy implements IOStorageStrategy {
     @Override
@@ -57,46 +59,50 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
             Resume resume = new Resume(dataInputStream.readUTF(), dataInputStream.readUTF());
 
-            addElements(resume::addContact,
-                    () -> ContactTypes.valueOf(dataInputStream.readUTF()),
-                    (type) -> new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()),
-                    dataInputStream.readInt());
+            addElements(dataInputStream, () -> {
+                ContactTypes type = ContactTypes.valueOf(dataInputStream.readUTF());
+                resume.addContact(type, new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()));
+            });
 
-            addElements(resume::addSection,
-                    () -> SectionTypes.valueOf(dataInputStream.readUTF()),
-                    (sectionType) -> {
+            addElements(dataInputStream, () -> {
+                        SectionTypes sectionType = SectionTypes.valueOf(dataInputStream.readUTF());
+                        AbstractSection section;
                         switch (sectionType) {
                             case OBJECTIVE:
                             case PERSONAL:
-                                return new SimpleTextSection(dataInputStream.readUTF());
+                                section = new SimpleTextSection(dataInputStream.readUTF());
+                                break;
                             case ACHIEVEMENT:
                             case QUALIFICATIONS:
-                                return new BulletedTextListSection(
-                                        getListIOException(ArrayList::new,
-                                                dataInputStream::readUTF,
-                                                dataInputStream.readInt()));
+                                section = new BulletedTextListSection(
+                                        getListIOException(dataInputStream::readUTF, dataInputStream));
+                                break;
                             case EXPERIENCE:
                             case EDUCATION:
-                                return new OrganizationSection(
-                                        getListIOException(ArrayList::new,
-                                                () -> new Organization(
-                                                        new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()),
-                                                        getListIOException(ArrayList::new,
-                                                                () -> new Organization.Position(
-                                                                        LocalDate.parse(dataInputStream.readUTF()),
-                                                                        LocalDate.parse(dataInputStream.readUTF()),
-                                                                        dataInputStream.readUTF(),
-                                                                        dataInputStream.readUTF()),
-                                                                dataInputStream.readInt())
-                                                ),
-                                                dataInputStream.readInt()));
+                                section = new OrganizationSection(
+                                        getListIOException(() -> new Organization(
+                                                new Contact(dataInputStream.readUTF(), dataInputStream.readUTF()),
+                                                getListIOException(() -> new Organization.Position(
+                                                                LocalDate.parse(dataInputStream.readUTF()),
+                                                                LocalDate.parse(dataInputStream.readUTF()),
+                                                                dataInputStream.readUTF(),
+                                                                dataInputStream.readUTF()),
+                                                        dataInputStream)
+                                        ), dataInputStream));
+                                break;
                             default:
                                 throw new StorageException("Unknown section: " + sectionType);
                         }
-                    },
-                    dataInputStream.readInt());
+                        resume.addSection(sectionType, section);
+                    }
+            );
             return resume;
         }
+    }
+
+    @FunctionalInterface
+    private interface IOExceptionUnary {
+        void apply() throws IOException;
     }
 
     @FunctionalInterface
@@ -105,18 +111,8 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
     }
 
     @FunctionalInterface
-    private interface IOExceptionBiConsumer<T, U> {
-        void apply(T t, U u) throws IOException;
-    }
-
-    @FunctionalInterface
     private interface IOExceptionSupplier<T> {
         T get() throws IOException;
-    }
-
-    @FunctionalInterface
-    private interface IOExceptionBiSupplier<T, V> {
-        T get(V v) throws IOException;
     }
 
     private static <T> void forEachConsume(Collection<? extends T> collection, DataOutputStream dataOutputStream, IOExceptionConsumer<T> action) throws IOException {
@@ -126,18 +122,19 @@ public class DataStreamStorageStrategy implements IOStorageStrategy {
         }
     }
 
-    private static <T> List<T> getListIOException(Supplier<? extends List<T>> collectionSupplier, IOExceptionSupplier<T> element, int size) throws IOException {
-        List<T> collection = collectionSupplier.get();
+    private static <T> List<T> getListIOException(IOExceptionSupplier<T> element, DataInputStream dataInputStream) throws IOException {
+        int size = dataInputStream.readInt();
+        List<T> collection = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             collection.add(element.get());
         }
         return collection;
     }
 
-    private static <ET, T, U> void addElements(IOExceptionBiConsumer<ET, T> action, IOExceptionSupplier<ET> elementType, IOExceptionBiSupplier<T, ET> element, int size) throws IOException {
+    private static <T> void addElements(DataInputStream dataInputStream, IOExceptionUnary action) throws IOException {
+        int size = dataInputStream.readInt();
         for (int i = 0; i < size; i++) {
-            ET type = elementType.get();
-            action.apply(type, element.get(type));
+            action.apply();
         }
     }
 }
