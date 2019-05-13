@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -22,7 +23,6 @@ public class MainFile {
 //        listDir(rootFileObject);
 //        listDirWithCounters(rootFileObject);
     }
-
 
     public static void listPathRecursiveBeautiful(Path pathFrom, int startIndent) {
         if (startIndent < 0) return;
