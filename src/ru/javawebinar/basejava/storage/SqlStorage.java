@@ -1,6 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -32,14 +31,14 @@ public class SqlStorage implements Storage {
                     } else {
                         throw new StorageException("Error getting resume count");
                     }
-                });
+                }, null);
     }
 
     @Override
     public void clear() {
         new SqlHelper<Boolean>().execute(connectionFactory,
                 "DELETE FROM Contact; DELETE FROM Resume;",
-                PreparedStatement::execute);
+                PreparedStatement::execute, null);
     }
 
     @Override
@@ -54,7 +53,7 @@ public class SqlStorage implements Storage {
                     } else {
                         throw new NotExistStorageException(resume.getUuid());
                     }
-                });
+                }, resume.getUuid());
     }
 
     @Override
@@ -68,7 +67,7 @@ public class SqlStorage implements Storage {
                         resumes.add(getFromResultSet(resultSet));
                     }
                     return resumes;
-                });
+                }, null);
     }
 
     @Override
@@ -78,16 +77,8 @@ public class SqlStorage implements Storage {
                 (preparedStatement) -> {
                     preparedStatement.setString(1, resume.getUuid());
                     preparedStatement.setString(2, resume.getFullName());
-                    try {
-                        if (preparedStatement.executeUpdate() == 1) {
-                            return true;
-                        } else {
-                            throw new ExistStorageException(resume.getUuid());
-                        }
-                    } catch (SQLException e) {
-                        throw new ExistStorageException(resume.getUuid());
-                    }
-                });
+                    return preparedStatement.execute();
+                }, resume.getUuid());
     }
 
     @Override
@@ -101,7 +92,7 @@ public class SqlStorage implements Storage {
                     } else {
                         throw new NotExistStorageException(uuid);
                     }
-                });
+                }, uuid);
     }
 
     @Override
@@ -116,12 +107,12 @@ public class SqlStorage implements Storage {
                     } else {
                         throw new NotExistStorageException(uuid);
                     }
-                });
+                }, uuid);
     }
 
     private Resume getFromResultSet(ResultSet resultSet) throws SQLException {
         return new Resume(
-                resultSet.getString("uuid").trim(),
+                resultSet.getString("uuid"),
                 resultSet.getString("full_name"));
     }
 }
