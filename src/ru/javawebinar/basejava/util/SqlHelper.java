@@ -7,17 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class SqlHelper {
-    public static void execute(ConnectionFactory connectionFactory, String sql, SqlExceptionConsumer<PreparedStatement> action) {
-        try (Connection connection = connectionFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            action.accept(preparedStatement);
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
-    }
-
-    public static <R> R executeQuery(ConnectionFactory connectionFactory, String sql, SqlExceptionFunction<PreparedStatement, R> function) {
+public class SqlHelper<R> {
+    public R execute(ConnectionFactory connectionFactory, String sql, SqlExceptionFunction<PreparedStatement, R> function) {
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             return function.apply(preparedStatement);
