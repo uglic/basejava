@@ -4,14 +4,17 @@ import java.util.Arrays;
 
 public class HW12MinValue {
     static int minValue(int[] values) {
-        return Arrays.stream(values).sorted().reduce((s, i) -> {
-            if (i >= 10 || i < 0) return 0;
-            if ((s - i) % 10 != 0) {
-                return s * 10 + i;
-            } else {
-                return s;
-            }
-        }).orElse(0);
+        return Arrays.stream(values)
+                .sorted()
+                .filter(i -> i >= 0)
+                .filter(i -> i < 10)
+                .reduce((s, i) -> {
+                    if ((s - i) % 10 != 0) {
+                        return s * 10 + i;
+                    } else {
+                        return s;
+                    }
+                }).orElse(0);
     }
 
     static String printIntArray(int[] values) {
