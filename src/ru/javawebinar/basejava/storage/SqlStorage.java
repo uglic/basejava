@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -43,6 +44,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume resume) {
+        if (!isExist(connectionFactory, resume.getUuid())) {
+            throw new NotExistStorageException(resume.getUuid());
+        }
         SqlHelper.execute(connectionFactory,
                 "UPDATE Resume SET full_name = ? WHERE uuid = ?;",
                 (preparedStatement) -> {
@@ -68,6 +72,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public void save(final Resume resume) {
+        if (isExist(connectionFactory, resume.getUuid())) {
+            throw new ExistStorageException(resume.getUuid());
+        }
         SqlHelper.execute(connectionFactory,
                 "INSERT INTO Resume(uuid, full_name) VALUES(?, ?);",
                 (preparedStatement) -> {
@@ -79,6 +86,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(final String uuid) {
+        if (!isExist(connectionFactory, uuid)) {
+            throw new NotExistStorageException(uuid);
+        }
         SqlHelper.execute(connectionFactory,
                 "DELETE FROM Resume WHERE uuid = ?;",
                 (preparedStatement) -> {
@@ -111,5 +121,16 @@ public class SqlStorage implements Storage {
             throw new StorageException(e);
         }
 
+    }
+
+    private boolean isExist(final ConnectionFactory connectionFactory, final String uuid) {
+        return SqlHelper.executeQuery(connectionFactory,
+                "SELECT uuid FROM Resume WHERE uuid = ?;",
+                (preparedStatement) -> {
+                    preparedStatement.setString(1, uuid);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    return resultSet.next();
+                }
+        );
     }
 }

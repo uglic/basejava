@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 public class HW12OddOrEven {
     static List<Integer> oddOrEven(List<Integer> integers) {
         int remainder = integers.stream().reduce(Integer::sum).orElse(0) % 2;
-        Predicate<Integer> test = i -> i % 2 == (1 - remainder);
+        //Predicate<Integer> test = i -> i % 2 == (1 - remainder);
+        Predicate<Integer> test = i -> i % 2 != remainder;
         return integers.stream().filter(test).collect(Collectors.toList());
     }
 
