@@ -3,16 +3,14 @@ package ru.javawebinar.basejava;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class HW12OddOrEven {
     static List<Integer> oddOrEven(List<Integer> integers) {
-        //if (integers.stream().mapToInt(i -> i).sum() % 2 == 0) {
-        if (integers.stream().reduce(Integer::sum).orElse(0) % 2 == 0) {
-            return integers.stream().filter(i -> i % 2 == 1).collect(Collectors.toList());
-        } else {
-            return integers.stream().filter(i -> i % 2 == 0).collect(Collectors.toList());
-        }
+        int remainder = integers.stream().reduce(Integer::sum).orElse(0) % 2;
+        Predicate<Integer> test = i -> i % 2 == (1 - remainder);
+        return integers.stream().filter(test).collect(Collectors.toList());
     }
 
     public static void main(String[] args) {

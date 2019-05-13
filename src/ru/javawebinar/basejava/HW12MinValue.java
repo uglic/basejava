@@ -5,16 +5,10 @@ import java.util.Arrays;
 public class HW12MinValue {
     static int minValue(int[] values) {
         return Arrays.stream(values)
+                .distinct()
                 .sorted()
-                .filter(i -> i >= 0)
-                .filter(i -> i < 10)
-                .reduce((s, i) -> {
-                    if ((s - i) % 10 != 0) {
-                        return s * 10 + i;
-                    } else {
-                        return s;
-                    }
-                }).orElse(0);
+                .reduce((s, i) -> s * 10 + i)
+                .orElse(0);
     }
 
     static String printIntArray(int[] values) {
@@ -35,7 +29,7 @@ public class HW12MinValue {
         values = new int[]{1, 2, 3, 3, 2, 3};
         System.out.println("minValue for " + printIntArray(values) + " is " + minValue(values));
 
-        values = new int[]{10};
+        values = new int[]{9, 1};
         System.out.println("minValue for " + printIntArray(values) + " is " + minValue(values));
 
         values = new int[]{0};
