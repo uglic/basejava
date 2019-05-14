@@ -4,6 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface SqlExceptionFunction<R> {
+public interface SqlPreparedStatementFunction<R> {
     R apply(PreparedStatement t) throws SQLException;
 }

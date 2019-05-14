@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava;
 
+import ru.javawebinar.basejava.model.Contact;
+import ru.javawebinar.basejava.model.ContactTypes;
 import ru.javawebinar.basejava.model.Resume;
 
 public class ResumeTestData {
@@ -15,27 +17,27 @@ public class ResumeTestData {
     }
 
     private static Resume get(Resume resume) {
-//        resume.addContact(ContactTypes.PHONE,
-//                new Contact("+7(921) 855-0482", null)
-//        );
-//        resume.addContact(ContactTypes.SKYPE,
-//                new Contact("grigory.kislin", "skype:grigory.kislin")
-//        );
-//        resume.addContact(ContactTypes.EMAIL,
-//                new Contact("gkislin@yandex.ru", "mailto:gkislin@yandex.ru")
-//        );
-//        resume.addContact(ContactTypes.LINKEDIN,
-//                new Contact("Профиль LinkedIn", "https://www.linkedin.com/in/gkislin")
-//        );
-//        resume.addContact(ContactTypes.GITHUB,
-//                new Contact("Профиль GitHub", "https://github.com/gkislin")
-//        );
-//        resume.addContact(ContactTypes.STACKOVERFLOW,
-//                new Contact("Профиль Stackoverflow", "https://stackoverflow.com/users/548473")
-//        );
-//        resume.addContact(ContactTypes.HOMESITE,
-//                new Contact("Домашняя страница", "http://gkislin.ru/")
-//        );
+        resume.addContact(ContactTypes.PHONE,
+                new Contact("+7(921) 855-0482", null)
+        );
+        resume.addContact(ContactTypes.SKYPE,
+                new Contact("grigory.kislin", "skype:grigory.kislin")
+        );
+        resume.addContact(ContactTypes.EMAIL,
+                new Contact("gkislin@yandex.ru", "mailto:gkislin@yandex.ru")
+        );
+        resume.addContact(ContactTypes.LINKEDIN,
+                new Contact("Профиль LinkedIn", "https://www.linkedin.com/in/gkislin")
+        );
+        resume.addContact(ContactTypes.GITHUB,
+                new Contact("Профиль GitHub", "https://github.com/gkislin")
+        );
+        resume.addContact(ContactTypes.STACKOVERFLOW,
+                new Contact("Профиль Stackoverflow", "https://stackoverflow.com/users/548473")
+        );
+        resume.addContact(ContactTypes.HOMESITE,
+                new Contact("Домашняя страница", "http://gkislin.ru/")
+        );
 //        resume.addSection(SectionTypes.OBJECTIVE,
 //                new SimpleTextSection(
 //                        "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"

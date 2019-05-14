@@ -4,10 +4,11 @@ CREATE TABLE resume (
 );
 
 CREATE TABLE contact (
-  id          SERIAL,
-  resume_uuid CHAR(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
-  type        TEXT     NOT NULL,
-  value       TEXT     NOT NULL
+  id          SERIAL      PRIMARY KEY NOT NULL,
+  resume_uuid VARCHAR(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
+  type        TEXT        NOT NULL,
+  name        TEXT        NOT NULL,
+  url         TEXT        NOT NULL
 );
 CREATE UNIQUE INDEX contact_uuid_type_index
   ON contact (resume_uuid, type);

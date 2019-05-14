@@ -15,12 +15,23 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <R> R execute(String sql, SqlExceptionFunction<R> function, String uuid) {
-        try (Connection connection = connectionFactory.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            return function.apply(preparedStatement);
+    public <R> R execute(String sql, SqlPreparedStatementFunction<R> function, String uuid) {
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            return function.apply(ps);
         } catch (SQLException e) {
             throw convertSqlException(e, uuid);
+        }
+    }
+
+    public <R> R transactionalExecute(SqlConnectionFunction<R> function) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            conn.setAutoCommit(false);
+            R result = function.apply(conn);
+            conn.commit();
+            return result;
+        } catch (SQLException e) {
+            throw new StorageException(e);
         }
     }
 
