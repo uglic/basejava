@@ -24,12 +24,17 @@ public class SqlHelper {
         }
     }
 
-    public <R> R transactionalExecute(SqlConnectionFunction<R> function) {
+    public <R> R transactionalExecute(SqlConnectionFunction<R> function, String uuid) {
         try (Connection conn = connectionFactory.getConnection()) {
-            conn.setAutoCommit(false);
-            R result = function.apply(conn);
-            conn.commit();
-            return result;
+            try {
+                conn.setAutoCommit(false);
+                R result = function.apply(conn);
+                conn.commit();
+                return result;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw convertSqlException(e, uuid);
+            }
         } catch (SQLException e) {
             throw new StorageException(e);
         }
