@@ -8,8 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class SqlHelper<R> {
-    public R execute(ConnectionFactory connectionFactory, String sql, SqlExceptionFunction<R> function, String uuid) {
+public class SqlHelper {
+    private final ConnectionFactory connectionFactory;
+
+    public SqlHelper(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
+    public <R> R execute(String sql, SqlExceptionFunction<R> function, String uuid) {
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             return function.apply(preparedStatement);
@@ -18,7 +24,7 @@ public class SqlHelper<R> {
         }
     }
 
-    public StorageException convertSqlException(SQLException e, String message) {
+    public static StorageException convertSqlException(SQLException e, String message) {
         if (e instanceof PSQLException) {
             switch (e.getSQLState()) {
                 case "23505": //  postgres:23505:unique_violation

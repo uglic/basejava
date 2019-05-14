@@ -1,5 +1,8 @@
 package ru.javawebinar.basejava;
 
+import ru.javawebinar.basejava.storage.SqlStorage;
+import ru.javawebinar.basejava.storage.Storage;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,13 +11,10 @@ import java.util.Properties;
 
 public class Config {
     private static final File PROPERTIES_FILE = new File("config" + System.getProperty("file.separator") + "resumes.properties");
-    private static final Properties PROPERTIES = new Properties();
     private static final Config INSTANCE = new Config();
 
     private final String storageDir;
-    private final String databaseUrl;
-    private final String databaseUser;
-    private final String databasePassword;
+    private final Storage sqlStorage;
 
     public static Config get() {
         return INSTANCE;
@@ -22,14 +22,15 @@ public class Config {
 
     private Config() {
         try (InputStream is = new FileInputStream(PROPERTIES_FILE)) {
-            PROPERTIES.load(is);
-            storageDir = PROPERTIES.getProperty("storage.dir").replace("/", System.getProperty("file.separator"));
-            databaseUrl = PROPERTIES.getProperty("db.url");
-            databaseUser = PROPERTIES.getProperty("db.user");
-            databasePassword = PROPERTIES.getProperty("db.password"); // bad practice to store passwords in String (cannot clear it), see java.io.Console.readPassword for example
-
+            Properties props = new Properties();
+            props.load(is);
+            storageDir = props.getProperty("storage.dir").replace("/", System.getProperty("file.separator"));
+            sqlStorage = new SqlStorage(
+                    props.getProperty("db.url"),
+                    props.getProperty("db.user"),
+                    props.getProperty("db.password") // bad practice to store passwords in String (cannot clear it), see java.io.Console.readPassword for example
+            );
         } catch (IOException e) {
-            e.printStackTrace();
             throw new IllegalStateException("Invalid config file " + PROPERTIES_FILE.getAbsolutePath());
         }
     }
@@ -38,15 +39,7 @@ public class Config {
         return storageDir;
     }
 
-    public String getDatabaseUrl() {
-        return databaseUrl;
-    }
-
-    public String getDatabaseUser() {
-        return databaseUser;
-    }
-
-    public String getDatabasePassword() {
-        return databasePassword;
+    public Storage getSqlStorage() {
+        return sqlStorage;
     }
 }
