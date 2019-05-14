@@ -1,8 +1,8 @@
-package ru.javawebinar.basejava.util;
+package ru.javawebinar.basejava.sql;
 
+import org.postgresql.util.PSQLException;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
-import ru.javawebinar.basejava.sql.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,13 +14,20 @@ public class SqlHelper<R> {
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             return function.apply(preparedStatement);
         } catch (SQLException e) {
+            throw convertSqlException(e, uuid);
+        }
+    }
+
+    public StorageException convertSqlException(SQLException e, String message) {
+        if (e instanceof PSQLException) {
             switch (e.getSQLState()) {
                 case "23505": //  postgres:23505:unique_violation
-                    throw new ExistStorageException(uuid == null ?"unknown": uuid);
+                    return new ExistStorageException(message == null ? "unknown" : message);
                 default:
-                    throw new StorageException(e);
+                    return new StorageException(e);
             }
         }
+        return new StorageException(e);
     }
 }
 
