@@ -2,9 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
-import ru.javawebinar.basejava.model.Contact;
-import ru.javawebinar.basejava.model.ContactTypes;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.SqlHelper;
 import ru.javawebinar.basejava.sql.SqlPreparedStatementConsumer;
 
@@ -48,8 +46,10 @@ public class SqlStorage implements Storage {
                                 stmt.setString(2, resume.getUuid());
                                 if (stmt.executeUpdate() == 0) throw new NotExistStorageException(resume.getUuid());
                             });
-                    deleteOldContactsFromResume(conn, resume);
-                    insertContactsForResume(conn, resume);
+                    deleteOldContacts(conn, resume);
+                    deleteOldSections(conn, resume);
+                    insertContacts(conn, resume);
+                    insertSections(conn, resume);
                 }, resume.getUuid());
     }
 
@@ -63,7 +63,8 @@ public class SqlStorage implements Storage {
                                 stmt.setString(2, resume.getFullName());
                                 stmt.execute();
                             });
-                    insertContactsForResume(conn, resume);
+                    insertContacts(conn, resume);
+                    insertSections(conn, resume);
                 }, resume.getUuid());
     }
 
@@ -122,7 +123,7 @@ public class SqlStorage implements Storage {
         return resume;
     }
 
-    private void deleteOldContactsFromResume(final Connection conn, final Resume resume) throws SQLException {
+    private void deleteOldContacts(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("DELETE FROM Contact WHERE (resume_uuid = ?)",
                 conn, stmt -> {
                     stmt.setString(1, resume.getUuid());
@@ -130,7 +131,15 @@ public class SqlStorage implements Storage {
                 });
     }
 
-    private void insertContactsForResume(final Connection conn, final Resume resume) throws SQLException {
+    private void deleteOldSections(final Connection conn, final Resume resume) throws SQLException {
+        tryPrepared("DELETE FROM Section WHERE (resume_uuid = ?)",
+                conn, stmt -> {
+                    stmt.setString(1, resume.getUuid());
+                    stmt.execute();
+                });
+    }
+
+    private void insertContacts(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("INSERT INTO Contact(name, url, resume_uuid, type) VALUES(?, ?, ?, ?);",
                 conn, stmt -> {
                     for (Map.Entry<ContactTypes, Contact> contact : resume.getContacts().entrySet()) {
@@ -138,6 +147,35 @@ public class SqlStorage implements Storage {
                         stmt.setString(2, contact.getValue().getUrl());
                         stmt.setString(3, resume.getUuid());
                         stmt.setString(4, contact.getKey().name());
+                        stmt.addBatch();
+                    }
+                    stmt.executeBatch();
+                });
+    }
+
+    private void insertSections(final Connection conn, final Resume resume) throws SQLException {
+        tryPrepared("INSERT INTO Section(resume_uuid, type, content) VALUES(?, ?, ?);",
+                conn, stmt -> {
+                    for (Map.Entry<SectionTypes, AbstractSection> section : resume.getSections().entrySet()) {
+                        SectionTypes sectionType = section.getKey();
+                        stmt.setString(1, resume.getUuid());
+                        stmt.setString(2, section.getKey().name());
+                        switch (sectionType) {
+                            case OBJECTIVE:
+                            case PERSONAL:
+                                SimpleTextSection sectionTyped = (SimpleTextSection) section.getValue();
+                                stmt.setString(3, sectionTyped.getContent());
+                                break;
+                            case ACHIEVEMENT:
+                            case QUALIFICATIONS:
+                                //section = new BulletedTextListSection();
+                                break;
+                            case EXPERIENCE:
+                            case EDUCATION:
+                                throw new StorageException("TODO::Unknown section: " + sectionType);
+                            default:
+                                throw new StorageException("Unknown section: " + sectionType);
+                        }
                         stmt.addBatch();
                     }
                     stmt.executeBatch();
