@@ -8,6 +8,7 @@ import ru.javawebinar.basejava.sql.SqlPreparedStatementFunction;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -154,8 +155,8 @@ public class SqlStorage implements Storage {
                                     break;
                                 case ACHIEVEMENT:
                                 case QUALIFICATIONS:
-                                    section = null;
-                                    //section = new BulletedTextListSection();
+                                    List<String> items = Arrays.asList(rs.getString("content").split("\n"));
+                                    section = new BulletedTextListSection(items);
                                     break;
                                 case EXPERIENCE:
                                 case EDUCATION:
@@ -213,12 +214,16 @@ public class SqlStorage implements Storage {
                         switch (sectionType) {
                             case OBJECTIVE:
                             case PERSONAL:
-                                SimpleTextSection sectionTyped = (SimpleTextSection) section.getValue();
-                                stmt.setString(3, sectionTyped.getContent());
+                                stmt.setString(3, ((SimpleTextSection) section.getValue()).getContent());
                                 break;
                             case ACHIEVEMENT:
                             case QUALIFICATIONS:
-                                //section = new BulletedTextListSection();
+                                StringBuilder builder = new StringBuilder();
+                                ((BulletedTextListSection) section.getValue()).getItems().forEach(row -> {
+                                    builder.append(row);
+                                    builder.append('\n');
+                                });
+                                stmt.setString(3, builder.toString());
                                 break;
                             case EXPERIENCE:
                             case EDUCATION:

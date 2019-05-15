@@ -8,11 +8,11 @@ public class ResumeTestData {
     }
 
     public static Resume get(String uuid, String fullName) {
-        return get(new Resume(uuid, fullName), ContactTypes.values().length, 2); //SectionTypes.values().length
+        return get(new Resume(uuid, fullName), ContactTypes.values().length, 4); //SectionTypes.values().length
     }
 
     public static Resume get(String fullName) {
-        return get(new Resume(fullName), ContactTypes.values().length, 2); //SectionTypes.values().length)
+        return get(new Resume(fullName), ContactTypes.values().length, 4); //SectionTypes.values().length)
     }
 
     public static Resume get(String uuid, String fullName, int contactsCount, int sectionsCount) {
