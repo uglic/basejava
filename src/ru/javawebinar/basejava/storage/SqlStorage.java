@@ -40,7 +40,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(final Resume resume) {
-        sqlHelper.<Boolean>transactionalExecute(
+        sqlHelper.transactionalExecute(
                 conn -> {
                     tryPrepared("UPDATE Resume SET full_name = ? WHERE uuid = ?;",
                             conn, stmt -> {
@@ -49,13 +49,12 @@ public class SqlStorage implements Storage {
                                 if (stmt.executeUpdate() == 0) throw new NotExistStorageException(resume.getUuid());
                             });
                     deleteOldThenInsertNewResumeContacts(conn, resume);
-                    return null;
                 }, resume.getUuid());
     }
 
     @Override
     public void save(final Resume resume) {
-        sqlHelper.<Boolean>transactionalExecute(
+        sqlHelper.transactionalExecute(
                 conn -> {
                     tryPrepared("INSERT INTO Resume(uuid, full_name) VALUES(?, ?);",
                             conn, stmt -> {
@@ -64,7 +63,6 @@ public class SqlStorage implements Storage {
                                 stmt.execute();
                             });
                     deleteOldThenInsertNewResumeContacts(conn, resume);
-                    return null;
                 }, resume.getUuid());
     }
 
