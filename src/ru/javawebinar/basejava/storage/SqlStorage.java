@@ -48,7 +48,8 @@ public class SqlStorage implements Storage {
                                 stmt.setString(2, resume.getUuid());
                                 if (stmt.executeUpdate() == 0) throw new NotExistStorageException(resume.getUuid());
                             });
-                    deleteOldThenInsertNewResumeContacts(conn, resume);
+                    deleteOldContactsFromResume(conn, resume);
+                    insertContactsForResume(conn, resume);
                 }, resume.getUuid());
     }
 
@@ -62,7 +63,7 @@ public class SqlStorage implements Storage {
                                 stmt.setString(2, resume.getFullName());
                                 stmt.execute();
                             });
-                    deleteOldThenInsertNewResumeContacts(conn, resume);
+                    insertContactsForResume(conn, resume);
                 }, resume.getUuid());
     }
 
@@ -121,12 +122,15 @@ public class SqlStorage implements Storage {
         return resume;
     }
 
-    private void deleteOldThenInsertNewResumeContacts(final Connection conn, final Resume resume) throws SQLException {
+    private void deleteOldContactsFromResume(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("DELETE FROM Contact WHERE (resume_uuid = ?)",
                 conn, stmt -> {
                     stmt.setString(1, resume.getUuid());
                     stmt.execute();
                 });
+    }
+
+    private void insertContactsForResume(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("INSERT INTO Contact(name, url, resume_uuid, type) VALUES(?, ?, ?, ?);",
                 conn, stmt -> {
                     for (Map.Entry<ContactTypes, Contact> contact : resume.getContacts().entrySet()) {
