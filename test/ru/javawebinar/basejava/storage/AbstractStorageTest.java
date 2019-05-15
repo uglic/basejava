@@ -21,13 +21,13 @@ public abstract class AbstractStorageTest {
     private static final String UUID_1 = "7de882da-02f2-4d16-8daa-60660aaf";
     private static final String UUID_NEW = "uuidNew";
     private static final String UUID_TO_CHECK_EXISTING = UUID_1;
+    private static final int CONTACTS_FOR_UUID_1 = 3;
 
-    private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Abab Ababov");
+    private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Abab Ababov", CONTACTS_FOR_UUID_1);
     private final Resume RESUME_EXIST_2 = ResumeTestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Baba Babov");
     private final Resume RESUME_EXIST_3 = ResumeTestData.get("a97b3ac3-3817-4c3f-8a5f-17849731", "Caca Cavov");
     private final Resume RESUME_EXIST_NEW = ResumeTestData.get(UUID_NEW, "Nemo Captain");
 
-    @SuppressWarnings("WeakerAccess")
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
     }
@@ -54,7 +54,21 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName");
+        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1);
+        storage.update(newResume);
+        assertEquals(newResume, storage.get(UUID_1));
+    }
+
+    @Test
+    public void updateLessContacts() {
+        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 - 1);
+        storage.update(newResume);
+        assertEquals(newResume, storage.get(UUID_1));
+    }
+
+    @Test
+    public void updateMoreContacts() {
+        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 + 1);
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
     }

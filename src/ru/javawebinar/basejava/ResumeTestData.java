@@ -9,35 +9,56 @@ public class ResumeTestData {
     }
 
     public static Resume get(String uuid, String fullName) {
-        return get(new Resume(uuid, fullName));
+        return get(new Resume(uuid, fullName), ContactTypes.values().length);
     }
 
     public static Resume get(String fullName) {
-        return get(new Resume(fullName));
+        return get(new Resume(fullName), ContactTypes.values().length);
     }
 
-    private static Resume get(Resume resume) {
-        resume.addContact(ContactTypes.PHONE,
-                new Contact("+7(921) 855-0482", null)
-        );
-        resume.addContact(ContactTypes.SKYPE,
-                new Contact("grigory.kislin", "skype:grigory.kislin")
-        );
-        resume.addContact(ContactTypes.EMAIL,
-                new Contact("gkislin@yandex.ru", "mailto:gkislin@yandex.ru")
-        );
-        resume.addContact(ContactTypes.LINKEDIN,
-                new Contact("Профиль LinkedIn", "https://www.linkedin.com/in/gkislin")
-        );
-        resume.addContact(ContactTypes.GITHUB,
-                new Contact("Профиль GitHub", "https://github.com/gkislin")
-        );
-        resume.addContact(ContactTypes.STACKOVERFLOW,
-                new Contact("Профиль Stackoverflow", "https://stackoverflow.com/users/548473")
-        );
-        resume.addContact(ContactTypes.HOMESITE,
-                new Contact("Домашняя страница", "http://gkislin.ru/")
-        );
+    public static Resume get(String uuid, String fullName, int contactsCount) {
+        return get(new Resume(uuid, fullName), contactsCount);
+    }
+
+    public static Resume get(String fullName, int contactsCount) {
+        return get(new Resume(fullName), contactsCount);
+    }
+
+
+    private static Resume get(Resume resume, int contactsCount) {
+        int contacts = 0;
+
+        if (contactsCount > ContactTypes.values().length || contactsCount < 0) {
+            throw new IllegalArgumentException("Max contacts count is " + ContactTypes.values().length);
+        }
+        if (contacts++ < contactsCount)
+            resume.addContact(ContactTypes.PHONE,
+                    new Contact("+7(921) 855-0482", null)
+            );
+        if (contacts++ < contactsCount)
+            resume.addContact(ContactTypes.SKYPE,
+                    new Contact("grigory.kislin", "skype:grigory.kislin")
+            );
+        if (contacts++ < contactsCount)
+            resume.addContact(ContactTypes.EMAIL,
+                    new Contact("gkislin@yandex.ru", "mailto:gkislin@yandex.ru")
+            );
+        if (contacts++ < contactsCount)
+            resume.addContact(ContactTypes.LINKEDIN,
+                    new Contact("Профиль LinkedIn", "https://www.linkedin.com/in/gkislin")
+            );
+        if (contacts++ < contactsCount)
+            resume.addContact(ContactTypes.GITHUB,
+                    new Contact("Профиль GitHub", "https://github.com/gkislin")
+            );
+        if (contacts++ < contactsCount)
+            resume.addContact(ContactTypes.STACKOVERFLOW,
+                    new Contact("Профиль Stackoverflow", "https://stackoverflow.com/users/548473")
+            );
+        if (contacts < contactsCount)
+            resume.addContact(ContactTypes.HOMESITE,
+                    new Contact("Домашняя страница", "http://gkislin.ru/")
+            );
 //        resume.addSection(SectionTypes.OBJECTIVE,
 //                new SimpleTextSection(
 //                        "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"
