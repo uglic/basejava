@@ -18,13 +18,13 @@ public abstract class AbstractStorageTest {
 
     protected final Storage storage;
 
-    private static final String UUID_1 = "uuid1";
+    private static final String UUID_1 = "7de882da-02f2-4d16-8daa-60660aaf";
     private static final String UUID_NEW = "uuidNew";
     private static final String UUID_TO_CHECK_EXISTING = UUID_1;
 
     private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Abab Ababov");
-    private final Resume RESUME_EXIST_2 = ResumeTestData.get("uuid2", "Baba Babov");
-    private final Resume RESUME_EXIST_3 = ResumeTestData.get("uuid3", "Caca Cavov");
+    private final Resume RESUME_EXIST_2 = ResumeTestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Baba Babov");
+    private final Resume RESUME_EXIST_3 = ResumeTestData.get("a97b3ac3-3817-4c3f-8a5f-17849731", "Caca Cavov");
     private final Resume RESUME_EXIST_NEW = ResumeTestData.get(UUID_NEW, "Nemo Captain");
 
     @SuppressWarnings("WeakerAccess")

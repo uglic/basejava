@@ -62,12 +62,18 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.execute("SELECT uuid, full_name FROM Resume ORDER BY full_name, uuid;",
+        return sqlHelper.execute(getSqlGet() + " ORDER BY full_name, uuid",
                 (stmt) -> {
                     ResultSet rs = stmt.executeQuery();
                     List<Resume> resumes = new ArrayList<>();
-                    while (rs.next()) {
-                        resumes.add(get(rs.getString("uuid")));
+                    Resume resume;
+                    if (rs.next()) {
+                        boolean hasNext;
+                        do {
+                            resume = getResumeHeadFromRs(rs);
+                            hasNext = fillResumeFromRs(resume, rs);
+                            resumes.add(resume);
+                        } while (hasNext);
                     }
                     return resumes;
                 }, null);
@@ -95,32 +101,27 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(final String uuid) {
-        return sqlHelper.execute("SELECT" +
-                        " Resume.uuid uuid," +
-                        " Resume.full_name, " +
-                        " Contact.type," +
-                        " Contact.name," +
-                        " Contact.url," +
-                        " Contact.id contact_id" +
-                        " FROM " +
-                        " Resume LEFT JOIN Contact" +
-                        " ON Resume.uuid = Contact.resume_uuid" +
-                        " WHERE Resume.uuid = ?;",
+        return sqlHelper.execute(getSqlGet() + " WHERE Resume.uuid = ?;",
                 (stmt) -> {
                     stmt.setString(1, uuid);
                     ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
-                        return getResumeFromResultSet(rs);
+                        Resume resume = getResumeHeadFromRs(rs);
+                        fillResumeFromRs(resume, rs);
+                        return resume;
                     } else {
                         throw new NotExistStorageException(uuid);
                     }
                 }, uuid);
     }
 
-    private Resume getResumeFromResultSet(ResultSet rs) throws SQLException {
-        Resume resume = new Resume(
-                rs.getString("uuid"),
-                rs.getString("full_name"));
+    private Resume getResumeHeadFromRs(ResultSet rs) throws SQLException {
+        return new Resume(rs.getString("uuid"), rs.getString("full_name"));
+    }
+
+    private boolean fillResumeFromRs(Resume resume, ResultSet rs) throws SQLException {
+        boolean isNextExist;
+        String uuid = rs.getString("uuid");
         do {
             if (rs.getString("type") != null) {
                 resume.addContact(
@@ -129,8 +130,8 @@ public class SqlStorage implements Storage {
                                 rs.getString("name"),
                                 rs.getString("url")));
             }
-        } while (rs.next());
-        return resume;
+        } while ((isNextExist = rs.next()) && uuid.equals(rs.getString("uuid")));
+        return isNextExist;
     }
 
     private void changeResumeTransactional(Connection conn, Resume resume, DataChangeType type) throws SQLException {
@@ -169,5 +170,18 @@ public class SqlStorage implements Storage {
             }
             stmt.executeBatch();
         }
+    }
+
+    private String getSqlGet() {
+        return "SELECT" +
+                " Resume.uuid uuid," +
+                " Resume.full_name, " +
+                " Contact.type," +
+                " Contact.name," +
+                " Contact.url," +
+                " Contact.id contact_id" +
+                " FROM " +
+                " Resume LEFT JOIN Contact" +
+                " ON Resume.uuid = Contact.resume_uuid";
     }
 }
