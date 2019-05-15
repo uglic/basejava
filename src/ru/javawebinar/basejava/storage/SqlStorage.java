@@ -49,8 +49,7 @@ public class SqlStorage implements Storage {
                     });
             addResumeContacts(conn, resume);
             deleteResumeContacts(conn, resume);
-            updateResumeContacts(conn, resume,
-                    "UPDATE Contact SET (name, url) = (?, ?) WHERE (resume_uuid = ?) AND (type = ?);");
+            updateResumeContacts(conn, resume, getSqlUpdateContact());
             return null;
         }, resume.getUuid());
     }
@@ -63,8 +62,7 @@ public class SqlStorage implements Storage {
                         setStmtParamsForResume(stmt, resume);
                         stmt.execute();
                     });
-            updateResumeContacts(conn, resume,
-                    "INSERT INTO Contact(name, url, resume_uuid, type) VALUES(?, ?, ?, ?);");
+            updateResumeContacts(conn, resume, getSqlInsertContact());
             return null;
         }, resume.getUuid());
     }
@@ -187,7 +185,7 @@ public class SqlStorage implements Storage {
                 stmt.setString(1, resume.getUuid());
                 int i = 0;
                 for (ContactTypes type : unusedTypes) {
-                    stmt.setString(i++ + 2, type.name());
+                    stmt.setString(2 + i++, type.name());
                 }
                 stmt.execute();
             });
@@ -203,8 +201,7 @@ public class SqlStorage implements Storage {
             }
         }
         if (temporaryResume.getContacts().size() > 0) {
-            updateResumeContacts(conn, temporaryResume,
-                    "INSERT INTO Contact(name, url, resume_uuid, type) VALUES(?, ?, ?, ?);");
+            updateResumeContacts(conn, temporaryResume, getSqlInsertContact());
         }
     }
 
@@ -219,6 +216,14 @@ public class SqlStorage implements Storage {
                 " FROM " +
                 " Resume LEFT JOIN Contact" +
                 " ON Resume.uuid = Contact.resume_uuid";
+    }
+
+    private String getSqlInsertContact() {
+        return "INSERT INTO Contact(name, url, resume_uuid, type) VALUES(?, ?, ?, ?);";
+    }
+
+    private String getSqlUpdateContact() {
+        return "UPDATE Contact SET (name, url) = (?, ?) WHERE (resume_uuid = ?) AND (type = ?);";
     }
 
     private void tryPrepared(String sql, Connection conn, SqlPreparedStatementConsumer action) throws SQLException {
