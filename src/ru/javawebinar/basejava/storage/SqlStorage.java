@@ -6,7 +6,7 @@ import ru.javawebinar.basejava.model.Contact;
 import ru.javawebinar.basejava.model.ContactTypes;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
-import ru.javawebinar.basejava.sql.SqlPreparedStatementFunction;
+import ru.javawebinar.basejava.sql.SqlPreparedStatementConsumer;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class SqlStorage implements Storage {
     public int size() {
         return sqlHelper.<Integer>execute(
                 "SELECT COUNT(uuid) c1 FROM Resume;",
-                (stmt) -> {
+                stmt -> {
                     ResultSet rs = stmt.executeQuery();
                     if (!rs.next()) throw new StorageException("Error getting resume count");
                     return rs.getInt(1);
@@ -42,13 +42,11 @@ public class SqlStorage implements Storage {
     @Override
     public void update(final Resume resume) {
         sqlHelper.<Boolean>transactionalExecute(conn -> {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE Resume SET full_name = ? WHERE uuid = ?;")) {
-                setStmtParamsForResume(stmt, resume);
-                if (stmt.executeUpdate() == 0) {
-                    throw new NotExistStorageException(resume.getUuid());
-                }
-            }
+            tryPrepared("UPDATE Resume SET full_name = ? WHERE uuid = ?;",
+                    conn, stmt -> {
+                        setStmtParamsForResume(stmt, resume);
+                        if (stmt.executeUpdate() == 0) throw new NotExistStorageException(resume.getUuid());
+                    });
             addResumeContacts(conn, resume);
             deleteResumeContacts(conn, resume);
             updateResumeContacts(conn, resume,
@@ -60,11 +58,11 @@ public class SqlStorage implements Storage {
     @Override
     public void save(final Resume resume) {
         sqlHelper.<Boolean>transactionalExecute(conn -> {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO Resume(full_name, uuid) VALUES(?, ?);")) {
-                setStmtParamsForResume(stmt, resume);
-                stmt.execute();
-            }
+            tryPrepared("INSERT INTO Resume(full_name, uuid) VALUES(?, ?);",
+                    conn, stmt -> {
+                        setStmtParamsForResume(stmt, resume);
+                        stmt.execute();
+                    });
             updateResumeContacts(conn, resume,
                     "INSERT INTO Contact(name, url, resume_uuid, type) VALUES(?, ?, ?, ?);");
             return null;
@@ -74,7 +72,7 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         return sqlHelper.execute(getSqlGet() + " ORDER BY full_name, uuid",
-                (stmt) -> {
+                stmt -> {
                     ResultSet rs = stmt.executeQuery();
                     List<Resume> resumes = new ArrayList<>();
                     Resume resume;
@@ -93,21 +91,21 @@ public class SqlStorage implements Storage {
     @Override
     public void delete(final String uuid) {
         sqlHelper.<Boolean>transactionalExecute(conn -> {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "DELETE FROM Resume WHERE uuid = ?;")) {
-                stmt.setString(1, uuid);
-                if (stmt.executeUpdate() == 0) {
-                    throw new NotExistStorageException(uuid);
-                }
-                return true;
-            }
+            tryPrepared("DELETE FROM Resume WHERE uuid = ?;",
+                    conn, stmt -> {
+                        stmt.setString(1, uuid);
+                        if (stmt.executeUpdate() == 0) {
+                            throw new NotExistStorageException(uuid);
+                        }
+                    });
+            return true;
         }, uuid);
     }
 
     @Override
     public Resume get(final String uuid) {
         return sqlHelper.execute(getSqlGet() + " WHERE Resume.uuid = ?;",
-                (stmt) -> {
+                stmt -> {
                     stmt.setString(1, uuid);
                     ResultSet rs = stmt.executeQuery();
                     if (!rs.next()) throw new NotExistStorageException(uuid);
@@ -142,7 +140,7 @@ public class SqlStorage implements Storage {
     }
 
     private void updateResumeContacts(Connection conn, Resume resume, String sql) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        tryPrepared(sql, conn, stmt -> {
             stmt.setString(3, resume.getUuid());
             for (Map.Entry<ContactTypes, Contact> contact : resume.getContacts().entrySet()) {
                 stmt.setString(1, contact.getValue().getName());
@@ -151,7 +149,7 @@ public class SqlStorage implements Storage {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-        }
+        });
     }
 
     private EnumSet<ContactTypes> getUnsedResumeContacts(Resume resume) {
@@ -185,14 +183,14 @@ public class SqlStorage implements Storage {
                 builderSql.append(",?");
             }
             builderSql.append("));");
-            try (PreparedStatement stmt = conn.prepareStatement(builderSql.toString())) {
+            tryPrepared(builderSql.toString(), conn, stmt -> {
                 stmt.setString(1, resume.getUuid());
                 int i = 0;
                 for (ContactTypes type : unusedTypes) {
                     stmt.setString(i++ + 2, type.name());
                 }
                 stmt.execute();
-            }
+            });
         }
     }
 
@@ -223,9 +221,9 @@ public class SqlStorage implements Storage {
                 " ON Resume.uuid = Contact.resume_uuid";
     }
 
-    private <R> R tryPrepared(Connection conn, String sql, SqlPreparedStatementFunction<R> action) throws SQLException {
+    private void tryPrepared(String sql, Connection conn, SqlPreparedStatementConsumer action) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            return action.apply(stmt);
+            action.accept(stmt);
         }
     }
 }
