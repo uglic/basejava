@@ -6,6 +6,7 @@ import ru.javawebinar.basejava.exception.StorageException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SqlHelper {
@@ -17,7 +18,7 @@ public class SqlHelper {
 
     public <R> R execute(String sql, SqlPreparedStatementFunction<R> function, String uuid) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT)) {
             return function.apply(ps);
         } catch (SQLException e) {
             throw convertSqlException(e, uuid);
