@@ -25,12 +25,13 @@ public class SqlHelper {
         }
     }
 
-    public void transactionalExecute(SqlConnectionConsumer function, String uuid) {
+    public <R> R transactionalExecute(SqlConnectionFunction<R> function, String uuid) {
         try (Connection conn = connectionFactory.getConnection()) {
             try {
                 conn.setAutoCommit(false);
-                function.accept(conn);
+                R result = function.apply(conn);
                 conn.commit();
+                return result;
             } catch (SQLException e) {
                 conn.rollback();
                 throw convertSqlException(e, uuid);

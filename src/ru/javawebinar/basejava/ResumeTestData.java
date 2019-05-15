@@ -16,11 +16,11 @@ public class ResumeTestData {
     }
 
     public static Resume get(String uuid, String fullName, int contactsCount, int sectionsCount) {
-        return get(new Resume(uuid, fullName), contactsCount, 2); //sectionsCount
+        return get(new Resume(uuid, fullName), contactsCount, sectionsCount); //sectionsCount
     }
 
     public static Resume get(String fullName, int contactsCount, int sectionsCount) {
-        return get(new Resume(fullName), contactsCount, 2); //sectionsCount
+        return get(new Resume(fullName), contactsCount, sectionsCount); //sectionsCount
     }
 
     private static Resume get(Resume resume, int contactsCount, int sectionsCount) {
