@@ -22,7 +22,7 @@ public abstract class AbstractStorageTest {
     private static final String UUID_NEW = "uuidNew";
     private static final String UUID_TO_CHECK_EXISTING = UUID_1;
     private static final int CONTACTS_FOR_UUID_1 = 3;
-    private static final int SECTIONS_FOR_UUID_1 = 3;
+    private static final int SECTIONS_FOR_UUID_1 = 4;
 
     private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Abab Ababov", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
     private final Resume RESUME_EXIST_2 = ResumeTestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Baba Babov", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
@@ -77,13 +77,6 @@ public abstract class AbstractStorageTest {
     @Test
     public void updateLessSections() {
         Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1 - 1);
-        storage.update(newResume);
-        assertEquals(newResume, storage.get(UUID_1));
-    }
-
-    @Test
-    public void updateMoreSections() {
-        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1 + 1);
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
     }
