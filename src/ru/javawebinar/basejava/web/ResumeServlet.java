@@ -11,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class ResumeServlet extends javax.servlet.http.HttpServlet {
     @Override
@@ -24,7 +23,6 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html; charset=utf-8");
-        PrintWriter w = response.getWriter();
         String uuid = request.getParameter("uuid");
         if (uuid == null) {
             response.getWriter().write(getResumeListPage());
