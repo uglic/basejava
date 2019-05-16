@@ -74,30 +74,23 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.transactionalExecute(
                 conn -> {
-                    final List<Resume> resumes = new ArrayList<>();
-                    tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid ORDER BY full_name, uuid;",
-                            conn, stmt -> {
-                                final ResultSet rs = stmt.executeQuery();
-                                if (rs.next()) {
-                                    Resume resume;
-                                    while ((resume = getResumeWithContactsOnlyFromRs(rs)) != null) {
-                                        resumes.add(resume);
-                                    }
-                                }
-                                return resumes;
-                            });
-                    resumes.sort(Comparator.comparing(Resume::getUuid));
+                    final List<Resume> resumes = getAllResumesWithContactsOnly(conn);
                     tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
                             conn, stmt -> {
                                 final ResultSet rs = stmt.executeQuery();
+                                final Map<String, Resume> mapped = new HashMap<>();
+                                for (Resume resume : resumes) {
+                                    mapped.put(resume.getUuid(), resume);
+                                }
                                 if (rs.next()) {
-                                    for (Resume resume : resumes) {
-                                        readSingleResumeSectionsFromRs(rs, resume);
+                                    List<String> uuids = new ArrayList<>(mapped.keySet());
+                                    Collections.sort(uuids);
+                                    for (String uuid : uuids) {
+                                        readSingleResumeSectionsFromRs(rs, mapped.get(uuid));
                                     }
                                 }
                                 return resumes;
                             });
-                    resumes.sort(Resume::compareTo);
                     return resumes;
                 }, null);
     }
@@ -143,6 +136,21 @@ public class SqlStorage implements Storage {
             }
         } while (rs.next() && uuid.equals(rs.getString("uuid")));
         return resume;
+    }
+
+    private List<Resume> getAllResumesWithContactsOnly(final Connection conn) throws SQLException {
+        final List<Resume> resumes = new ArrayList<>();
+        return tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid ORDER BY full_name, uuid;",
+                conn, stmt -> {
+                    final ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        Resume resume;
+                        while ((resume = getResumeWithContactsOnlyFromRs(rs)) != null) {
+                            resumes.add(resume);
+                        }
+                    }
+                    return resumes;
+                });
     }
 
     private Resume readSections(final Connection conn, final Resume resume) throws SQLException {
