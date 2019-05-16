@@ -137,7 +137,7 @@ public class SqlStorage implements Storage {
     }
 
     private List<Resume> readSectionsForResumes(final Connection conn, final List<Resume> resumes) throws SQLException {
-        return tryPrepared("SELECT Section.*, Resume.uuid FROM Section LEFT JOIN Resume ON Section.resume_uuid = Resume.uuid ORDER BY full_name, resume_uuid;",
+        return tryPrepared("SELECT Section.* FROM Section LEFT JOIN Resume ON Section.resume_uuid = Resume.uuid ORDER BY full_name, resume_uuid;",
                 conn, stmt -> {
                     final ResultSet rs = stmt.executeQuery();
                     if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
@@ -147,33 +147,6 @@ public class SqlStorage implements Storage {
                     }
                     return resumes;
                 });
-    }
-
-    private List<Resume> readSectionsForResumesStupid(final Connection conn, final List<Resume> resumes) throws SQLException {
-        return tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
-                conn, stmt -> {
-                    final ResultSet rs = stmt.executeQuery();
-                    if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
-                        Resume resume = findResume(rs.getString("resume_uuid"), resumes);
-                        while (readResumeSectionsFromRs(rs, resume)) {
-                            if (!rs.isAfterLast()) {
-                                resume = findResume(rs.getString("resume_uuid"), resumes);
-                            } else {
-                                resume = null;
-                            }
-                        }
-                    }
-                    return resumes;
-                });
-    }
-
-    private Resume findResume(final String uuid, final List<Resume> resumes) {
-        for (Resume resume : resumes) {
-            if (uuid.equals(resume.getUuid())) {
-                return resume;
-            }
-        }
-        return null;
     }
 
     private Resume readSections(final Connection conn, final Resume resume) throws SQLException {
@@ -205,8 +178,8 @@ public class SqlStorage implements Storage {
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        List<String> items = new ArrayList<>(Arrays.asList(content.split("\n")));
-                        section = new BulletedTextListSection(items);
+                        section = new BulletedTextListSection(
+                                new ArrayList<>(Arrays.asList(content.split("\n"))));
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
