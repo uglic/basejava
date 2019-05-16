@@ -48,8 +48,8 @@ public class SqlStorage implements Storage {
                                 if (stmt.executeUpdate() == 0) throw new NotExistStorageException(resume.getUuid());
                                 return true;
                             });
-                    deleteOldContacts(conn, resume);
-                    deleteOldSections(conn, resume);
+                    deleteContacts(conn, resume);
+                    deleteSections(conn, resume);
                     insertContacts(conn, resume);
                     insertSections(conn, resume);
                     return true;
@@ -76,20 +76,21 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         return sqlHelper.transactionalExecute(
-                conn -> {
-                    final List<Resume> resumes = new ArrayList<>();
-                    tryPrepared("SELECT * FROM Resume ORDER BY full_name, uuid;",
-                            conn, stmt -> {
-                                final ResultSet rs = stmt.executeQuery();
-                                while (rs.next()) {
-                                    Resume resume = new Resume(rs.getString("uuid"), rs.getString("full_name"));
-                                    fillEmptyResume(conn, resume);
-                                    resumes.add(resume);
-                                }
-                                return resumes;
-                            });
-                    return resumes;
-                }, null);
+                conn -> readSectionsForResumes(
+                        conn,
+                        tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid ORDER BY full_name, uuid;",
+                                conn, stmt -> {
+                                    final ResultSet rs = stmt.executeQuery();
+                                    final List<Resume> resumes = new ArrayList<>();
+                                    if (rs.next()) {
+                                        Resume resume;
+                                        while ((resume = getResumeFromRs(rs)) != null) {
+                                            resumes.add(resume);
+                                        }
+                                    }
+                                    return resumes;
+                                }))
+                , null);
     }
 
     @Override
@@ -105,73 +106,121 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(final String uuid) {
         return sqlHelper.transactionalExecute(
-                conn -> tryPrepared("SELECT * FROM Resume WHERE uuid = ?;",
-                        conn, stmt -> {
-                            stmt.setString(1, uuid);
-                            ResultSet rs = stmt.executeQuery();
-                            if (!rs.next()) throw new NotExistStorageException(uuid);
-                            Resume resume = new Resume(uuid, rs.getString("full_name"));
-                            fillEmptyResume(conn, resume);
-                            return resume;
-                        }), uuid);
+                conn -> readSections(
+                        conn,
+                        tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid WHERE uuid = ?;",
+                                conn, stmt -> {
+                                    stmt.setString(1, uuid);
+                                    ResultSet rs = stmt.executeQuery();
+                                    if (!rs.next()) throw new NotExistStorageException(uuid);
+                                    return getResumeFromRs(rs);
+                                }))
+                , uuid);
     }
 
-    private void fillEmptyResume(final Connection conn, final Resume resume) throws SQLException {
-        fillContacts(conn, resume);
-        fillSections(conn, resume);
+    private Resume getResumeFromRs(final ResultSet rs) throws SQLException {
+        if (rs.isAfterLast()) {
+            return null;
+        }
+        final String uuid = rs.getString("uuid");
+        final Resume resume = new Resume(uuid, rs.getString("full_name"));
+        do {
+            if (rs.getString("type") != null) {
+                resume.addContact(
+                        ContactTypes.valueOf(rs.getString("type")),
+                        new Contact(
+                                rs.getString("name"),
+                                rs.getString("url")));
+            }
+        } while (rs.next() && uuid.equals(rs.getString("uuid")));
+        return resume;
     }
 
-    private void fillContacts(final Connection conn, final Resume resume) throws SQLException {
-        tryPrepared("SELECT * FROM Contact WHERE resume_uuid = ?;",
+    private List<Resume> readSectionsForResumes(final Connection conn, final List<Resume> resumes) throws SQLException {
+        return tryPrepared("SELECT Section.*, Resume.uuid FROM Section LEFT JOIN Resume ON Section.resume_uuid = Resume.uuid ORDER BY full_name, resume_uuid;",
                 conn, stmt -> {
-                    stmt.setString(1, resume.getUuid());
                     final ResultSet rs = stmt.executeQuery();
-                    while (rs.next()) {
-                        if (rs.getString("type") != null) {
-                            resume.addContact(
-                                    ContactTypes.valueOf(rs.getString("type")),
-                                    new Contact(
-                                            rs.getString("name"),
-                                            rs.getString("url")));
+                    if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
+                        for (Resume resume : resumes) {
+                            readResumeSectionsFromRs(rs, resume);
                         }
                     }
-                    return true;
+                    return resumes;
                 });
     }
 
-    private void fillSections(final Connection conn, final Resume resume) throws SQLException {
-        tryPrepared("SELECT * FROM Section WHERE resume_uuid = ?;",
+    private List<Resume> readSectionsForResumesStupid(final Connection conn, final List<Resume> resumes) throws SQLException {
+        return tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
                 conn, stmt -> {
-                    stmt.setString(1, resume.getUuid());
                     final ResultSet rs = stmt.executeQuery();
-                    while (rs.next()) {
-                        if (rs.getString("type") != null) {
-                            SectionTypes sectionType = SectionTypes.valueOf(rs.getString("type"));
-                            AbstractSection section;
-                            switch (sectionType) {
-                                case OBJECTIVE:
-                                case PERSONAL:
-                                    section = new SimpleTextSection(rs.getString("content"));
-                                    break;
-                                case ACHIEVEMENT:
-                                case QUALIFICATIONS:
-                                    List<String> items = Arrays.asList(rs.getString("content").split("\n"));
-                                    section = new BulletedTextListSection(items);
-                                    break;
-                                case EXPERIENCE:
-                                case EDUCATION:
-                                    throw new StorageException("TODO::Unknown section: " + sectionType);
-                                default:
-                                    throw new StorageException("Unknown section: " + sectionType);
+                    if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
+                        Resume resume = findResume(rs.getString("resume_uuid"), resumes);
+                        while (readResumeSectionsFromRs(rs, resume)) {
+                            if (!rs.isAfterLast()) {
+                                resume = findResume(rs.getString("resume_uuid"), resumes);
+                            } else {
+                                resume = null;
                             }
-                            resume.addSection(sectionType, section);
                         }
                     }
-                    return true;
+                    return resumes;
                 });
     }
 
-    private void deleteOldContacts(final Connection conn, final Resume resume) throws SQLException {
+    private Resume findResume(final String uuid, final List<Resume> resumes) {
+        for (Resume resume : resumes) {
+            if (uuid.equals(resume.getUuid())) {
+                return resume;
+            }
+        }
+        return null;
+    }
+
+    private Resume readSections(final Connection conn, final Resume resume) throws SQLException {
+        return tryPrepared("SELECT * FROM Section WHERE resume_uuid = ?;",
+                conn, stmt -> {
+                    stmt.setString(1, resume.getUuid());
+                    final ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        readResumeSectionsFromRs(rs, resume);
+                    }
+                    return resume;
+                });
+    }
+
+    private boolean readResumeSectionsFromRs(final ResultSet rs, Resume resume) throws SQLException {
+        if (rs.isAfterLast() || resume == null) {
+            return false;
+        }
+        final String uuid = resume.getUuid();
+        do {
+            if (rs.getString("type") != null) {
+                SectionTypes sectionType = SectionTypes.valueOf(rs.getString("type"));
+                String content = rs.getString("content");
+                AbstractSection section;
+                switch (sectionType) {
+                    case OBJECTIVE:
+                    case PERSONAL:
+                        section = new SimpleTextSection(content);
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        List<String> items = new ArrayList<>(Arrays.asList(content.split("\n")));
+                        section = new BulletedTextListSection(items);
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        throw new StorageException("TODO: Unknown section: " + sectionType);
+                    default:
+                        throw new StorageException("Unknown section: " + sectionType);
+                }
+                resume.addSection(sectionType, section);
+            }
+        } while (rs.next() && uuid.equals(rs.getString("resume_uuid")));
+        return true;
+    }
+
+    private void deleteContacts(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("DELETE FROM Contact WHERE (resume_uuid = ?)",
                 conn, stmt -> {
                     stmt.setString(1, resume.getUuid());
@@ -180,7 +229,7 @@ public class SqlStorage implements Storage {
                 });
     }
 
-    private void deleteOldSections(final Connection conn, final Resume resume) throws SQLException {
+    private void deleteSections(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("DELETE FROM Section WHERE (resume_uuid = ?)",
                 conn, stmt -> {
                     stmt.setString(1, resume.getUuid());
@@ -207,30 +256,28 @@ public class SqlStorage implements Storage {
     private void insertSections(final Connection conn, final Resume resume) throws SQLException {
         tryPrepared("INSERT INTO Section(resume_uuid, type, content) VALUES(?, ?, ?);",
                 conn, stmt -> {
-                    for (Map.Entry<SectionTypes, AbstractSection> section : resume.getSections().entrySet()) {
-                        SectionTypes sectionType = section.getKey();
+                    for (Map.Entry<SectionTypes, AbstractSection> sectionEntry : resume.getSections().entrySet()) {
+                        SectionTypes sectionType = sectionEntry.getKey();
+                        AbstractSection section = sectionEntry.getValue();
                         stmt.setString(1, resume.getUuid());
-                        stmt.setString(2, section.getKey().name());
+                        stmt.setString(2, sectionType.name());
+                        String content;
                         switch (sectionType) {
                             case OBJECTIVE:
                             case PERSONAL:
-                                stmt.setString(3, ((SimpleTextSection) section.getValue()).getContent());
+                                content = ((SimpleTextSection) section).getContent();
                                 break;
                             case ACHIEVEMENT:
                             case QUALIFICATIONS:
-                                StringBuilder builder = new StringBuilder();
-                                ((BulletedTextListSection) section.getValue()).getItems().forEach(row -> {
-                                    builder.append(row);
-                                    builder.append('\n');
-                                });
-                                stmt.setString(3, builder.toString());
+                                content = String.join("\n", ((BulletedTextListSection) section).getItems());
                                 break;
                             case EXPERIENCE:
                             case EDUCATION:
-                                throw new StorageException("TODO::Unknown section: " + sectionType);
+                                throw new StorageException("TODO: Unknown section type");
                             default:
-                                throw new StorageException("Unknown section: " + sectionType);
+                                throw new StorageException("Unknown section type: " + sectionType.name());
                         }
+                        stmt.setString(3, content);
                         stmt.addBatch();
                     }
                     stmt.executeBatch();
