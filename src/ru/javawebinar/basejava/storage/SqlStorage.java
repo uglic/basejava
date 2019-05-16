@@ -90,14 +90,14 @@ public class SqlStorage implements Storage {
                     tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
                             conn, stmt -> {
                                 final ResultSet rs = stmt.executeQuery();
-                                if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
+                                if (rs.next()) {
                                     for (Resume resume : resumes) {
                                         readSingleResumeSectionsFromRs(rs, resume);
                                     }
                                 }
                                 return resumes;
                             });
-                    resumes.sort(Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid));
+                    resumes.sort(Resume::compareTo);
                     return resumes;
                 }, null);
     }
