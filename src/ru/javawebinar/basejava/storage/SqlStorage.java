@@ -7,10 +7,7 @@ import ru.javawebinar.basejava.sql.SqlHelper;
 import ru.javawebinar.basejava.sql.SqlPreparedStatementFunction;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     private final SqlHelper sqlHelper;
@@ -76,21 +73,33 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         return sqlHelper.transactionalExecute(
-                conn -> readSectionsForResumes(
-                        conn,
-                        tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid ORDER BY full_name, uuid;",
-                                conn, stmt -> {
-                                    final ResultSet rs = stmt.executeQuery();
-                                    final List<Resume> resumes = new ArrayList<>();
-                                    if (rs.next()) {
-                                        Resume resume;
-                                        while ((resume = getResumeFromRs(rs)) != null) {
-                                            resumes.add(resume);
-                                        }
+                conn -> {
+                    final List<Resume> resumes = new ArrayList<>();
+                    tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid ORDER BY full_name, uuid;",
+                            conn, stmt -> {
+                                final ResultSet rs = stmt.executeQuery();
+                                if (rs.next()) {
+                                    Resume resume;
+                                    while ((resume = getResumeWithContactsOnlyFromRs(rs)) != null) {
+                                        resumes.add(resume);
                                     }
-                                    return resumes;
-                                }))
-                , null);
+                                }
+                                return resumes;
+                            });
+                    resumes.sort(Comparator.comparing(Resume::getUuid));
+                    tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
+                            conn, stmt -> {
+                                final ResultSet rs = stmt.executeQuery();
+                                if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
+                                    for (Resume resume : resumes) {
+                                        readSingleResumeSectionsFromRs(rs, resume);
+                                    }
+                                }
+                                return resumes;
+                            });
+                    resumes.sort(Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid));
+                    return resumes;
+                }, null);
     }
 
     @Override
@@ -106,19 +115,19 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(final String uuid) {
         return sqlHelper.transactionalExecute(
-                conn -> readSections(
-                        conn,
-                        tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid WHERE uuid = ?;",
-                                conn, stmt -> {
-                                    stmt.setString(1, uuid);
-                                    ResultSet rs = stmt.executeQuery();
-                                    if (!rs.next()) throw new NotExistStorageException(uuid);
-                                    return getResumeFromRs(rs);
-                                }))
-                , uuid);
+                conn -> {
+                    Resume resume = tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid WHERE uuid = ?;",
+                            conn, stmt -> {
+                                stmt.setString(1, uuid);
+                                ResultSet rs = stmt.executeQuery();
+                                if (!rs.next()) throw new NotExistStorageException(uuid);
+                                return getResumeWithContactsOnlyFromRs(rs);
+                            });
+                    return readSections(conn, resume);
+                }, uuid);
     }
 
-    private Resume getResumeFromRs(final ResultSet rs) throws SQLException {
+    private Resume getResumeWithContactsOnlyFromRs(final ResultSet rs) throws SQLException {
         if (rs.isAfterLast()) {
             return null;
         }
@@ -136,34 +145,21 @@ public class SqlStorage implements Storage {
         return resume;
     }
 
-    private List<Resume> readSectionsForResumes(final Connection conn, final List<Resume> resumes) throws SQLException {
-        return tryPrepared("SELECT Section.* FROM Section LEFT JOIN Resume ON Section.resume_uuid = Resume.uuid ORDER BY full_name, resume_uuid;",
-                conn, stmt -> {
-                    final ResultSet rs = stmt.executeQuery();
-                    if (rs.next()) { // [resumes] are sorted by [full_name, uuid]
-                        for (Resume resume : resumes) {
-                            readResumeSectionsFromRs(rs, resume);
-                        }
-                    }
-                    return resumes;
-                });
-    }
-
     private Resume readSections(final Connection conn, final Resume resume) throws SQLException {
         return tryPrepared("SELECT * FROM Section WHERE resume_uuid = ?;",
                 conn, stmt -> {
                     stmt.setString(1, resume.getUuid());
                     final ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
-                        readResumeSectionsFromRs(rs, resume);
+                        readSingleResumeSectionsFromRs(rs, resume);
                     }
                     return resume;
                 });
     }
 
-    private boolean readResumeSectionsFromRs(final ResultSet rs, Resume resume) throws SQLException {
+    private void readSingleResumeSectionsFromRs(final ResultSet rs, Resume resume) throws SQLException {
         if (rs.isAfterLast() || resume == null) {
-            return false;
+            return;
         }
         final String uuid = resume.getUuid();
         do {
@@ -190,7 +186,6 @@ public class SqlStorage implements Storage {
                 resume.addSection(sectionType, section);
             }
         } while (rs.next() && uuid.equals(rs.getString("resume_uuid")));
-        return true;
     }
 
     private void deleteContacts(final Connection conn, final Resume resume) throws SQLException {
@@ -246,7 +241,7 @@ public class SqlStorage implements Storage {
                                 break;
                             case EXPERIENCE:
                             case EDUCATION:
-                                throw new StorageException("TODO: Unknown section type");
+                                throw new StorageException("TODO: Unknown section type: " + sectionType.name());
                             default:
                                 throw new StorageException("Unknown section type: " + sectionType.name());
                         }
