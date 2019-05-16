@@ -10,8 +10,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Config {
-    private static final File PROPERTIES_FILE = new File("config" + System.getProperty("file.separator") + "resumes.properties");
     private static final Config INSTANCE = new Config();
+    //private static final String PROPERTIES_FILE = "config" + System.getProperty("file.separator") + "resumes.properties";
+    private static final String PROPERTIES_FILE = "config/resumes.properties";
 
     private final String storageDir;
     private final Storage sqlStorage;
@@ -21,7 +22,12 @@ public class Config {
     }
 
     private Config() {
-        try (InputStream is = new FileInputStream(PROPERTIES_FILE)) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+        try (InputStream is = new FileInputStream(new File(PROPERTIES_FILE))) {
             Properties props = new Properties();
             props.load(is);
             storageDir = props.getProperty("storage.dir").replace("/", System.getProperty("file.separator"));
@@ -31,7 +37,7 @@ public class Config {
                     props.getProperty("db.password") // bad practice to store passwords in String (cannot clear it), see java.io.Console.readPassword for example
             );
         } catch (IOException e) {
-            throw new IllegalStateException("Invalid config file " + PROPERTIES_FILE.getAbsolutePath());
+            throw new IllegalStateException("Invalid config file " + new File(PROPERTIES_FILE).getAbsolutePath());
         }
     }
 
