@@ -74,24 +74,8 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.transactionalExecute(
                 conn -> {
-                    final List<Resume> resumes = getAllResumesWithContactsOnly(conn);
-                    tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
-                            conn, stmt -> {
-                                final ResultSet rs = stmt.executeQuery();
-                                final Map<String, Resume> mapped = new HashMap<>();
-                                for (Resume resume : resumes) {
-                                    mapped.put(resume.getUuid(), resume);
-                                }
-                                if (rs.next()) {
-                                    List<String> uuids = new ArrayList<>(mapped.keySet());
-                                    Collections.sort(uuids);
-                                    for (String uuid : uuids) {
-                                        readSingleResumeSectionsFromRs(rs, mapped.get(uuid));
-                                    }
-                                }
-                                return resumes;
-                            });
-                    return resumes;
+                    final List<Resume> resumes = getAllSortedWithContactsOnly(conn);
+                    return readAllSections(conn, resumes);
                 }, null);
     }
 
@@ -114,13 +98,13 @@ public class SqlStorage implements Storage {
                                 stmt.setString(1, uuid);
                                 ResultSet rs = stmt.executeQuery();
                                 if (!rs.next()) throw new NotExistStorageException(uuid);
-                                return getResumeWithContactsOnlyFromRs(rs);
+                                return getWithContactsOnlyFromRs(rs);
                             });
                     return readSections(conn, resume);
                 }, uuid);
     }
 
-    private Resume getResumeWithContactsOnlyFromRs(final ResultSet rs) throws SQLException {
+    private Resume getWithContactsOnlyFromRs(final ResultSet rs) throws SQLException {
         if (rs.isAfterLast()) {
             return null;
         }
@@ -138,14 +122,14 @@ public class SqlStorage implements Storage {
         return resume;
     }
 
-    private List<Resume> getAllResumesWithContactsOnly(final Connection conn) throws SQLException {
+    private List<Resume> getAllSortedWithContactsOnly(final Connection conn) throws SQLException {
         final List<Resume> resumes = new ArrayList<>();
         return tryPrepared("SELECT * FROM Resume LEFT JOIN Contact ON Resume.uuid = Contact.resume_uuid ORDER BY full_name, uuid;",
                 conn, stmt -> {
                     final ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
                         Resume resume;
-                        while ((resume = getResumeWithContactsOnlyFromRs(rs)) != null) {
+                        while ((resume = getWithContactsOnlyFromRs(rs)) != null) {
                             resumes.add(resume);
                         }
                     }
@@ -159,13 +143,32 @@ public class SqlStorage implements Storage {
                     stmt.setString(1, resume.getUuid());
                     final ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
-                        readSingleResumeSectionsFromRs(rs, resume);
+                        readSectionsFromRs(rs, resume);
                     }
                     return resume;
                 });
     }
 
-    private void readSingleResumeSectionsFromRs(final ResultSet rs, Resume resume) throws SQLException {
+    private List<Resume> readAllSections(final Connection conn, final List<Resume> resumes) throws SQLException {
+        return tryPrepared("SELECT * FROM Section ORDER BY resume_uuid;",
+                conn, stmt -> {
+                    final ResultSet rs = stmt.executeQuery();
+                    final Map<String, Resume> mapped = new HashMap<>(3 * resumes.size() / 2);
+                    for (Resume resume : resumes) {
+                        mapped.put(resume.getUuid(), resume);
+                    }
+                    if (rs.next()) {
+                        List<String> uuids = new ArrayList<>(mapped.keySet());
+                        Collections.sort(uuids);
+                        for (String uuid : uuids) {
+                            readSectionsFromRs(rs, mapped.get(uuid));
+                        }
+                    }
+                    return resumes;
+                });
+    }
+
+    private void readSectionsFromRs(final ResultSet rs, Resume resume) throws SQLException {
         if (rs.isAfterLast() || resume == null) {
             return;
         }
