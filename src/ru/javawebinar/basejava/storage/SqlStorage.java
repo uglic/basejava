@@ -154,12 +154,11 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteContacts(Connection conn, Resume resume) {
-        sqlHelper.execute("DELETE FROM contact WHERE resume_uuid = ?", ps -> {
+    private void deleteContacts(Connection conn, Resume resume) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid = ?")) {
             ps.setString(1, resume.getUuid());
             ps.execute();
-            return null;
-        });
+        }
     }
 
     private void addContact(ResultSet rs, Resume resume) throws SQLException {
@@ -198,12 +197,11 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteSections(Connection conn, Resume resume) {
-        sqlHelper.execute("DELETE FROM section WHERE resume_uuid = ?", ps -> {
+    private void deleteSections(Connection conn, Resume resume) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM section WHERE resume_uuid = ?")) {
             ps.setString(1, resume.getUuid());
             ps.execute();
-            return null;
-        });
+        }
     }
 
     private void addSection(ResultSet rs, Resume resume) throws SQLException {
