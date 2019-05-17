@@ -1,12 +1,9 @@
 package ru.javawebinar.basejava.sql;
 
-import org.postgresql.util.PSQLException;
-import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SqlHelper {
@@ -16,16 +13,20 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <R> R execute(String sql, SqlPreparedStatementFunction<R> function, String uuid) {
+    public void execute(String sql) {
+        execute(sql, PreparedStatement::execute);
+    }
+
+    public <R> R execute(String sql, SqlPreparedStatementFunction<R> function) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             return function.apply(ps);
         } catch (SQLException e) {
-            throw convertSqlException(e, uuid);
+            throw ExceptionUtil.convertException(e);
         }
     }
 
-    public <R> R transactionalExecute(SqlConnectionFunction<R> function, String uuid) {
+    public <R> R transactionalExecute(SqlConnectionFunction<R> function) {
         try (Connection conn = connectionFactory.getConnection()) {
             try {
                 conn.setAutoCommit(false);
@@ -34,23 +35,10 @@ public class SqlHelper {
                 return result;
             } catch (SQLException e) {
                 conn.rollback();
-                throw convertSqlException(e, uuid);
+                throw ExceptionUtil.convertException(e);
             }
         } catch (SQLException e) {
             throw new StorageException(e);
         }
     }
-
-    public static StorageException convertSqlException(SQLException e, String message) {
-        if (e instanceof PSQLException) {
-            switch (e.getSQLState()) {
-                case "23505": //  postgres:23505:unique_violation
-                    return new ExistStorageException(message == null ? "unknown" : message);
-                default:
-                    return new StorageException(e);
-            }
-        }
-        return new StorageException(e);
-    }
 }
-

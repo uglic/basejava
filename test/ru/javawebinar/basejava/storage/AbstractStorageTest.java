@@ -24,10 +24,10 @@ public abstract class AbstractStorageTest {
     private static final int CONTACTS_FOR_UUID_1 = 6;
     private static final int SECTIONS_FOR_UUID_1 = 4;
 
-    private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Abab Ababov", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
-    private final Resume RESUME_EXIST_2 = ResumeTestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Baba Babov", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
-    private final Resume RESUME_EXIST_3 = ResumeTestData.get("a97b3ac3-3817-4c3f-8a5f-17849731", "Caca Cavov", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
-    private final Resume RESUME_EXIST_NEW = ResumeTestData.get(UUID_NEW, "Nemo Captain");
+    private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Resumist1", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+    private final Resume RESUME_EXIST_2 = ResumeTestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Resumist2", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+    private final Resume RESUME_EXIST_3 = ResumeTestData.get("a97b3ac3-3817-4c3f-8a5f-17849731", "Resumist3", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+    private final Resume RESUME_EXIST_NEW = ResumeTestData.get(UUID_NEW, "ResumistNew");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
