@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public class Config {
     //private static final Logger LOG = Logger.getLogger("CONFIG");
-    private static final String PROPERTIES_FILE = "config" + System.getProperty("file.separator") + "resumes.properties";
+    private static final String PROPERTIES_FILE = getHomeDir() + System.getProperty("file.separator")  + "config" + System.getProperty("file.separator") + "resumes.properties";
     private static final Config INSTANCE = new Config();
 
     private final String storageDir;
@@ -22,11 +22,6 @@ public class Config {
     }
 
     private Config() {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Error in loading database driver: " + e);
-        }
         try (InputStream is = new FileInputStream(new File(PROPERTIES_FILE))) {
             Properties props = new Properties();
             props.load(is);
@@ -47,5 +42,14 @@ public class Config {
 
     public Storage getSqlStorage() {
         return sqlStorage;
+    }
+
+    private static File getHomeDir() {
+        String prop = System.getProperty("homeDir");
+        File homeDir = new File(prop == null ? "." : prop);
+        if (!homeDir.isDirectory()) {
+            throw new IllegalStateException(homeDir + " is not directory");
+        }
+        return homeDir;
     }
 }

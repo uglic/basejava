@@ -1,16 +1,28 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
+import ru.javawebinar.basejava.model.ContactTypes;
+import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.Storage;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Writer;
 
 public class ResumeServlet extends javax.servlet.http.HttpServlet {
+    private Storage storage;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        storage = Config.get().getSqlStorage();
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        super.doPost(request, response);
     }
 
     @Override
@@ -18,48 +30,31 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html; charset=utf-8");
-        response.getWriter().write(getResumeListPage());
-    }
-
-    private String getResumeListPage() {
-        final StringBuilder builder = new StringBuilder();
-        buildHtmlHead(builder, "Список всех резюме")
-                .append("<table>\r\n")
-                .append("<tr><th>uuid</th><th>fullName</th></tr>\r\n");
-        Config.get().getSqlStorage().getAllSorted().forEach(
-                resume -> builder
-                        .append("<tr>\r\n")
-                        .append("<td>")
-                        .append(resume.getUuid())
-                        .append("</td>\r\n")
-                        .append("<td>")
-                        .append(resume.getFullName())
-                        .append("</td>\r\n")
-                        .append("</tr>\r\n")
-        );
-        builder.append("</table>\r\n");
-        buildHtmlTail(builder);
-        return builder.toString();
-    }
-
-    private StringBuilder buildHtmlHead(StringBuilder builder, String title) {
-        String titleCleared = title
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
-        return builder.append("<!DOCTYPE html>\r\n")
-                .append("<html lang=\"ru\">\r\n")
-                .append("<head>\r\n")
-                .append("<meta charset=\"utf-8\">\r\n")
-                .append("<title>")
-                .append(titleCleared)
-                .append("</title>\r\n")
-                .append("</head>\r\n")
-                .append("<body>\r\n");
-    }
-
-    private StringBuilder buildHtmlTail(StringBuilder builder) {
-        return builder.append("</body>\r\n")
-                .append("</html>\r\n");
+        Writer writer = response.getWriter();
+        writer.write(
+                "<html>\n" +
+                        "<head>\n" +
+                        "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
+                        "    <link rel=\"stylesheet\" href=\"css/style.css\">\n" +
+                        "    <title>Список всех резюме</title>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "<section>\n" +
+                        "<table border=\"1\" cellpadding=\"8\" cellspacing=\"0\">\n" +
+                        "    <tr>\n" +
+                        "        <th>Имя</th>\n" +
+                        "        <th>Email</th>\n" +
+                        "    </tr>\n");
+        for (Resume resume : storage.getAllSorted()) {
+            writer.write(
+                    "<tr>\n" +
+                            "     <td><a href=\"?uuid=" + resume.getUuid() + "\">" + resume.getFullName() + "</a></td>\n" +
+                            "     <td>" + resume.getContacts().get(ContactTypes.EMAIL).getName() + "</td>\n" +
+                            "</tr>\n");
+        }
+        writer.write("</table>\n" +
+                "</section>\n" +
+                "</body>\n" +
+                "</html>\n");
     }
 }

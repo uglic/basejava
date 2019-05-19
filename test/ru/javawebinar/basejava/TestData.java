@@ -3,8 +3,19 @@ package ru.javawebinar.basejava;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.util.DateUtil;
 
-public class ResumeTestData {
-    private ResumeTestData() {
+public class TestData {
+    public static final String UUID_1 = "7de882da-02f2-4d16-8daa-60660aaf";
+    public static final String UUID_NEW = "uuidNew";
+    public static final String UUID_TO_CHECK_EXISTING = UUID_1;
+    public static final int CONTACTS_FOR_UUID_1 = 6;
+    public static final int SECTIONS_FOR_UUID_1 = 4;
+
+    public final static Resume RESUME_EXIST_1 = TestData.get(UUID_1, "Resumist1", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+    public final static Resume RESUME_EXIST_2 = TestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Resumist2", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+    public final static Resume RESUME_EXIST_3 = TestData.get("a97b3ac3-3817-4c3f-8a5f-17849731", "Resumist3", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+    public final static Resume RESUME_EXIST_NEW = TestData.get(UUID_NEW, "ResumistNew");
+
+    private TestData() {
     }
 
     public static Resume get(String uuid, String fullName) {

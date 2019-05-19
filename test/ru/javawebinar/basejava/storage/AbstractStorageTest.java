@@ -3,7 +3,7 @@ package ru.javawebinar.basejava.storage;
 import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.ResumeTestData;
+import ru.javawebinar.basejava.TestData;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -12,22 +12,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static ru.javawebinar.basejava.TestData.*;
 
 public abstract class AbstractStorageTest {
     protected static final String STORAGE_DIR = Config.get().getStorageDir();
 
     protected final Storage storage;
-
-    private static final String UUID_1 = "7de882da-02f2-4d16-8daa-60660aaf";
-    private static final String UUID_NEW = "uuidNew";
-    private static final String UUID_TO_CHECK_EXISTING = UUID_1;
-    private static final int CONTACTS_FOR_UUID_1 = 6;
-    private static final int SECTIONS_FOR_UUID_1 = 4;
-
-    private final Resume RESUME_EXIST_1 = ResumeTestData.get(UUID_1, "Resumist1", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
-    private final Resume RESUME_EXIST_2 = ResumeTestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Resumist2", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
-    private final Resume RESUME_EXIST_3 = ResumeTestData.get("a97b3ac3-3817-4c3f-8a5f-17849731", "Resumist3", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
-    private final Resume RESUME_EXIST_NEW = ResumeTestData.get(UUID_NEW, "ResumistNew");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -55,21 +45,21 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
+        Resume newResume = TestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
     }
 
     @Test
     public void updateLessContacts() {
-        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 - 1, SECTIONS_FOR_UUID_1);
+        Resume newResume = TestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 - 1, SECTIONS_FOR_UUID_1);
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
     }
 
     @Test
     public void updateMoreContacts() {
-        Resume newResume = ResumeTestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 + 1, SECTIONS_FOR_UUID_1);
+        Resume newResume = TestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 + 1, SECTIONS_FOR_UUID_1);
         storage.update(newResume);
         assertEquals(newResume, storage.get(UUID_1));
     }
