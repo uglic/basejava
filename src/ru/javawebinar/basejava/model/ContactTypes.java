@@ -6,10 +6,10 @@ public enum ContactTypes {
     PHONE("Тел."),
     SKYPE("Skype"),
     EMAIL("Почта"),
-    LINKEDIN(""),
-    GITHUB(""),
-    STACKOVERFLOW(""),
-    HOMESITE("");
+    LINKEDIN("Профиль LinkedIn"),
+    GITHUB("Профиль Github"),
+    STACKOVERFLOW("Профиль Stackoverflow"),
+    HOMESITE("Домашняя страница");
 
     private final String prefix;
 

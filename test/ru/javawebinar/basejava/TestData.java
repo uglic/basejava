@@ -7,8 +7,8 @@ public class TestData {
     public static final String UUID_1 = "7de882da-02f2-4d16-8daa-60660aaf";
     public static final String UUID_NEW = "uuidNew";
     public static final String UUID_TO_CHECK_EXISTING = UUID_1;
-    public static final int CONTACTS_FOR_UUID_1 = 6;
-    public static final int SECTIONS_FOR_UUID_1 = 4;
+    public static final int CONTACTS_FOR_UUID_1 = ContactTypes.values().length;
+    public static final int SECTIONS_FOR_UUID_1 = SectionTypes.values().length;
 
     public final static Resume RESUME_EXIST_1 = TestData.get(UUID_1, "Resumist1", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
     public final static Resume RESUME_EXIST_2 = TestData.get("dd0a70d1-5ed3-479a-b452-d5e04f21", "Resumist2", CONTACTS_FOR_UUID_1, SECTIONS_FOR_UUID_1);
@@ -19,11 +19,11 @@ public class TestData {
     }
 
     public static Resume get(String uuid, String fullName) {
-        return get(new Resume(uuid, fullName), ContactTypes.values().length, 4); //SectionTypes.values().length
+        return get(new Resume(uuid, fullName), ContactTypes.values().length, SectionTypes.values().length);
     }
 
     public static Resume get(String fullName) {
-        return get(new Resume(fullName), ContactTypes.values().length, 4); //SectionTypes.values().length)
+        return get(new Resume(fullName), ContactTypes.values().length, SectionTypes.values().length);
     }
 
     public static Resume get(String uuid, String fullName, int contactsCount, int sectionsCount) {
@@ -46,31 +46,31 @@ public class TestData {
         }
         if (contacts++ < contactsCount)
             resume.addContact(ContactTypes.PHONE,
-                    new Contact("+7(921) 855-0482", null)
+                    new Contact("+7(921) 855-0482", ContactTypes.PHONE)
             );
         if (contacts++ < contactsCount)
             resume.addContact(ContactTypes.SKYPE,
-                    new Contact("grigory.kislin", "skype:grigory.kislin")
+                    new Contact("grigory.kislin", ContactTypes.SKYPE)
             );
         if (contacts++ < contactsCount)
             resume.addContact(ContactTypes.EMAIL,
-                    new Contact("gkislin@yandex.ru", "mailto:gkislin@yandex.ru")
+                    new Contact("gkislin@yandex.ru", ContactTypes.EMAIL)
             );
         if (contacts++ < contactsCount)
             resume.addContact(ContactTypes.LINKEDIN,
-                    new Contact("Профиль LinkedIn", "https://www.linkedin.com/in/gkislin")
+                    new Contact("https://www.linkedin.com/in/gkislin", ContactTypes.LINKEDIN)
             );
         if (contacts++ < contactsCount)
             resume.addContact(ContactTypes.GITHUB,
-                    new Contact("Профиль GitHub", "https://github.com/gkislin")
+                    new Contact("https://github.com/gkislin", ContactTypes.GITHUB)
             );
         if (contacts++ < contactsCount)
             resume.addContact(ContactTypes.STACKOVERFLOW,
-                    new Contact("Профиль Stackoverflow", "https://stackoverflow.com/users/548473")
+                    new Contact("https://stackoverflow.com/users/548473", ContactTypes.STACKOVERFLOW)
             );
         if (contacts < contactsCount)
             resume.addContact(ContactTypes.HOMESITE,
-                    new Contact("Домашняя страница", "http://gkislin.ru/")
+                    new Contact("http://gkislin.ru/", ContactTypes.HOMESITE)
             );
         if (sections++ < sectionsCount)
             resume.addSection(SectionTypes.OBJECTIVE,
@@ -160,7 +160,7 @@ public class TestData {
                                     )
                             ),
                             new Organization(
-                                    new Contact("RIT Center", null),
+                                    new Contact("RIT Center", (String) null),
                                     new Organization.Position(DateUtil.of(2012, 4), DateUtil.of(2014, 10),
                                             "Java архитектор",
                                             "Организация процесса разработки системы ERP для разных окружений: "

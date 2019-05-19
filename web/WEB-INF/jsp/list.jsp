@@ -15,15 +15,19 @@
         <tr>
             <th>Имя</th>
             <th>Email</th>
+            <th></th>
+            <th></th>
         </tr>
         <c:forEach items="${resumes}" var="resume">
             <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume"/>
             <tr>
-                <td><a href="resume?uuid=${resume.getUuid()}">${resume.getFullName()}</a></td>
-                <td>${resume.getContacts().get(ContactTypes.EMAIL).getName()}</td>
+                <td><a href="?uuid=${resume.uuid}&action=view">${resume.fullName}</a></td>
+                <td>${resume.contacts.get(ContactTypes.EMAIL).toHtml(ContactTypes.EMAIL)}</td>
+                <td><a href="?uuid=${resume.uuid}&action=delete"><img src="img/delete.png"></a></td>
+                <td><a href="?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></td>
             </tr>
         </c:forEach>
-        </table>
+    </table>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>

@@ -50,20 +50,6 @@ public abstract class AbstractStorageTest {
         assertEquals(newResume, storage.get(UUID_1));
     }
 
-    @Test
-    public void updateLessContacts() {
-        Resume newResume = TestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 - 1, SECTIONS_FOR_UUID_1);
-        storage.update(newResume);
-        assertEquals(newResume, storage.get(UUID_1));
-    }
-
-    @Test
-    public void updateMoreContacts() {
-        Resume newResume = TestData.get(UUID_1, "updated fullName", CONTACTS_FOR_UUID_1 + 1, SECTIONS_FOR_UUID_1);
-        storage.update(newResume);
-        assertEquals(newResume, storage.get(UUID_1));
-    }
-
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() {
         storage.update(RESUME_EXIST_NEW);
