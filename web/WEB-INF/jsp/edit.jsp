@@ -13,18 +13,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type", content="text/html;charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <link rel="stylesheet" href="css/style.css">
-    <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
-    <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
+    <h3>Редактирование резюме</h3>
+    <form method="post" action="resume?action=edit" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
-            <dt>Имя:</dt>
+            <dt>Полное имя:</dt>
             <dd><input type="text" name="fullName" size=50 value="${HtmlUtil.toEntityValue(resume.fullName)}"></dd>
         </dl>
         <h3>Контакты:</h3>
@@ -34,56 +34,104 @@
                 <dd><input type="text" name="${type.name()}" size=30 value="${HtmlUtil.toEntityValue(resume.getContacts().get(type).getName())}"></dd>
             </dl>
         </c:forEach>
-        <h3>Секции:</h3>
-        <table cellpadding="2">
-        <c:forEach var="sectionEntry" items="${resume.getSections()}">
-            <c:set var="sectionType" value="${sectionEntry.getKey()}"/>
-            <c:set var="section" value="${sectionEntry.getValue()}"/>
-            <tr>
-                <td colspan="2"><h2>${sectionType.getTitle()}</h2></td>
-            </tr>
-            <c:if test="${sectionType.equals(SectionTypes.OBJECTIVE)}">
-            <tr>
-                <td colspan="2"><input type="text" size=2000 name="${sectionType.name()}" value="${HtmlUtil.toEntityValue(section.getContent())}"><br/></td>
-            </tr>
-            </c:if>
-            <c:if test="${sectionType.equals(SectionTypes.PERSONAL)}">
-            <tr>
-                <td colspan="2"><input type="text" size=2000 name="${sectionType.name()}" value="${HtmlUtil.toEntityValue(section.getContent())}"><br/></td>
-            </tr>
-            </c:if>
-            <c:if test="${sectionType.equals(SectionTypes.ACHIEVEMENT) || sectionType.equals(SectionTypes.QUALIFICATIONS)}">
-            <tr>
-                <td colspan="2">
-                    <ul>
-                        <c:forEach var="listItem" items="${section.getItems()}">
-                                <li><input type="text" size=2000 name="${sectionType.name()}" value="${HtmlUtil.toEntityValue(listItem)}"></li>
-                        </c:forEach>
-                        <li><input type="text" size=2000 name="${sectionType.name()}" value=""></li>
-                    </ul>
-                </td>
-            </tr>
-            </c:if>
-            <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE) || sectionType.equals(SectionTypes.EDUCATION)}">
-                <c:forEach var="organization" items="${section.getOrganizations()}">
-                    <tr>
-                        <td colspan="2"><h3>${organization.getContact().toHtml()}</h3></td>
-                    </tr>
-                    <c:forEach var="position" items="${organization.getHistory()}">
-                        <tr>
-                            <td width="15%" style="vertical-align: top">${DateUtil.to(position.getStartDate())} - ${DateUtil.to(position.getEndDate())}</td>
-                            <td><b>${position.getTitle()}</b><br>${position.getDescription()}</td>
-                        </tr>
-                    </c:forEach>
-                </c:forEach>
-            </c:if>
+        <c:forEach var="sectionType" items="${SectionTypes.values()}">
+            <c:set var="section" value="${resume.getSections().get(sectionType)}"/>
+            <div>
+                <h2>${sectionType.getTitle()}</h2>
+                <div>
+
+                    <c:if test="${sectionType.equals(SectionTypes.OBJECTIVE) || sectionType.equals(SectionTypes.PERSONAL)}">
+                        <div id="${sectionType.name()}">
+                            <textarea size="2000" rows="1" name="${sectionType.name()}"><c:if test="${section != null}">${HtmlUtil.toEntityValue(section.getContent())}</c:if></textarea>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${sectionType.equals(SectionTypes.ACHIEVEMENT) || sectionType.equals(SectionTypes.QUALIFICATIONS)}">
+                        <c:if test="${empty section.getItems()}">
+                          <c:set var="section" value="${BulletedTextListSection.getEmpty()}"/>
+                        </c:if>
+                        <ul>
+                            <c:set var="counter" value="0"/>
+                            <c:forEach var="listItem" items="${section.getItems()}">
+                                <c:set var="counter" value="${counter + 1}"/>
+                                <li id="${sectionType.name()}.${counter}">
+                                    <textarea size="2000" rows="1" name="${sectionType.name()}" class="w95">${HtmlUtil.toEntityValue(listItem)}</textarea>
+                                    <a class="delete del:${sectionType.name()}" href=""><img src="img/delete.png"></a>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                        <div class="row">${sectionType.getTitle()}: <a class="add:${sectionType.name()}" href="">добавить строку</a></div>
+                    </c:if>
+
+                    <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE) || sectionType.equals(SectionTypes.EDUCATION)}">
+                        <div>
+                            <c:if test="${empty section.getOrganizations()}">
+                              <c:set var="section" value="${OrganizationSection.getEmpty()}"/>
+                            </c:if>
+                            <c:set var="counterOrg" value="0"/>
+                            <c:forEach var="organization" items="${section.getOrganizations()}">
+                                <c:set var="counterOrg" value="${counterOrg + 1}"/>
+                                <div id="${sectionType.name()}-org.${counterOrg}">
+                                    <hr/>
+                                    <div class="col-15">Организация:</div>
+                                    <div class="col-85">
+                                        <input type="text" size="2000" name="${sectionType.name()}.name" class="w95" value="${organization.getContact().getName()}">
+                                        <a class="delete del:${sectionType.name()}-org" href=""><img src="img/delete.png"></a>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-15">URL:</div>
+                                        <div class="col-85">
+                                            <textarea size="2000" rows="1" name="${sectionType.name()}.url">${organization.getContact().getUrl()}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <c:set var="counterHist" value="0"/>
+                                        <c:forEach var="position" items="${organization.getHistory()}">
+                                            <c:set var="counterHist" value="${counterHist + 1}"/>
+                                            <div id="${sectionType.name()}-period.${counterOrg}.${counterHist}">
+                                                <div class="row">
+                                                    <div class="col-15"></div>
+                                                    <div class="col-15">Период:</div>
+                                                    <div class="col-70">
+                                                        <input type="date" name="${sectionType.name()}.startDate" value="${position.getStartDate()}"> - <input type="date" name="${sectionType.name()}.endDate" value="${position.getEndDate()}">
+                                                        <a class="delete del:${sectionType.name()}-period" href=""><img src="img/delete.png"></a>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-15"></div>
+                                                    <div class="col-15">Должность:</div>
+                                                    <div class="col-70">
+                                                        <input type="text" size="250" name="${sectionType.name()}.title" value="${position.getTitle()}">
+                                                    </div>
+                                                </div>
+                                                <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE)}">
+                                                    <div class="row">
+                                                        <div class="col-15"></div>
+                                                        <div class="col-15">Обязанности:</div>
+                                                        <div class="col-70">
+                                                            <textarea size="2000" name="${sectionType.name()}.description">${position.getDescription()}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </c:if>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                    <div class="row">${sectionType.getTitle()}.Период: <a class="add:${sectionType.name()}-period" href="">добавить строку</a></div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                        <div class="row">${sectionType.getTitle()}: <a class="add:${sectionType.name()}-org" href="">добавить строку</a></div>
+                    </c:if>
+
+                </div>
+            </div>
         </c:forEach>
-        </table>
         <hr>
-        <button type="submit">Сохранить</button>
-        <button onclick="window.history.back()">Отменить</button>
+        <button type="submit">Создать</button>
+        <button type="button" onclick="window.history.back()">Отменить</button>
     </form>
 </section>
+<script type="text/javascript" src="js/some.js"></script>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>

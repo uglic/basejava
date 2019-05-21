@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 
@@ -24,10 +25,27 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
-        String uuid = request.getParameter("uuid");
-        String fullName = request.getParameter("fullName");
-        Resume resume = storage.get(uuid);
-        resume.setFullName(fullName);
+        String action = request.getParameter("action");
+        Resume resume;
+        String fullName;
+        switch (action) {
+            case "delete":
+            case "view":
+                doGet(request, response);
+                return;
+            case "add":
+                fullName = request.getParameter("fullName");
+                resume = new Resume(fullName);
+                break;
+            case "edit":
+                fullName = request.getParameter("fullName");
+                String uuid = request.getParameter("uuid");
+                resume = storage.get(uuid);
+                resume.setFullName(fullName);
+                break;
+            default:
+                throw new IllegalArgumentException("Action " + action + " is illegal");
+        }
         for (ContactTypes type : ContactTypes.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -37,13 +55,13 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
             }
         }
         for (SectionTypes type : SectionTypes.values()) {
-            if(!type.equals(SectionTypes.EXPERIENCE) && !type.equals(SectionTypes.EDUCATION)) {
-                String [] values = request.getParameterValues(type.name());
-                if(values == null || values.length == 0) {
+            if (!type.equals(SectionTypes.EXPERIENCE) && !type.equals(SectionTypes.EDUCATION)) {
+                String[] values = request.getParameterValues(type.name());
+                if (values == null || values.length == 0) {
                     resume.getSections().remove(type);
                     continue;
                 }
-                switch(type){
+                switch (type) {
                     case OBJECTIVE:
                     case PERSONAL:
                         resume.addSection(type, new SimpleTextSection(values[0]));
@@ -62,13 +80,18 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                 }
             }
         }
-        storage.update(resume);
+        if (action.equals("add")) {
+            storage.save(resume);
+        } else {
+            storage.update(resume);
+        }
         response.sendRedirect(request.getRequestURI());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String uuid = request.getParameter("uuid");
+        String fullName = request.getParameter("fullName");
         String action = request.getParameter("action");
         if (action == null) {
             request.setAttribute("resumes", storage.getAllSorted());
@@ -81,17 +104,26 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                 storage.delete(uuid);
                 response.sendRedirect(request.getRequestURI());
                 return;
+            case "add":
+                request.setAttribute("fullName", fullName);
+                request.getRequestDispatcher("WEB-INF/jsp/add.jsp").forward(request, response);
+                return;
             case "view":
             case "edit":
-                resume = storage.get(uuid);
-                break;
+                try {
+                    resume = storage.get(uuid);
+                    request.setAttribute("resume", resume);
+                } catch (NotExistStorageException e) {
+                    request.setAttribute("resumes", storage.getAllSorted());
+                    request.getRequestDispatcher("WEB-INF/jsp/list.jsp").forward(request, response);
+                    return;
+                }
+                request.getRequestDispatcher(
+                        ("view".equals(action) ? "WEB-INF/jsp/view.jsp" : "WEB-INF/jsp/edit.jsp")
+                ).forward(request, response);
+                return;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
-        request.setAttribute("resume", resume);
-        request.getRequestDispatcher(
-                ("view".equals(action) ? "WEB-INF/jsp/view.jsp" : "WEB-INF/jsp/edit.jsp")
-        ).forward(request, response);
-
     }
 }

@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,5 +44,12 @@ public class OrganizationSection extends AbstractSection {
     @Override
     public int hashCode() {
         return organizations.hashCode();
+    }
+
+    public static AbstractSection getEmpty() {
+        return new OrganizationSection(
+                new Organization(
+                        new Contact("", ""),
+                        new Organization.Position(LocalDate.now(), LocalDate.now(), "", "")));
     }
 }

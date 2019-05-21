@@ -1,9 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class BulletedTextListSection extends AbstractSection {
     private static final long serialVersionUID = 1L;
@@ -43,5 +40,9 @@ public class BulletedTextListSection extends AbstractSection {
     @Override
     public int hashCode() {
         return items.hashCode();
+    }
+
+    public static AbstractSection getEmpty(){
+        return new BulletedTextListSection("");
     }
 }

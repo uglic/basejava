@@ -70,5 +70,48 @@ a[href*="github."] {
     background: url(../img/gh.png) no-repeat center left;
 }
 
-tr > td > input {width: 100%;}
-tr > td > ul > li > input {width: 100%;}
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+input[type=text], input[type=date], select, textarea {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  vertical-align: top;
+}
+
+input[type=text], select, textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.w85 {width: 85% !important;}
+.w95 {width: 95% !important;}
+
+.col-15 {
+  float: left;
+  width: 15%;
+  margin-top: 6px;
+}
+
+.col-70 {
+  float: left;
+  width: 70%;
+  margin-top: 6px;
+}
+
+.col-85 {
+  float: left;
+  width: 85%;
+  margin-top: 6px;
+}
+
+a.delete {
+    padding: 6px;
+    width: 20px;
+    float: right;
+    vertical-align: top;
+}

@@ -15,8 +15,7 @@
         <tr>
             <th>Имя</th>
             <th>Email</th>
-            <th></th>
-            <th></th>
+            <th colspan="2"><a href="?action=add"><img src="img/add.png"></a></th>
         </tr>
         <c:forEach items="${resumes}" var="resume">
             <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume"/>
