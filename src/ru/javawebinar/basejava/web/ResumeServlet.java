@@ -83,7 +83,7 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                         continue;
                     }
                     List<String> list = new ArrayList<>();
-                    for (String listKey : values) { // need to sort items by (int)subkey
+                    for (String listKey : values) {
                         simpleKey = type.name() + "." + listKey;
                         simpleValue = request.getParameter(simpleKey);
                         list.add(simpleValue);
@@ -95,9 +95,9 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                     Organization organization;
                     Organization.Position position;
                     List<Organization> organizations = new ArrayList<>();
-                    for (String orgNameKey : paramsSplitted.get(type.name() + "-name")) { // need to sort items
+                    for (String orgNameKey : paramsSplitted.get(type.name() + "-name")) {
                         List<Organization.Position> history = new ArrayList<>();
-                        for (String historyKey : paramsSplitted.get(type.name() + "-title")) { // need to sort items
+                        for (String historyKey : paramsSplitted.get(type.name() + "-title")) {
                             if (historyKey.startsWith(orgNameKey + ".")) {
                                 LocalDate startDate = DateUtil.parse(request.getParameter(type.name() + "-startDate" + "." + historyKey));
                                 LocalDate endDate = DateUtil.parse(request.getParameter(type.name() + "-endDate" + "." + historyKey));
@@ -112,7 +112,7 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                         if (history.size() > 0) {
                             String orgName = request.getParameter(type.name() + "-name" + "." + orgNameKey);
                             String orgUrl = request.getParameter(type.name() + "-url" + "." + orgNameKey);
-                            if(!orgName.isEmpty()) {
+                            if (!orgName.isEmpty()) {
                                 organization = new Organization(new Contact(orgName, orgUrl), history);
                                 organizations.add(organization);
                             }
@@ -200,6 +200,53 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
             Set<String> numberSet = result.computeIfAbsent(prefix, k -> new HashSet<>());
             numberSet.add(numbers);
         }
+        sortRequestSubKeys(result);
         return result;
+    }
+
+    private void sortRequestSubKeys(Map<String, Set<String>> result) {
+        for (String key : result.keySet()) {
+            Set<String> old = result.get(key);
+            if (old.size() > 0) {
+                String[] subkeys = new String[old.size()];
+                old.toArray(subkeys);
+                Arrays.sort(subkeys, this::compareSubKeys);
+                result.put(key, new LinkedHashSet<>(Arrays.asList(subkeys)));
+            }
+        }
+    }
+
+    private int compareSubKeys(String key1, String key2) {
+        if (key1 == null && key2 == null) return 0;
+        if (key1 == null) return -1;
+        if (key2 == null) return 1;
+
+        int compare = getSubKeyAsInt(key1, 0) - getSubKeyAsInt(key2, 0);
+        if (compare != 0) return compare;
+        return getSubKeyAsInt(key1, 1) - getSubKeyAsInt(key2, 1);
+    }
+
+    private int getSubKeyAsInt(String subkey, int position) {
+        int index;
+        int section;
+        index = subkey.indexOf(".");
+        try {
+            if (index == -1) {
+                if (position <= 0) {
+                    section = Integer.parseInt(subkey);
+                } else {
+                    section = 0;
+                }
+            } else {
+                if (position <= 0) {
+                    section = Integer.parseInt(subkey.substring(0, index));
+                } else {
+                    section = getSubKeyAsInt(subkey.substring(index + 1), position - 1);
+                }
+            }
+        } catch (NumberFormatException e) {
+            section = 0;
+        }
+        return section;
     }
 }
