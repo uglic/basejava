@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.web;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
+import ru.javawebinar.basejava.util.DateUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -97,25 +98,29 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                     for (String orgNameKey : paramsSplitted.get(type.name() + "-name")) { // need to sort items
                         List<Organization.Position> history = new ArrayList<>();
                         for (String historyKey : paramsSplitted.get(type.name() + "-title")) { // need to sort items
-                            if(historyKey.startsWith(orgNameKey + ".")) {
-                                LocalDate startDate = LocalDate.parse(request.getParameter(type.name() + "-startDate" + "." + historyKey));
-                                LocalDate endDate = LocalDate.parse(request.getParameter(type.name() + "-endDate" + "." + historyKey));
+                            if (historyKey.startsWith(orgNameKey + ".")) {
+                                LocalDate startDate = DateUtil.parse(request.getParameter(type.name() + "-startDate" + "." + historyKey));
+                                LocalDate endDate = DateUtil.parse(request.getParameter(type.name() + "-endDate" + "." + historyKey));
                                 String title = request.getParameter(type.name() + "-title" + "." + historyKey);
                                 String description = request.getParameter(type.name() + "-description" + "." + historyKey);
-                                position = new Organization.Position(startDate, endDate, title, description);
-                                history.add(position);
+                                if (!title.isEmpty()) {
+                                    position = new Organization.Position(startDate, endDate, title, description);
+                                    history.add(position);
+                                }
                             }
                         }
-                        organization = new Organization(
-                                new Contact(
-                                        request.getParameter(type.name() + "-name" + "." + orgNameKey),
-                                        request.getParameter(type.name() + "-url" + "." + orgNameKey)
-                                ),
-                                history
-                        );
-                        organizations.add(organization);
+                        if (history.size() > 0) {
+                            String orgName = request.getParameter(type.name() + "-name" + "." + orgNameKey);
+                            String orgUrl = request.getParameter(type.name() + "-url" + "." + orgNameKey);
+                            if(!orgName.isEmpty()) {
+                                organization = new Organization(new Contact(orgName, orgUrl), history);
+                                organizations.add(organization);
+                            }
+                        }
                     }
-                    resume.addSection(type, new OrganizationSection(organizations));
+                    if (organizations.size() > 0) {
+                        resume.addSection(type, new OrganizationSection(organizations));
+                    }
                     break;
                 default:
             }
