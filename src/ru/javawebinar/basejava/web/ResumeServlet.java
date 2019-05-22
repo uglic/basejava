@@ -1,7 +1,6 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 
@@ -10,8 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 public class ResumeServlet extends javax.servlet.http.HttpServlet {
     private Storage storage;
@@ -26,20 +25,22 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         String action = request.getParameter("action");
-        Resume resume;
-        String fullName;
+        String uuid = request.getParameter("uuid");
         switch (action) {
             case "delete":
-            case "view":
-                doGet(request, response);
+                doMakeDelete(uuid, request, response);
                 return;
+            case "view":
+                doMakeView(uuid, request, response);
+                return;
+        }
+        Resume resume;
+        String fullName = request.getParameter("fullName");
+        switch (action) {
             case "add":
-                fullName = request.getParameter("fullName");
                 resume = new Resume(fullName);
                 break;
             case "edit":
-                fullName = request.getParameter("fullName");
-                String uuid = request.getParameter("uuid");
                 resume = storage.get(uuid);
                 resume.setFullName(fullName);
                 break;
@@ -54,30 +55,69 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                 resume.getContacts().remove(type);
             }
         }
+        Map<String, Set<String>> paramsSplitted = splitRequestKeys(request);
         for (SectionTypes type : SectionTypes.values()) {
-            if (!type.equals(SectionTypes.EXPERIENCE) && !type.equals(SectionTypes.EDUCATION)) {
-                String[] values = request.getParameterValues(type.name());
-                if (values == null || values.length == 0) {
-                    resume.getSections().remove(type);
-                    continue;
-                }
-                switch (type) {
-                    case OBJECTIVE:
-                    case PERSONAL:
-                        resume.addSection(type, new SimpleTextSection(values[0]));
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        List<String> list = new ArrayList<>();
-                        for (String value : values) {
-                            if (value != null && value.trim().length() != 0) {
-                                list.add(value);
+            String simpleKey;
+            String simpleValue;
+            Set<String> values;
+            switch (type) {
+                case OBJECTIVE:
+                case PERSONAL:
+                    values = paramsSplitted.get(type.name());
+                    if (values.isEmpty()) {
+                        resume.getSections().remove(type);
+                        continue;
+                    }
+                    simpleKey = type.name() + values.iterator().next();
+                    simpleValue = request.getParameter(simpleKey);
+                    if (simpleValue != null && simpleValue.trim().length() != 0) {
+                        resume.addSection(type, new SimpleTextSection(simpleValue));
+                    }
+                    break;
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    values = paramsSplitted.get(type.name());
+                    if (values.isEmpty()) {
+                        resume.getSections().remove(type);
+                        continue;
+                    }
+                    List<String> list = new ArrayList<>();
+                    for (String listKey : values) { // need to sort items by (int)subkey
+                        simpleKey = type.name() + "." + listKey;
+                        simpleValue = request.getParameter(simpleKey);
+                        list.add(simpleValue);
+                    }
+                    resume.addSection(type, new BulletedTextListSection(list));
+                    break;
+                case EXPERIENCE:
+                case EDUCATION:
+                    Organization organization;
+                    Organization.Position position;
+                    List<Organization> organizations = new ArrayList<>();
+                    for (String orgNameKey : paramsSplitted.get(type.name() + "-name")) { // need to sort items
+                        List<Organization.Position> history = new ArrayList<>();
+                        for (String historyKey : paramsSplitted.get(type.name() + "-title")) { // need to sort items
+                            if(historyKey.startsWith(orgNameKey + ".")) {
+                                LocalDate startDate = LocalDate.parse(request.getParameter(type.name() + "-startDate" + "." + historyKey));
+                                LocalDate endDate = LocalDate.parse(request.getParameter(type.name() + "-endDate" + "." + historyKey));
+                                String title = request.getParameter(type.name() + "-title" + "." + historyKey);
+                                String description = request.getParameter(type.name() + "-description" + "." + historyKey);
+                                position = new Organization.Position(startDate, endDate, title, description);
+                                history.add(position);
                             }
                         }
-                        resume.addSection(type, new BulletedTextListSection(list));
-                        break;
-                    default:
-                }
+                        organization = new Organization(
+                                new Contact(
+                                        request.getParameter(type.name() + "-name" + "." + orgNameKey),
+                                        request.getParameter(type.name() + "-url" + "." + orgNameKey)
+                                ),
+                                history
+                        );
+                        organizations.add(organization);
+                    }
+                    resume.addSection(type, new OrganizationSection(organizations));
+                    break;
+                default:
             }
         }
         if (action.equals("add")) {
@@ -98,32 +138,63 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
             request.getRequestDispatcher("WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
-        Resume resume;
         switch (action) {
             case "delete":
-                storage.delete(uuid);
-                response.sendRedirect(request.getRequestURI());
+                doMakeDelete(uuid, request, response);
                 return;
             case "add":
                 request.setAttribute("fullName", fullName);
                 request.getRequestDispatcher("WEB-INF/jsp/add.jsp").forward(request, response);
                 return;
             case "view":
+                doMakeView(uuid, request, response);
+                return;
             case "edit":
-                try {
-                    resume = storage.get(uuid);
-                    request.setAttribute("resume", resume);
-                } catch (NotExistStorageException e) {
-                    request.setAttribute("resumes", storage.getAllSorted());
-                    request.getRequestDispatcher("WEB-INF/jsp/list.jsp").forward(request, response);
-                    return;
-                }
-                request.getRequestDispatcher(
-                        ("view".equals(action) ? "WEB-INF/jsp/view.jsp" : "WEB-INF/jsp/edit.jsp")
-                ).forward(request, response);
+                doGetEdit(uuid, request, response);
                 return;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
+    }
+
+    private void doMakeDelete(String uuid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        storage.delete(uuid);
+        response.sendRedirect(request.getRequestURI());
+    }
+
+    private void doMakeView(String uuid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGetViewEdit(uuid, "view", request, response);
+    }
+
+    private void doGetEdit(String uuid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGetViewEdit(uuid, "edit", request, response);
+    }
+
+    private void doGetViewEdit(String uuid, String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Resume resume = storage.get(uuid);
+        request.setAttribute("resume", resume);
+        request.getRequestDispatcher(
+                ("view".equals(action) ? "WEB-INF/jsp/view.jsp" : "WEB-INF/jsp/edit.jsp")
+        ).forward(request, response);
+    }
+
+    private Map<String, Set<String>> splitRequestKeys(HttpServletRequest request) {
+        Map<String, String[]> sourceMap = request.getParameterMap();
+        Map<String, Set<String>> result = new HashMap<>();
+        for (String key : sourceMap.keySet()) {
+            int index = key.indexOf(".");
+            String prefix;
+            String numbers;
+            if (index != -1) {
+                numbers = key.substring(index + 1);
+                prefix = key.substring(0, index);
+            } else {
+                numbers = "";
+                prefix = key;
+            }
+            Set<String> numberSet = result.computeIfAbsent(prefix, k -> new HashSet<>());
+            numberSet.add(numbers);
+        }
+        return result;
     }
 }

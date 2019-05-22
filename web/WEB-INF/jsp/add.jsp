@@ -44,8 +44,8 @@
                     </c:if>
                     <c:if test="${sectionType.equals(SectionTypes.ACHIEVEMENT) || sectionType.equals(SectionTypes.QUALIFICATIONS)}">
                         <ul>
-                            <li id="${sectionType.name()}">
-                                <textarea size="2000" rows="1" name="${sectionType.name()}" class="w95"></textarea>
+                            <li id="${sectionType.name()}.1">
+                                <textarea size="2000" rows="1" name="${sectionType.name()}.1" class="w95"></textarea>
                                 <a class="delete del:${sectionType.name()}" href=""><img src="img/delete.png"></a>
                             </li>
                         </ul>
@@ -53,26 +53,26 @@
                     </c:if>
                     <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE) || sectionType.equals(SectionTypes.EDUCATION)}">
                         <div>
-                            <div id="${sectionType.name()}-org">
+                            <div id="${sectionType.name()}-org.1">
                                 <hr/>
                                 <div class="col-15">Организация:</div>
                                 <div class="col-85">
-                                    <input type="text" size="2000" name="${sectionType.name()}.name" class="w95">
+                                    <input type="text" size="2000" name="${sectionType.name()}-name.1" class="w95">
                                     <a class="delete del:${sectionType.name()}-org" href=""><img src="img/delete.png"></a>
                                 </div>
                                 <div class="row">
                                     <div class="col-15">URL:</div>
                                     <div class="col-85">
-                                        <textarea size="2000" rows="1" name="${sectionType.name()}.url"></textarea>
+                                        <textarea size="2000" rows="1" name="${sectionType.name()}-url.1"></textarea>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div id="${sectionType.name()}-period">
+                                    <div id="${sectionType.name()}-period.1.1">
                                         <div class="row">
                                             <div class="col-15"></div>
                                             <div class="col-15">Период:</div>
                                             <div class="col-70">
-                                                <input type="date" name="${sectionType.name()}.startDate"> - <input type="date" name="${sectionType.name()}.endDate">
+                                                <input type="date" name="${sectionType.name()}-startDate.1.1"> - <input type="date" name="${sectionType.name()}-endDate.1.1">
                                                 <a class="delete del:${sectionType.name()}-period" href=""><img src="img/delete.png"></a>
                                             </div>
                                         </div>
@@ -80,7 +80,7 @@
                                             <div class="col-15"></div>
                                             <div class="col-15">Должность:</div>
                                             <div class="col-70">
-                                                <input type="text" size="250" name="${sectionType.name()}.title">
+                                                <input type="text" size="250" name="${sectionType.name()}-title.1.1">
                                             </div>
                                         </div>
                                         <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE)}">
@@ -88,7 +88,7 @@
                                                 <div class="col-15"></div>
                                                 <div class="col-15">Обязанности:</div>
                                                 <div class="col-70">
-                                                    <textarea size="2000" name="${sectionType.name()}.description"></textarea>
+                                                    <textarea size="2000" name="${sectionType.name()}-description.1.1"></textarea>
                                                 </div>
                                             </div>
                                         </c:if>

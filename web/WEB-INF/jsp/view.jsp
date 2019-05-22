@@ -32,31 +32,38 @@
     <c:forEach var="sectionEntry" items="${resume.getSections()}">
         <c:set var="sectionType" value="${sectionEntry.getKey()}"/>
         <c:set var="section" value="${sectionEntry.getValue()}"/>
-        <tr>
-            <td colspan="2"><h2>${sectionType.getTitle()}</h2></td>
-        </tr>
-        <c:if test="${sectionType.equals(SectionTypes.OBJECTIVE)}">
-        <tr>
-            <td colspan="2"><h3>${section.getContent()}</h3></td>
-        </tr>
-        </c:if>
-        <c:if test="${sectionType.equals(SectionTypes.PERSONAL)}">
-        <tr>
-            <td colspan="2">${section.getContent()}</td>
-        </tr>
+        <c:if test="${sectionType.equals(SectionTypes.OBJECTIVE) || sectionType.equals(SectionTypes.PERSONAL)}">
+            <c:if test="${!section.getContent().isEmpty()}">
+                <tr>
+                    <td colspan="2"><h2>${sectionType.getTitle()}</h2></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><h3>${section.getContent()}</h3></td>
+                </tr>
+            </c:if>
         </c:if>
         <c:if test="${sectionType.equals(SectionTypes.ACHIEVEMENT) || sectionType.equals(SectionTypes.QUALIFICATIONS)}">
-        <tr>
-            <td colspan="2">
-                <ul>
-                    <c:forEach var="listItem" items="${section.getItems()}">
-                            <li>${listItem}</li>
-                    </c:forEach>
-                </ul>
-            </td>
-        </tr>
+            <c:if test="${section.getItems().size() > 0}">
+                <tr>
+                    <td colspan="2"><h2>${sectionType.getTitle()}</h2></td>
+                </tr>
+            </c:if>
+            <tr>
+                <td colspan="2">
+                    <ul>
+                        <c:forEach var="listItem" items="${section.getItems()}">
+                                <li>${listItem}</li>
+                        </c:forEach>
+                    </ul>
+                </td>
+            </tr>
         </c:if>
         <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE) || sectionType.equals(SectionTypes.EDUCATION)}">
+            <c:if test="${section.getOrganizations().size() > 0}">
+                <tr>
+                    <td colspan="2"><h2>${sectionType.getTitle()}</h2></td>
+                </tr>
+            </c:if>
             <c:forEach var="organization" items="${section.getOrganizations()}">
                 <tr>
                     <td colspan="2"><h3>${organization.getContact().toHtml()}</h3></td>

@@ -25,13 +25,13 @@
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
             <dt>Полное имя:</dt>
-            <dd><input type="text" name="fullName" size=50 value="${HtmlUtil.toEntityValue(resume.fullName)}"></dd>
+            <dd><textarea name="fullName" size=50>${HtmlUtil.toEntityValue(resume.fullName)}</textarea></dd>
         </dl>
         <h3>Контакты:</h3>
         <c:forEach var="type" items="<%=ContactTypes.values()%>">
             <dl>
                 <dt>${type.getPrefix()}</dt>
-                <dd><input type="text" name="${type.name()}" size=30 value="${HtmlUtil.toEntityValue(resume.getContacts().get(type).getName())}"></dd>
+                <dd><textarea name="${type.name()}" size=30>${HtmlUtil.toEntityValue(resume.getContacts().get(type).getName())}</textarea></dd>
             </dl>
         </c:forEach>
         <c:forEach var="sectionType" items="${SectionTypes.values()}">
@@ -55,7 +55,7 @@
                             <c:forEach var="listItem" items="${section.getItems()}">
                                 <c:set var="counter" value="${counter + 1}"/>
                                 <li id="${sectionType.name()}.${counter}">
-                                    <textarea size="2000" rows="1" name="${sectionType.name()}" class="w95">${HtmlUtil.toEntityValue(listItem)}</textarea>
+                                    <textarea size="2000" rows="1" name="${sectionType.name()}.${counter}" class="w95">${HtmlUtil.toEntityValue(listItem)}</textarea>
                                     <a class="delete del:${sectionType.name()}" href=""><img src="img/delete.png"></a>
                                 </li>
                             </c:forEach>
@@ -75,13 +75,13 @@
                                     <hr/>
                                     <div class="col-15">Организация:</div>
                                     <div class="col-85">
-                                        <input type="text" size="2000" name="${sectionType.name()}.name" class="w95" value="${organization.getContact().getName()}">
+                                        <textarea size="2000" name="${sectionType.name()}-name.${counterOrg}" class="w95">${HtmlUtil.toEntityValue(organization.getContact().getName())}</textarea>
                                         <a class="delete del:${sectionType.name()}-org" href=""><img src="img/delete.png"></a>
                                     </div>
                                     <div class="row">
                                         <div class="col-15">URL:</div>
                                         <div class="col-85">
-                                            <textarea size="2000" rows="1" name="${sectionType.name()}.url">${organization.getContact().getUrl()}</textarea>
+                                            <textarea size="2000" rows="1" name="${sectionType.name()}-url.${counterOrg}">${HtmlUtil.toEntityValue(organization.getContact().getUrl())}</textarea>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -93,7 +93,7 @@
                                                     <div class="col-15"></div>
                                                     <div class="col-15">Период:</div>
                                                     <div class="col-70">
-                                                        <input type="date" name="${sectionType.name()}.startDate" value="${position.getStartDate()}"> - <input type="date" name="${sectionType.name()}.endDate" value="${position.getEndDate()}">
+                                                        <input type="date" name="${sectionType.name()}-startDate.${counterOrg}.${counterHist}" value="${position.getStartDate()}"> - <input type="date" name="${sectionType.name()}-endDate.${counterOrg}.${counterHist}" value="${position.getEndDate()}">
                                                         <a class="delete del:${sectionType.name()}-period" href=""><img src="img/delete.png"></a>
                                                     </div>
                                                 </div>
@@ -101,7 +101,7 @@
                                                     <div class="col-15"></div>
                                                     <div class="col-15">Должность:</div>
                                                     <div class="col-70">
-                                                        <input type="text" size="250" name="${sectionType.name()}.title" value="${position.getTitle()}">
+                                                        <textarea size="250" name="${sectionType.name()}-title.${counterOrg}.${counterHist}">${HtmlUtil.toEntityValue(position.getTitle())}</textarea>
                                                     </div>
                                                 </div>
                                                 <c:if test="${sectionType.equals(SectionTypes.EXPERIENCE)}">
@@ -109,7 +109,7 @@
                                                         <div class="col-15"></div>
                                                         <div class="col-15">Обязанности:</div>
                                                         <div class="col-70">
-                                                            <textarea size="2000" name="${sectionType.name()}.description">${position.getDescription()}</textarea>
+                                                            <textarea size="2000" name="${sectionType.name()}-description.${counterOrg}.${counterHist}">${HtmlUtil.toEntityValue(position.getDescription())}</textarea>
                                                         </div>
                                                     </div>
                                                 </c:if>
@@ -127,7 +127,7 @@
             </div>
         </c:forEach>
         <hr>
-        <button type="submit">Создать</button>
+        <button type="submit">Сохранить</button>
         <button type="button" onclick="window.history.back()">Отменить</button>
     </form>
 </section>
