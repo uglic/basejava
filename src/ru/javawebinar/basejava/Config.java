@@ -4,14 +4,14 @@ import ru.javawebinar.basejava.storage.SqlStorage;
 import ru.javawebinar.basejava.storage.Storage;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class Config {
     //private static final Logger LOG = Logger.getLogger("CONFIG");
-    private static final String PROPERTIES_FILE = getHomeDir() + System.getProperty("file.separator")  + "config" + System.getProperty("file.separator") + "resumes.properties";
+    //private static final String PROPERTIES_FILE = getHomeDir() + System.getProperty("file.separator")  + "config" + System.getProperty("file.separator") + "resumes.properties";
+    private static final String PROPERTIES_FILE = "/resumes.properties";
     private static final Config INSTANCE = new Config();
 
     private final String storageDir;
@@ -22,7 +22,7 @@ public class Config {
     }
 
     private Config() {
-        try (InputStream is = new FileInputStream(new File(PROPERTIES_FILE))) {
+        try (InputStream is = Config.class.getResourceAsStream(PROPERTIES_FILE)) {
             Properties props = new Properties();
             props.load(is);
             storageDir = props.getProperty("storage.dir").replace("/", System.getProperty("file.separator"));
