@@ -23,3 +23,16 @@ CREATE TABLE section (
 
 CREATE UNIQUE INDEX section_uuid_type_index
   ON section (resume_uuid, type);
+
+-- Added 04.09.2019
+
+-- CREATE TABLE name_variants (
+--  id primary key not null,
+--  name varchar(32) not null,
+--  type int -- 0-surname, 1-name, 2-patronymic
+--);
+
+--CREATE TABLE words (
+--  id primary key not null,
+--  word varchar(32) not null
+--);
