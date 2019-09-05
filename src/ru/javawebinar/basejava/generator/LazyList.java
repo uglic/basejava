@@ -1,19 +1,21 @@
 package ru.javawebinar.basejava.generator;
 
+import ru.javawebinar.basejava.generator.loader.ILoader;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Lazy loading data by loader
+ *
  * @param <T> Type of list's values
  */
 public class LazyList<T> implements Iterable<T> {
     private List<T> list;
-    private final Supplier<List<T>> loader;
+    private final ILoader<T> loader;
 
-    public LazyList(Supplier<List<T>> loader) {
+    public LazyList(ILoader<T> loader) {
         this.loader = loader;
     }
 
@@ -29,7 +31,7 @@ public class LazyList<T> implements Iterable<T> {
         if (list == null) {
             synchronized (this) {
                 if (list == null) {
-                    list = loader.get();
+                    list = loader.load();
                 }
             }
         }

@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.generator;
 
 import org.junit.jupiter.api.Test;
+import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 
 class FullNameGeneratorTest {
 
@@ -14,12 +15,13 @@ class FullNameGeneratorTest {
         printMultiThreadRandomFullNames(false, 500);
     }
 
-    private void printMultiThreadRandomFullNames(boolean isMen, int count) {
+    private void printMultiThreadRandomFullNames(boolean isMan, int count) {
+        final IGeneratorParameter parameter = () -> true;
         Thread[] tasks = new Thread[count];
         for (int i = 0; i < count; i++) {
             final int id = i;
             tasks[id] = new Thread(() -> {
-                String name = FullNameGenerator.getInstance().getRandomFullName(isMen);
+                String name = FullNameGenerator.getInstance().getRandom(parameter);
                 System.out.format("Task %03d: %s\n", id, name);
             });
         }

@@ -1,6 +1,9 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
+import ru.javawebinar.basejava.generator.ResumeGenerator;
+import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
+import ru.javawebinar.basejava.generator.param.IsManGeneratorParam;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 import ru.javawebinar.basejava.util.DateUtil;
@@ -12,6 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class ResumeServlet extends javax.servlet.http.HttpServlet {
     private Storage storage;
@@ -20,6 +27,7 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         storage = Config.get().getSqlStorage();
+        setupResumeControl(15);
     }
 
     @Override
@@ -248,5 +256,25 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
             section = 0;
         }
         return section;
+    }
+
+    protected void setupResumeControl(final int resumeMinCount) {
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            int addCount = resumeMinCount - storage.size();
+            if (addCount > 0) {
+                for (int i = 0; i < addCount; i++) {
+                    IGeneratorParameter gp = new IsManGeneratorParam(ThreadLocalRandom.current().nextBoolean());
+                    final Resume resume = ResumeGenerator.getInstance().getRandom(gp);
+                    List<String> names = new ArrayList<>();
+                    storage.getAllSorted().forEach(r -> {
+                        names.add(r.getFullName());
+                    });
+                    if (!names.contains(resume.getFullName())) {
+                        storage.save(resume);
+                    }
+                }
+            }
+        }, 10, 20, TimeUnit.SECONDS);
     }
 }
