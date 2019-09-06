@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManNameFileLineLoader extends AbstractNameFileLineLoader {
-    private final static String NAMES = "config/men_names.txt";
+    private final static String NAMES = "/men_names.txt";
 
     public ManNameFileLineLoader() {
         super(NAMES);

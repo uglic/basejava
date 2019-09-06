@@ -1,10 +1,9 @@
 package ru.javawebinar.basejava.generator;
 
-import ru.javawebinar.basejava.generator.param.ContactTypeGeneratorParam;
+import ru.javawebinar.basejava.generator.contact.LoginGenerator;
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 import ru.javawebinar.basejava.generator.param.IsManGeneratorParam;
 import ru.javawebinar.basejava.model.Contact;
-import ru.javawebinar.basejava.model.ContactTypes;
 import ru.javawebinar.basejava.model.Organization;
 import ru.javawebinar.basejava.util.DateUtil;
 
@@ -15,9 +14,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OrganizationGenerator implements IRandomDataGenerator<Organization> {
     private final static int MAX_POSITION_ON_SAME_ORGANIZATION = 3;
     private static volatile OrganizationGenerator instance;
-    private final IRandomDataGenerator<Contact> contactGenerator = ContactGenerator.getInstance();
+    private final IRandomDataGenerator<Contact> contactGenerator = OrganizationContactGenerator.getInstance();
     private final IRandomDataGenerator<String> positionNameGenerator = PositionNameGenerator.getInstance();
     private final IRandomDataGenerator<String> positionDescGenerator = PositionDescGenerator.getInstance();
+    private final IRandomDataGenerator<String> loginGenerator = LoginGenerator.getInstance();
 
     private OrganizationGenerator() {
     }
@@ -59,8 +59,6 @@ public class OrganizationGenerator implements IRandomDataGenerator<Organization>
                     positionNameGenerator.getRandom(paramDeeper),
                     positionDescGenerator.getRandom(paramDeeper));
         }
-        return new Organization(
-                contactGenerator.getRandom(new ContactTypeGeneratorParam(gp.isMan(), ContactTypes.HOMESITE)),
-                positions);
+        return new Organization(contactGenerator.getRandom(gp), positions);
     }
 }

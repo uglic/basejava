@@ -3,9 +3,6 @@ package ru.javawebinar.basejava;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.util.DateUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TestData {
     public static final String UUID_1 = "7de882da-02f2-4d16-8daa-60660aaf";
     public static final String UUID_NEW = "uuidNew";
@@ -279,23 +276,5 @@ public class TestData {
                     )
             );
         return resume;
-    }
-
-    public static List<Contact> getContacts() {
-        List<Contact> list = new ArrayList<>();
-        list.add(new Contact("Аба-групп", "https://group-aba.ru"));
-        list.add(new Contact("Аба-гсм", "https://gsm-aba.ru"));
-        list.add(new Contact("Аба-дент", "https://dent-aba.ru"));
-        list.add(new Contact("Аба-дизайн", "https://design-aba.ru"));
-        list.add(new Contact("Аба-клиника", "https://clinic-aba.ru"));
-        list.add(new Contact("Аба маркет", "https://market-aba.ru"));
-        list.add(new Contact("Аба моторс", "https://motors-aba.ru"));
-        list.add(new Contact("Аба плюс", "https://plus-aba.ru"));
-        list.add(new Contact("Аба стиль", "https://style-aba.ru"));
-        list.add(new Contact("Аба строй", "https://stroy-aba.ru"));
-        list.add(new Contact("Аба тур", "https://tour-aba.ru"));
-        list.add(new Contact("Аба уголь", "https://ugol-aba.ru"));
-        list.add(new Contact("Аба юрт", "https://urt-aba.ru"));
-        return list;
     }
 }

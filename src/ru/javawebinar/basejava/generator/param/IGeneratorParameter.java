@@ -20,11 +20,15 @@ public interface IGeneratorParameter {
         throw new IllegalStateException();
     }
 
-    ;
-
     default LocalDate getDateTo() {
         throw new IllegalStateException();
     }
 
-    ;
+    default String getFullName() {
+        throw new IllegalStateException();
+    }
+
+    default String getLogin() {
+        throw new IllegalStateException();
+    }
 }
