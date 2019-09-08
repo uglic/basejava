@@ -27,7 +27,7 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         storage = Config.get().getSqlStorage();
-        setupResumeControl(15);
+        setupResumeControl(15, 15);
     }
 
     @Override
@@ -258,7 +258,7 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
         return section;
     }
 
-    protected void setupResumeControl(final int resumeMinCount) {
+    protected void setupResumeControl(final int resumeMinCount, final int periodSeconds) {
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
             int addCount = resumeMinCount - storage.size();
@@ -275,6 +275,6 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
                     }
                 }
             }
-        }, 10, 20, TimeUnit.SECONDS);
+        }, 10, periodSeconds, TimeUnit.SECONDS);
     }
 }

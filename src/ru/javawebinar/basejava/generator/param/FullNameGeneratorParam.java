@@ -1,4 +1,7 @@
 package ru.javawebinar.basejava.generator.param;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 public class FullNameGeneratorParam implements IGeneratorParameter {
     private final boolean isMan;

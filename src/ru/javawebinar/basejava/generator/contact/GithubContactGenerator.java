@@ -1,4 +1,7 @@
 package ru.javawebinar.basejava.generator.contact;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import ru.javawebinar.basejava.generator.IRandomDataGenerator;
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
@@ -25,6 +28,6 @@ public class GithubContactGenerator implements IRandomDataGenerator<Contact> {
     @Override
     public Contact getRandom(IGeneratorParameter gp) {
         String login = gp.getLogin();
-        return new Contact( "https://github.com/" + login, ContactTypes.GITHUB);
+        return new Contact("https://github.com/" + login, ContactTypes.GITHUB);
     }
 }

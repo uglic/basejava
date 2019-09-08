@@ -5,6 +5,9 @@ import ru.javawebinar.basejava.generator.param.IsManGeneratorParam;
 import ru.javawebinar.basejava.model.BulletedTextListSection;
 
 import java.util.concurrent.ThreadLocalRandom;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 public class BulletedTextListSectionGenerator implements IRandomDataGenerator<BulletedTextListSection> {
     private static final int MAX_ITEMS = 15;

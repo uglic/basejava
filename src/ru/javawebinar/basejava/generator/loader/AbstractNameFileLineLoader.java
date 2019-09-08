@@ -1,5 +1,9 @@
 package ru.javawebinar.basejava.generator.loader;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractNameFileLineLoader implements IFileLineLoader<String> {
@@ -10,8 +14,8 @@ public abstract class AbstractNameFileLineLoader implements IFileLineLoader<Stri
     }
 
     @Override
-    public String parseLine(String line) {
-        return line.trim();
+    public List<String> parseLine(String line) {
+        return Collections.singletonList(line.trim());
     }
 
     @Override

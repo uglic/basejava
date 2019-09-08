@@ -2,6 +2,9 @@ package ru.javawebinar.basejava.generator;
 
 import ru.javawebinar.basejava.generator.loader.*;
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import java.util.concurrent.ThreadLocalRandom;
 

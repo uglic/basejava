@@ -1,4 +1,7 @@
 package ru.javawebinar.basejava.generator.loader;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import java.util.List;
 

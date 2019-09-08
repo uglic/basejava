@@ -2,6 +2,9 @@ package ru.javawebinar.basejava.generator.param;
 
 import ru.javawebinar.basejava.model.ContactTypes;
 import ru.javawebinar.basejava.model.SectionTypes;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import java.time.LocalDate;
 

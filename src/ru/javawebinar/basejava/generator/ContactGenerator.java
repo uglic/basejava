@@ -4,6 +4,9 @@ import ru.javawebinar.basejava.generator.contact.*;
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 import ru.javawebinar.basejava.model.Contact;
 import ru.javawebinar.basejava.model.ContactTypes;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import java.util.concurrent.ThreadLocalRandom;
 

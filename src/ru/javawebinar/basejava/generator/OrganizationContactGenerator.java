@@ -1,4 +1,7 @@
 package ru.javawebinar.basejava.generator;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 import ru.javawebinar.basejava.model.Contact;

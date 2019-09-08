@@ -1,4 +1,7 @@
 package ru.javawebinar.basejava.generator.loader;
+/*
+ * @author Stepan Shcherbakov /uglic.ru/ 2019
+ */
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +17,7 @@ public interface IFileLineLoader<T> extends ILoader<T> {
      * @param line Text line, usually from file; without end-line symbols
      * @return Value of parameter type
      */
-    T parseLine(String line);
+    List<T> parseLine(String line);
 
     default String filterRegex() {
         return "[а-яА-Я]*";
@@ -27,7 +30,7 @@ public interface IFileLineLoader<T> extends ILoader<T> {
         try {
             Files.lines(Paths.get(realName), StandardCharsets.UTF_8).forEach((e) -> {
                 if (!e.isEmpty() && e.matches(regex)) {
-                    list.add(parseLine(e));
+                    list.addAll(parseLine(e));
                 }
             });
         } catch (IOException ignored) {
