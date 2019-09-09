@@ -8,7 +8,9 @@ class ResumeGeneratorTest {
 
     @Test
     void getResumeRandom() {
-        Resume resume = ResumeGenerator.getInstance().getRandom(new IsManGeneratorParam(true));
-        System.out.println(resume);
+        for (int i = 0; i < 10; i++) {
+            Resume resume = ResumeGenerator.getInstance().getRandom(new IsManGeneratorParam(true));
+            System.out.println(resume);
+        }
     }
 }

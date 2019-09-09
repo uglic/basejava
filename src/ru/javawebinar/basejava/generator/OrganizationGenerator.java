@@ -3,7 +3,6 @@ package ru.javawebinar.basejava.generator;
  * @author Stepan Shcherbakov /uglic.ru/ 2019
  */
 
-import ru.javawebinar.basejava.generator.contact.LoginGenerator;
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 import ru.javawebinar.basejava.generator.param.IsManGeneratorParam;
 import ru.javawebinar.basejava.model.Contact;
@@ -20,7 +19,6 @@ public class OrganizationGenerator implements IRandomDataGenerator<Organization>
     private final IRandomDataGenerator<Contact> contactGenerator = OrganizationContactGenerator.getInstance();
     private final IRandomDataGenerator<String> positionNameGenerator = PositionNameGenerator.getInstance();
     private final IRandomDataGenerator<String> positionDescGenerator = PositionDescGenerator.getInstance();
-    private final IRandomDataGenerator<String> loginGenerator = LoginGenerator.getInstance();
 
     private OrganizationGenerator() {
     }

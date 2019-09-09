@@ -3,12 +3,15 @@ package ru.javawebinar.basejava.generator;
  * @author Stepan Shcherbakov /uglic.ru/ 2019
  */
 
+import ru.javawebinar.basejava.generator.markov.MarkovChain;
+import ru.javawebinar.basejava.generator.markov.MarkovUtil;
 import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PositionDescGenerator implements IRandomDataGenerator<String> {
     private static volatile PositionDescGenerator instance;
+    private final MarkovChain markovChain = MarkovUtil.getInstance().getMarkovChain();
 
     private PositionDescGenerator() {
     }
@@ -26,6 +29,6 @@ public class PositionDescGenerator implements IRandomDataGenerator<String> {
 
     @Override
     public String getRandom(IGeneratorParameter gp) {
-        return "Position description must be long enough " + ThreadLocalRandom.current().nextInt();
+        return markovChain.generate(ThreadLocalRandom.current().nextInt(20, 100));
     }
 }

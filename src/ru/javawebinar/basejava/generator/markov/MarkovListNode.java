@@ -6,22 +6,11 @@ package ru.javawebinar.basejava.generator.markov;/*
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Two stage initialization (isPositionsActual == false on start):
- * 1. add word and increment their counters
- * 2. recalc positions and create ordered by position array
- */
-
 class MarkovListNode {
-    private String word;
     private int totalCount;
     private boolean isPositionsActual;
     private final Map<String, MarkovChildNode> childrenByName = new LinkedHashMap<>();
     private final List<MarkovChildNode> children = new ArrayList<>();
-
-    MarkovListNode(String word) {
-        this.word = word;
-    }
 
     void addNextWord(String word) {
         if (!isPositionsActual) {

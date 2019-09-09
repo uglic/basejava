@@ -35,9 +35,9 @@ public class LoginGenerator implements IRandomDataGenerator<String> {
         String login = filter(parts[indexes[0]], 1, 4,
                 random.nextBoolean(), random);
         login = login.concat(filter(parts[indexes[1]], 1, 4,
-                !isVowel(login.charAt(login.length() - 1)), random));
+                login.length() <= 0 || !isVowel(login.charAt(login.length() - 1)), random));
         return login.concat(filter(parts[indexes[2]], 1, 4,
-                !isVowel(login.charAt(login.length() - 1)), random));
+                login.length() <= 0 || !isVowel(login.charAt(login.length() - 1)), random));
     }
 
     private int[] getRandomIndexes(ThreadLocalRandom random) {

@@ -9,18 +9,18 @@ import ru.javawebinar.basejava.generator.param.IGeneratorParameter;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class PositionNameGenerator implements IRandomDataGenerator<String> {
-    private static volatile PositionNameGenerator instance;
+public class ObjectiveGenerator implements IRandomDataGenerator<String> {
+    private static volatile ObjectiveGenerator instance;
     private final MarkovChain markovChain = MarkovUtil.getInstance().getMarkovChain();
 
-    private PositionNameGenerator() {
+    private ObjectiveGenerator() {
     }
 
-    public static PositionNameGenerator getInstance() {
+    public static ObjectiveGenerator getInstance() {
         if (instance == null) {
-            synchronized (PositionNameGenerator.class) {
+            synchronized (ObjectiveGenerator.class) {
                 if (instance == null) {
-                    instance = new PositionNameGenerator();
+                    instance = new ObjectiveGenerator();
                 }
             }
         }
@@ -29,6 +29,6 @@ public class PositionNameGenerator implements IRandomDataGenerator<String> {
 
     @Override
     public String getRandom(IGeneratorParameter gp) {
-        return markovChain.generate(ThreadLocalRandom.current().nextInt(1, 3));
+        return markovChain.generate(ThreadLocalRandom.current().nextInt(5, 25));
     }
 }

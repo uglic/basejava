@@ -17,7 +17,7 @@ class MarkovListNodeTest {
 
     @BeforeAll
     public static void fill() {
-        markovListNode = new MarkovListNode("word");
+        markovListNode = new MarkovListNode();
         for (int i = 1; i < 10; i++) {
             for (int j = 1; j <= i; j++) {
                 markovListNode.addNextWord("" + i);

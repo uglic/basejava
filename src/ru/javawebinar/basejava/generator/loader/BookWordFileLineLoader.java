@@ -25,7 +25,7 @@ public class BookWordFileLineLoader extends AbstractNameFileLineLoader {
 
     @Override
     public String filterRegex() {
-        return "[а-яА-Я.,!]+";
+        return ".*";
     }
 
     @Override

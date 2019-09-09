@@ -117,8 +117,7 @@ a.delete {
 }
 
 .header-message {
-  font-size: 12px;
-  text-align: left;
+  text-align: center;
   padding-top: 0.03em;
   padding-bottom: 0.01em;
 }

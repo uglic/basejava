@@ -9,7 +9,7 @@ import ru.javawebinar.basejava.model.SimpleTextSection;
 
 public class SimpleTextSectionGenerator implements IRandomDataGenerator<SimpleTextSection> {
     private static volatile SimpleTextSectionGenerator instance;
-    private final IRandomDataGenerator<String> textGenerator = PositionDescGenerator.getInstance();
+    private final IRandomDataGenerator<String> textGenerator = ObjectiveGenerator.getInstance();
 
     private SimpleTextSectionGenerator() {
     }
