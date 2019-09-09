@@ -3,45 +3,78 @@ package ru.javawebinar.basejava.generator.markov;/*
  * License MIT
  */
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class MarkovListNode {
+/**
+ * Two stage initialization (isPositionsActual == false on start):
+ * 1. add word and increment their counters
+ * 2. recalc positions and create ordered by position array
+ */
+
+class MarkovListNode {
     private String word;
     private int totalCount;
-    private Set<MarkovChildNode> children = new TreeSet<>();
+    private boolean isPositionsActual;
+    private final Map<String, MarkovChildNode> childrenByName = new LinkedHashMap<>();
+    private final List<MarkovChildNode> children = new ArrayList<>();
 
-    public MarkovListNode(String word) {
+    MarkovListNode(String word) {
         this.word = word;
     }
 
-    public void addNextWord(String word) {
-//        MarkovChildNode testNode = new MarkovChildNode(word, 0,0);
-//        if(children.contains(testNode)){
-//            test
-//        } else {
-//
-//        }
-//
-//
-//        children.computeIfPresent(word, (k, v) -> {
-//            v.count++;
-//            children.values().stream()
-//                    .filter((c) -> c.position > v.position)
-//                    .forEach((c) -> c.position++);
-//            return v;
-//        });
-//        children.computeIfAbsent(word, (k) -> children.put(k, new MarkovChildNode(1, totalCount)));
-//        totalCount++;
+    void addNextWord(String word) {
+        if (!isPositionsActual) {
+            childrenByName.compute(word, (k, v) -> {
+                MarkovChildNode node;
+                if (v == null) {
+                    node = new MarkovChildNode(k);
+                    children.add(node);
+                } else {
+                    node = v;
+                }
+                node.count++;
+                return node;
+            });
+            totalCount++;
+        } else {
+            throw new IllegalStateException("List of words is already closed to addition");
+        }
     }
 
-    public String getNextRandomWord() {
-//        int position = ThreadLocalRandom.current().nextInt(totalCount);
-//        MarkovChildNode child;
-//        Iterator<String> it = children.keySet().iterator();
-//        for (; it.hasNext(); ) {
-//            child = children.get(it.next());
-//        }
-        return null;
+    String getNextRandomWord() {
+        int position = ThreadLocalRandom.current().nextInt(totalCount);
+        return getWordByPosition(position);
+    }
+
+    String getWordByPosition(int position) {
+        if (!isPositionsActual) syncPositions();
+        MarkovChildNode test = new MarkovChildNode(null, 0, position);
+        int search = Collections.binarySearch(children, test, MarkovChildNode::compareByPosition);
+        if (search < 0) {
+            int index = -search - 1 - 1;
+            test = children.get(index);
+            if (index == children.size() - 1 && test.position + test.count <= position) {
+                throw new IndexOutOfBoundsException("Maximum index value is " + (totalCount - 1));
+            } else {
+                return children.get(-search - 1 - 1).word;
+
+            }
+        } else {
+            return children.get(search).word;
+        }
+    }
+
+    private void syncPositions() {
+        int position = 0;
+        for (MarkovChildNode node : children) {
+            node.position = position;
+            position += node.count;
+        }
+        if (position != totalCount) {
+            throw new IllegalStateException("Total of words is not equal count's sum");
+        }
+        isPositionsActual = true;
     }
 }
+

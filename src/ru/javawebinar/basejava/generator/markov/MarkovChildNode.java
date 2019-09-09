@@ -4,7 +4,7 @@ package ru.javawebinar.basejava.generator.markov;
  * License MIT
  */
 
-class MarkovChildNode implements Comparable<MarkovChildNode> {
+class MarkovChildNode {
     String word;
     int count;       // count of word in th chain
     int position; // sum of count for before-in-chain words
@@ -15,23 +15,11 @@ class MarkovChildNode implements Comparable<MarkovChildNode> {
         this.position = position;
     }
 
-    @Override
-    public int compareTo(MarkovChildNode o) {
-        return word.compareTo(o.word);
+    MarkovChildNode(String word) {
+        this.word = word;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        MarkovChildNode child = (MarkovChildNode) o;
-
-        return word.equals(child.word);
-    }
-
-    @Override
-    public int hashCode() {
-        return word.hashCode();
+    static int compareByPosition(MarkovChildNode node1, MarkovChildNode node2) {
+        return Integer.compare(node1.position, node2.position);
     }
 }
