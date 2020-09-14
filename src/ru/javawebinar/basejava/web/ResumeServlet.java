@@ -261,19 +261,20 @@ public class ResumeServlet extends javax.servlet.http.HttpServlet {
     protected void setupResumeControl(final int resumeMinCount, final int periodSeconds) {
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
-            int addCount = resumeMinCount - storage.size();
-            if (addCount > 0) {
-                for (int i = 0; i < addCount; i++) {
-                    IGeneratorParameter gp = new IsManGeneratorParam(ThreadLocalRandom.current().nextBoolean());
-                    final Resume resume = ResumeGenerator.getInstance().getRandom(gp);
-                    List<String> names = new ArrayList<>();
-                    storage.getAllSorted().forEach(r -> {
-                        names.add(r.getFullName());
-                    });
-                    if (!names.contains(resume.getFullName())) {
-                        storage.save(resume);
+            try {
+                int addCount = resumeMinCount - storage.size();
+                if (addCount > 0) {
+                    for (int i = 0; i < addCount; i++) {
+                        IGeneratorParameter gp = new IsManGeneratorParam(ThreadLocalRandom.current().nextBoolean());
+                        final Resume resume = ResumeGenerator.getInstance().getRandom(gp);
+                        List<String> names = new ArrayList<>();
+                        storage.getAllSorted().forEach(r -> names.add(r.getFullName()));
+                        if (!names.contains(resume.getFullName())) {
+                            storage.save(resume);
+                        }
                     }
                 }
+            } catch (Throwable ignore) {
             }
         }, 10, periodSeconds, TimeUnit.SECONDS);
     }
